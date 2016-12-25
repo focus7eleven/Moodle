@@ -1,14 +1,19 @@
 import React from 'react'
-import {Router, Route, browserHistory, IndexRoute} from 'react-router'
+import {Router, Route, browserHistory, IndexRoute, IndexRedirect} from 'react-router'
 import AppContainer from './containers/AppContainer'
 import HelloKdotContainer from './containers/HelloKdotContainer'
+import BaseInfoContainer from './containers/BaseInfoContainer'
+import NoticeManagerContainer from './containers/NoticeManagerContainer'
 
 const routes = (
 	<Router history={browserHistory}>
 		<Route path="/" component={AppContainer}>
-			<Route path="test">
-				<Route path="kdot" component={HelloKdotContainer}></Route>
-			</Route>
+		<IndexRedirect to='/base-info' />
+		<Route path='/base-info' component={BaseInfoContainer} />
+		<Route path='notice-mgr' component={NoticeManagerContainer} />
+		<Route path="test">
+			<Route path="kdot" component={HelloKdotContainer}></Route>
+		</Route>
 		</Route>
 	</Router>
 )
