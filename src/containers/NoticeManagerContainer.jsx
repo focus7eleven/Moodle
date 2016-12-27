@@ -57,7 +57,9 @@ const NoticeManagerContainer = React.createClass({
   getInitialState(){
     return {
       columns:[],
-      data:[]
+      data:[],
+      showNavigate:false,
+      showLeftBoard:false,
     }
   },
   handleClick(key){
@@ -72,26 +74,50 @@ const NoticeManagerContainer = React.createClass({
         data:[]
       })
     }
+    this.setState({
+      showLeftBoard:false
+    })
+  },
+  handleDisplayNavigate(){
+    this.setState({
+      showNavigate:!this.state.showNavigate
+    })
+  },
+  handleDisplayLeftBoard(){
+    this.setState({
+      showLeftBoard:!this.state.showLeftBoard
+    })
   },
   render(){
     const {columns,data} = this.state
     return (
       <div style={{height: '100%'}}>
         <Row>
-          <Col span={24}><Navigate /></Col>
+          <Col>
+            <div className={styles.navigateBar}><Navigate /></div>
+            <div className={styles.miniNavigateBar}>
+              <Icon type="bars" style={{fontSize:'24px'}} onClick={this.handleDisplayNavigate}/>
+              <div className={styles.miniNavigate} style={this.state.showNavigate?{display:'block'}:{display:'none'}}><Navigate mode='inline'/></div>
+            </div>
+          </Col>
         </Row>
         <div style={{height: 'calc( 100% - 48px )'}}>
           <Row type='flex'  gutter={16} style={{height:'100%'}}>
-            <Col span={6} style={{height:'100%'}}>
-              <LeftBoard menuList={this.props.menuList} onSelect={this.handleClick}/>
-            </Col>
-            <Col span={17}>
+            <Col span={24} className={styles.content}>
+              <div className={styles.plainLeftBoard}>
+                <LeftBoard menuList={this.props.menuList} onSelect={this.handleClick}/>
+              </div>
+              <div className={styles.leftBoard} style={this.state.showLeftBoard?{width:'200px'}:{width:'30px'}}>
+                <div className={styles.miniLeftBoardToggler}><Icon type="bars" style={{fontSize:'24px'}} onClick={this.handleDisplayLeftBoard}/></div>
+                <div className={styles.miniLeftBoard} style={this.state.showLeftBoard?{display:'block',width:'200px'}:{display:'none'}}><LeftBoard menuList={this.props.menuList} onSelect={this.handleClick}/></div>
+              </div>
               <div className={styles.tableContent}>
                 {
                   columns?<Table columns={columns} dataSource={data} />:null
                 }
               </div>
             </Col>
+
           </Row>
         </div>
       </div>

@@ -29,7 +29,8 @@ const NavigateContainer = React.createClass({
         '题库及组卷':'/question-exampaper'
       },{
         '答题卡':'/answer-sheet'
-      }]
+      }],
+      mode:'horizontal',
     }
   },
 
@@ -46,7 +47,7 @@ const NavigateContainer = React.createClass({
   render(){
     const {entryList} = this.props
     return (
-      <Menu mode="horizontal" selectedKeys={[this.state.current]} onClick={this.handleClick}>
+      <Menu mode={this.props.mode} selectedKeys={[this.state.current]} onClick={this.handleClick}>
       {
         entryList.map( entry => {
           let key = Object.keys(entry)[0]

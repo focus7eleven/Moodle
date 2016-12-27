@@ -1,6 +1,62 @@
-:local(.tableContent){
+:local(.content){
+  display: flex;
+  :local(.tableContent){
+    display: block;
+    position: relative;
+    width: 100%;
+    padding: 10px;
+  }
+}
+:local(.navigateBar){
   display: block;
-  position: relative;
-  width: 100%;
-  padding: 10px;
+}
+:local(.miniNavigateBar){
+  display: none;
+}
+:local(.plainLeftBoard){
+  display: block;
+  width: 200px;
+}
+:local(.leftBoard){
+  display: block;
+  width:200px;
+  padding:0px;
+}
+:local(.miniLeftBoardToggler){
+  display: none;
+}
+:local(.miniLeftBoardContainer){
+  display: none;
+}
+@media screen and (max-width: 900px) {
+  :local(.miniNavigateBar){
+    display:flex;
+    justify-content: flex-end;
+    position: relative;
+
+    :local(.miniNavigate){
+      position:absolute;
+      top:30px;
+      right:0px;
+      z-index: 99;
+    }
+  }
+  :local(.navigateBar){
+    display: none;
+  }
+}
+@media screen and (max-width: 900px) {
+  :local(.leftBoard){
+    width:30px;
+    overflow-x: hidden;
+    :local(.miniLeftBoard){
+      display:none;
+    }
+  }
+  :local(.miniLeftBoardToggler){
+    display: block;
+  }
+  :local(.plainLeftBoard){
+    display: none;
+  }
 }
