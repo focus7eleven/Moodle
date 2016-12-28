@@ -19,24 +19,13 @@ const BaseInfoContainer = React.createClass({
   },
   render(){
     return (
-      <div style={{height: '100%'}}>
-        <Row>
-          <Col span={24}><Navigate /></Col>
-        </Row>
-        <div style={{height: 'calc( 100% - 48px )'}}>
-          <Row gutter={16} style={{height:'100%'}}>
-            <Col span={6} style={{height:'100%'}}>
-              <LeftBoard menuList={this.props.menuList} onSelect={this.handleLeftBoardSelect}/>
-            </Col>
-            <Col span={18}>
-              <div style={{paddingTop:'10px'}}>
-                <EditorComponent></EditorComponent>
-              </div>
-            </Col>
-          </Row>
-        </div>
-      </div>
-
+      <Row gutter={16}>
+        <Col span={24}>
+          <div style={{paddingTop:'10px'}}>
+            <EditorComponent></EditorComponent>
+          </div>
+        </Col>
+      </Row>
     )
   }
 })
