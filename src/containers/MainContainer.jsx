@@ -37,7 +37,7 @@ const MainContainer = React.createClass({
         </div>
         <div className={styles.miniContainer}>
           <div className={styles.content}>
-            <div className={styles.leftBoardContainer} style={this.state.showLeftBoard?{transform:'translateX(0px)',transition:'transform 2s'}:{transform:'translateX(-200px)',transition:'transform 2s'}}>
+            <div className={styles.leftBoardContainer} style={this.state.showLeftBoard?{transform:'translateX(0px)',transition:'transform 0.7s'}:{transform:'translateX(-200px)',transition:'transform 0.7s'}}>
                 <div className={styles.toggleButton}>{this.state.showLeftBoard?<Icon type="menu-fold" onClick={this.handleShowLeftBoard}/>:<Icon type="menu-unfold" onClick={this.handleShowLeftBoard}/>}</div>
                 <div className={styles.leftBoard}><LeftBoard /></div>
             </div>
