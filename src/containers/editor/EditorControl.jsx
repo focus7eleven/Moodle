@@ -869,12 +869,6 @@ const EditorControl = React.createClass({
 							{this.renderTableAddButton()}
 						</div>
 					</div>
-
-					<div className={styles.rightGroup}>
-						{isFullscreenMode?<div className={styles.markdown} onClick={()=>onChangeMarkDownMode(!isMarkDownMode)}>{isMarkDownMode?"写作模式":"MarkDown"}</div>:null}
-						{/*全屏模式开关*/}
-						{isFullscreenMode?null:<span onClick={onEnterFullscreen} className={`simuicon-zoomout ${styles.fullscreen}`}></span>}
-					</div>
 				</div>
 
 

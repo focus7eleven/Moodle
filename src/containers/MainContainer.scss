@@ -31,16 +31,17 @@
       display: flex;
       flex-direction: row;
       justify-content: flex-start;
-      align-items: stretch;
-      flex-grow: 2;
+      height: calc( 100% - 48px );
 
       :local(.leftBoard){
-        width:200px;
+        width: 200px;
       }
 
       :local(.workspace){
-        width: 100%;
-        padding:10px;
+        width: calc( 100% - 200px );
+        padding: 10px;
+        padding-left: 30px;
+        padding-right: 30px;
       }
     }
   }
@@ -82,7 +83,7 @@
       flex-direction: row;
       :local(.leftBoardContainer){
         position:absolute;
-        top:50px;
+        top:48px;
         left:0px;
         z-index: 99;
         width: 200px;
@@ -98,7 +99,8 @@
       }
       :local(.workspace){
         width: 100%;
-        padding-left:30px;
+        padding: 10px;
+        padding-left: 30px;
         padding-right: 30px;
         height: 100%;
       }

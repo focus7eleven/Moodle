@@ -88,7 +88,7 @@ module.exports = {
 	},
 	output: {
 		path: __dirname + '/dist',
-		publicPath: '/build/',
+		publicPath: '/',
 		filename: 'bundle.js'
 	},
 	plugins: plugins,

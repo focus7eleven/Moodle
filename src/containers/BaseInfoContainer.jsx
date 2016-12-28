@@ -1,8 +1,8 @@
 import React from 'react'
-import {Row,Col} from 'antd'
-import LeftBoard from '../components/LeftBoard'
-import Navigate from '../components/Navigate'
-import EditorComponent from '../components/PlainTextEditor'
+import {} from 'antd'
+import AnnouncementEditor from './editor/AnnouncementEditor'
+import styles from './BaseInfoContainer.scss'
+
 
 const BaseInfoContainer = React.createClass({
   getInitialState(){
@@ -19,13 +19,9 @@ const BaseInfoContainer = React.createClass({
   },
   render(){
     return (
-      <Row gutter={16}>
-        <Col span={24}>
-          <div style={{paddingTop:'10px'}}>
-            <EditorComponent></EditorComponent>
-          </div>
-        </Col>
-      </Row>
+      <div className={styles.container}>
+        <AnnouncementEditor></AnnouncementEditor>
+      </div>
     )
   }
 })

@@ -1,7 +1,9 @@
 $maxWidth: 900px;
 :local(.container){
-	width: 650px;
-	height: 257px;
+	// width: 650px;
+	// height: 257px;
+  width: 100%;
+  height: 100%;
 	border-radius: 6px;
 	background-color: #ffffff;
 	border: solid 1px #e9e9e9;
@@ -13,7 +15,7 @@ $maxWidth: 900px;
 		height: calc(100% - 33px);
 		border-radius: 6px;
 		overflow: hidden;
-		max-width: $maxWidth;
+		// max-width: $maxWidth;
 		width: 100%;
 		display: flex;
 		justify-content: space-between;
@@ -111,7 +113,7 @@ $maxWidth: 900px;
 		margin: 20px 0 0 0;
 		width: 100%;
 		padding: 0 20px;
-		height: 135px;
+		height: calc(100% - 90px);
 		overflow: scroll;
 
 		.alignment-right{
@@ -175,7 +177,8 @@ $maxWidth: 900px;
 		display: flex;
 		justify-content: flex-end;
 		width: 100%;
-		max-width: 946px;
+    height: 70px;
+		// max-width: 946px;
 
 		:local(.submitButton){
 			margin: 21px 23px 21px 0;

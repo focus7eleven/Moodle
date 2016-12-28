@@ -42,9 +42,7 @@ const MainContainer = withRouter(React.createClass({
           <div className={styles.content}>
             <div className={styles.leftBoard}><LeftBoard menuList={this._menuList}/></div>
             <div className={styles.workspace}>
-            {
-              this.props.children
-            }
+              {this.props.children}
             </div>
           </div>
         </div>
@@ -55,13 +53,18 @@ const MainContainer = withRouter(React.createClass({
           </div>
           <div className={styles.content}>
             <div className={styles.leftBoardContainer} style={this.state.showLeftBoard?{transform:'translateX(0px)',transition:'transform 0.7s'}:{transform:'translateX(-200px)',transition:'transform 0.7s'}}>
-                <div className={styles.toggleButton}>{this.state.showLeftBoard?<Icon type="menu-fold" onClick={this.handleShowLeftBoard} style={{fontSize:'24px'}}/>:<Icon type="menu-unfold" onClick={this.handleShowLeftBoard} style={{fontSize:'24px'}}/>}</div>
-                <div className={styles.leftBoard}><LeftBoard menuList={this._menuList}/></div>
+              <div className={styles.toggleButton}>
+                {
+                  this.state.showLeftBoard ?
+                  <Icon type="menu-fold" onClick={this.handleShowLeftBoard} style={{fontSize:'24px'}}/>
+                  :
+                  <Icon type="menu-unfold" onClick={this.handleShowLeftBoard} style={{fontSize:'24px'}}/>
+                }
+              </div>
+              <div className={styles.leftBoard}><LeftBoard /></div>
             </div>
             <div className={styles.workspace}>
-              {
-                this.props.children
-              }
+              {this.props.children}
             </div>
           </div>
         </div>
