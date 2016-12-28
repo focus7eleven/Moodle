@@ -10,7 +10,6 @@ const routes = (
 	<Router history={browserHistory}>
 		<Route path="/" component={AppContainer}>
 			<Route path="test">
-				<Route path="kdot" component={HelloKdotContainer}></Route>
 				<Route path="editor" component={AnnouncementEditor}></Route>
 			</Route>
 			<IndexRedirect to='/base-info' />
