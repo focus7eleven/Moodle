@@ -74,7 +74,7 @@ const AnnouncementEditor = React.createClass({
 		return {
 			editorState,
 			// editorState: EditorState.createEmpty(EditorDecorator),
-			isFullscreenMode: true,
+			isFullscreenMode: false,
 			isMarkDownMode: false,
 			liveEdits: Map(), // 记录哪些 block 正在被编辑。
 			progress: false,
@@ -287,7 +287,7 @@ const AnnouncementEditor = React.createClass({
 		return (
 			<div className={classNames({[styles.container]: true, [styles['container-fullscreen']]: this.state.isFullscreenMode, [styles['container-focus']]: this.state.isFocus})}>
 				{/* 全屏模式下的标题 */}
-				{isFullscreenMode?this.renderHeader():null}
+				{/*isFullscreenMode?this.renderHeader():null*/}
 
 				{/*控制栏部分*/}
 				<EditorControl isFullscreenMode={isFullscreenMode} isMarkDownMode={isMarkDownMode} onChangeMarkDownMode={mode=>this.setState({isMarkDownMode: mode})} onEnterFullscreen={this.handleEnterFullscreen} onImageUpload={this.handleImageUpload} onChange={isMarkDownMode?this.handleChangeMarkDown:this.handleChange} editorState={isMarkDownMode?markDownEditorState:editorState}/>
