@@ -43,14 +43,17 @@ plugins = [
 
 module.exports = {
 	debug: false,
-	entry: [
-		'./src/client.jsx',
-	],
+	entry: {
+		app: [
+			'./src/client.jsx',
+		],
+		vendor: ['react', 'react-dom', 'draft-js'],
+	},
 	module: {
 		loaders: [{
 			test: /\.jsx?$/,
 			exclude: /node_modules/,
-			loaders: ['babel']
+			loaders: ['react-hot', 'babel'],
 		}, {
 			test: /\.scss$/,
 			loaders: ["style", "css", "postcss", "sass"]
@@ -89,7 +92,8 @@ module.exports = {
 	output: {
 		path: __dirname + '/dist',
 		publicPath: '/',
-		filename: 'bundle.js'
+		filename: '[name].bundle.js',
+		chunkFilename: '[id].bundle.js',
 	},
 	plugins: plugins,
 	devtool: false,
