@@ -35,26 +35,24 @@
   :local(.miniContainer){
     display: flex;
     height: 1000px;
-    :local(.miniMenuBar){
-      position:relative;
-      :local(.miniNavigate){
+    :local(.content){
+      width:100%;
+      :local(.leftBoardContainer){
         position:absolute;
-        top:0px;
-        left: -900px;
-        width: 900px;
+        top:0;
+        left:0px;
         z-index: 99;
-      }
-      :local(.miniLeftBoard){
-        position:absolute;
-        top:-1000px;
-        left: 0px;
         width: 200px;
-        z-index: 99;
+        :local(.toggleButton){
+          position:absolute;
+          right:-10px;
+          top:0;
+        }
       }
-    }
-    :local(.workspace){
-      width: 100%;
-      padding-top:20px;
+      :local(.workspace){
+        width: 100%;
+        padding-left:30px;
+      }
     }
   }
 }

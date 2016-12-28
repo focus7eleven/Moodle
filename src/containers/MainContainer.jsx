@@ -7,12 +7,18 @@ import {Affix,Icon} from 'antd'
 const MainContainer = React.createClass({
   getInitialState(){
     return {
-      showMenuBar:false
+      showMenuBar:false,
+      showLeftBoard:false,
     }
   },
   handleShowMenu(){
     this.setState({
       showMenuBar:!this.state.showMenuBar
+    })
+  },
+  handleShowLeftBoard(){
+    this.setState({
+      showLeftBoard:!this.state.showLeftBoard
     })
   },
   render(){
@@ -30,22 +36,17 @@ const MainContainer = React.createClass({
           </div>
         </div>
         <div className={styles.miniContainer}>
-        <Affix>
-          <div className={styles.miniMenuBar}>
-            <div className={styles.toggleButton}><Icon type='bars' style={{fontSize:'24px'}} onClick={this.handleShowMenu}/></div>
-            <div className={styles.miniNavigate} style={this.state.showMenuBar?{transform:'translateX(950px)',transition:'transform 2s'}:{transform:'translateX(-950px)',transition:'transform 2s'}}>
-              <Navigate type="mini"/>
+          <div className={styles.content}>
+            <div className={styles.leftBoardContainer} style={this.state.showLeftBoard?{transform:'translateX(0px)',transition:'transform 2s'}:{transform:'translateX(-200px)',transition:'transform 2s'}}>
+                <div className={styles.toggleButton}>{this.state.showLeftBoard?<Icon type="menu-fold" onClick={this.handleShowLeftBoard}/>:<Icon type="menu-unfold" onClick={this.handleShowLeftBoard}/>}</div>
+                <div className={styles.leftBoard}><LeftBoard /></div>
             </div>
-            <div className={styles.miniLeftBoard} style={this.state.showMenuBar?{transform:'translateY(1050px)',transition:'transform 2s'}:{transform:'translateX(-1050px)',transition:'transform 2s'}}>
-              <LeftBoard />
+            <div className={styles.workspace}>
+              {
+                this.props.children
+              }
             </div>
           </div>
-        </Affix>
-        <div className={styles.workspace}>
-          {
-            this.props.children
-          }
-        </div>
         </div>
       </div>
     )
