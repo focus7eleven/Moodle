@@ -5,30 +5,30 @@ import { Menu,Icon } from 'antd';
 
 const NavigateContainer = React.createClass({
   contextTypes: {
-    router: React.PropTypes.object
+    router: React.PropTypes.object.isRequired
   },
   getDefaultProps(){
     return {
       entryList:[{
-        '基础信息':'/base-info'
+        '基础信息':'base-info'
       },{
-        '通知管理':'/notice-mgr'
+        '通知管理':'notice-mgr'
       },{
-        '教育资讯':'/edu-info'
+        '教育资讯':'edu-info'
       },{
-        '任务管理':'/task-mgr'
+        '任务管理':'task-mgr'
       },{
-        '教学计划及总结':'/teaching-plan'
+        '教学计划及总结':'teaching-plan'
       },{
-        '课程中心':'/course-center'
+        '课程中心':'course-center'
       },{
-        '作业中心':'/homework'
+        '作业中心':'homework'
       },{
-        '微课中心':'/microvideo-mgr'
+        '微课中心':'microvideo-mgr'
       },{
-        '题库及组卷':'/question-exampaper'
+        '题库及组卷':'question-exampaper'
       },{
-        '答题卡':'/answer-sheet'
+        '答题卡':'answer-sheet'
       }],
       mode:'horizontal',
       type:'large',
@@ -40,11 +40,12 @@ const NavigateContainer = React.createClass({
       current: this.context.router.location.pathname,
     };
   },
+
   handleClick(e) {
-    this.setState({
-      current: e.key,
-    });
+    this.setState({current: e.key,});
+    this.context.router.push(`/index/${e.key}`);
   },
+
   render(){
     const {entryList} = this.props
     return (
@@ -53,10 +54,13 @@ const NavigateContainer = React.createClass({
         entryList.map( entry => {
           let key = Object.keys(entry)[0]
           return (
-            this.props.type=='large'?<Menu.Item key={entry[key]}>
-              <Icon type="appstore" /><Link style={{display:'inline'}} to={entry[key]}>{key}</Link>
-            </Menu.Item>:<Menu.Item key={entry[key]}>
-              <Icon type='appstore' /><Link style={{display:'inline'}} to={entry[key]}>{key.substring(0,1)}</Link>
+            this.props.type=='large' ?
+            <Menu.Item key={entry[key]}>
+              <Icon type="appstore" />{key}
+            </Menu.Item>
+            :
+            <Menu.Item key={entry[key]}>
+              <Icon type='appstore' />{key.substring(0,1)}
             </Menu.Item>
           )
         })

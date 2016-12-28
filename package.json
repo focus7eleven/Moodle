@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "isomorphic starter kit for webpack + react + redux",
   "scripts": {
-    "start": "webpack-dev-server --inline --hot --port 8080 --host 0.0.0.0 --progress --colors --content-base dist/",
+    "start": "webpack-dev-server --inline --port 8080 --host 0.0.0.0 --progress --colors --content-base dist/",
     "lint": "eslint src && echo \"eslint: no lint errors\"",
     "build": "NODE_ENV=production webpack -p --config webpack.deploy.config.js",
     "test": "jest --watch",
@@ -35,6 +35,8 @@
     "eslint": "^3.1.0",
     "eslint-plugin-react": "^5.2.2",
     "extract-text-webpack-plugin": "^1.0.1",
+    "file-loader": "^0.9.0",
+    "image-webpack-loader": "^1.8.0",
     "jest": "^16.0.0",
     "node-sass": "^3.13.0",
     "postcss-import": "^8.1.2",
