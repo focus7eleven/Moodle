@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "isomorphic starter kit for webpack + react + redux",
   "scripts": {
-    "start": "webpack-dev-server --inline --hot --port 8080 --host 0.0.0.0 --progress --colors --content-base dist/",
+    "start": "webpack-dev-server --inline --port 8080 --host 0.0.0.0 --progress --colors --content-base dist/",
     "lint": "eslint src && echo \"eslint: no lint errors\"",
     "build": "NODE_ENV=production webpack -p --config webpack.deploy.config.js",
     "test": "jest --watch",
@@ -53,7 +53,7 @@
     "less": "^2.7.1"
   },
   "dependencies": {
-    "antd": "^1.11.2",
+    "antd": "^2.5.0",
     "babel-polyfill": "^6.13.0",
     "babel-preset-stage-2": "^6.13.0",
     "classnames": "^2.2.5",
@@ -67,7 +67,7 @@
     "react-infinite": "^0.10.0",
     "react-motion": "^0.4.5",
     "react-redux": "^4.4.5",
-    "react-router": "^2.8.1",
+    "react-router": "^3.0.0",
     "react-script-loader": "0.0.1",
     "redux": "^3.5.2",
     "redux-immutablejs": "0.0.8",
