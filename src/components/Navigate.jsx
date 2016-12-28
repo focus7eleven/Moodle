@@ -31,6 +31,7 @@ const NavigateContainer = React.createClass({
         '答题卡':'/answer-sheet'
       }],
       mode:'horizontal',
+      type:'large',
     }
   },
 
@@ -52,8 +53,10 @@ const NavigateContainer = React.createClass({
         entryList.map( entry => {
           let key = Object.keys(entry)[0]
           return (
-            <Menu.Item key={entry[key]}>
+            this.props.type=='large'?<Menu.Item key={entry[key]}>
               <Icon type="appstore" /><Link style={{display:'inline'}} to={entry[key]}>{key}</Link>
+            </Menu.Item>:<Menu.Item key={entry[key]}>
+              <Icon type='appstore' /><Link style={{display:'inline'}} to={entry[key]}>{key.substring(0,1)}</Link>
             </Menu.Item>
           )
         })

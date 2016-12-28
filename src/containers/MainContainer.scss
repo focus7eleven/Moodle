@@ -1,0 +1,60 @@
+
+@media (min-width:1025px) {
+  :local(.miniContainer){
+    display:none;
+  }
+  :local(.container){
+    display:flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    height: 100%;
+
+
+
+    :local(.content){
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      align-items: stretch;
+      flex-grow: 2;
+      :local(.leftBoard){
+        width:200px;
+      }
+      :local(.workspace){
+        width: 100%;
+        padding:10px;
+      }
+    }
+  }
+}
+
+@media (max-width:1024px) {
+  :local(.container){
+    display:none;
+  }
+  :local(.miniContainer){
+    display: flex;
+    height: 1000px;
+    :local(.miniMenuBar){
+      position:relative;
+      :local(.miniNavigate){
+        position:absolute;
+        top:0px;
+        left: -900px;
+        width: 900px;
+        z-index: 99;
+      }
+      :local(.miniLeftBoard){
+        position:absolute;
+        top:-1000px;
+        left: 0px;
+        width: 200px;
+        z-index: 99;
+      }
+    }
+    :local(.workspace){
+      width: 100%;
+      padding-top:20px;
+    }
+  }
+}
