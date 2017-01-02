@@ -7,7 +7,7 @@ import NoticeManagerContainer from './containers/NoticeManagerContainer'
 import MainContainer from './containers/MainContainer'
 
 
-import Naviagtion from './containers/Navigation'
+import Naviagtion from './containers/navigation/Navigation'
 
 const routes = (
 	<Router history={browserHistory}>

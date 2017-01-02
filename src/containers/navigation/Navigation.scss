@@ -57,6 +57,7 @@
   :local(.dropDownPanel){
     width: 100%;
     top:47px;
+    left:0px;
     background-color: #276FC0;
     position: absolute;
     display:flex;
@@ -74,10 +75,11 @@
 
         :local(.secondMenuTitle){
           display:flex;
-          justify-content: center;
+          justify-content: flex-start;
           align-items: center;
           height: 30px;
           flex-shrink: 0;
+          padding-left: 9px;
         }
       }
       :local(.thirdMenu){
@@ -88,6 +90,8 @@
         line-height: 12px;
         margin-bottom: 10px;
         background-color: #195DAB;
+        cursor: pointer;
+        flex-shrink: 0;
         &:hover{
           background-color: #2B98F0;
         }
