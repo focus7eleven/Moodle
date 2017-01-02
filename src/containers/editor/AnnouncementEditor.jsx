@@ -11,61 +11,72 @@ import classNames from 'classnames'
 import EditorDecorator from "./EditorDecorator"
 import {Map} from 'immutable'
 import {Motion, spring} from 'react-motion';
+import {stateToHTML} from 'draft-js-export-html';
 // import config from '../../config'
 
 const initialRawDraftContentState = {
-	"entityMap": {
-		"0": {
-			"type": "LINK",
-			"mutability": "MUTABLE",
-			"data": {
-				"url": "http://www.menkor.com/"
-			}
-		},
-		"1": {
-			"type": "table",
-			"mutability": "MUTABLE",
-			"data": {
-				"columnCount": 4,
-				"rowCount": 2,
-				"data":[['a1','a2','a3','a4'],['b1','b2','b3','b4']],
-			}
-		}
-	},
-	"blocks": [{
-		"key": "1dpia",
-		"text": "Most of the lectures have been video-recorded, and you can watch them at home. The weekly quizzes and programming homeworks will be automatically uploaded and graded. Lecture, quizzes, and homeworks are available on Coursera.",
-		"type": "unstyled",
-		"depth": 0,
-		"inlineStyleRanges": [],
-		"entityRanges": [{
-			"offset": 37,
-			"length": 8,
-			"key": 0
-		}],
-		"data": {}
-	}, {
-		"key": "3n0l8",
-		"text": " ",
-		"type": "atomic",
-		"depth": 0,
-		"inlineStyleRanges": [],
-		"entityRanges": [{
-			"offset": 0,
-			"length": 1,
-			"key": 1
-		}],
-		"data": {}
-	}, {
-		"key": "7s8uh",
-		"text": "5 of the in-class sessions will be for group problem-solving activities. The remainder will be for some lectures on material not in the videos, a few redundant lectures by me (covering the same material as the videos), a few guest speakers, review sessions, and occasional presentation of state-of-the-art research.",
-		"type": "unstyled",
-		"depth": 0,
-		"inlineStyleRanges": [],
-		"entityRanges": [],
-		"data": {}
-	}]
+	"entityMap":{"0":{"type":"MEDIA","mutability":"IMMUTABLE","data":{"src":"http://img4.imgtn.bdimg.com/it/u=2898212038,3221700425&fm=214&gp=0.jpg"}},"1":{"type":"LINK","mutability":"MUTABLE","data":{"url":"http://www.menkor.com/"}},"2":{"type":"table","mutability":"MUTABLE","data":{"columnCount":4,"rowCount":2,"data":[["a1","a2","a3","a4"],["b1","b2","b3","b4"]]}}},"blocks":[{"key":"1dpia","text":"","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}},{"key":"3g159","text":" ","type":"atomic","depth":0,"inlineStyleRanges":[],"entityRanges":[{"offset":0,"length":1,"key":0}],"data":{}},{"key":"dngoi","text":"Most of the lectures have been video-recorded, and you can watch them at home. The weekly quizzes and programming homeworks will be automatically uploaded and graded. Lecture, quizzes, and homeworks are available on Coursera.","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[{"offset":37,"length":8,"key":1}],"data":{}},{"key":"3n0l8","text":" ","type":"atomic","depth":0,"inlineStyleRanges":[],"entityRanges":[{"offset":0,"length":1,"key":2}],"data":{}},{"key":"7s8uh","text":"5 of the in-class sessions will be for group problem-solving activities. The remainder will be for some lectures on material not in the videos, a few redundant lectures by me (covering the same material as the videos), a few guest speakers, review sessions, and occasional presentation of state-of-the-art research.","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}]
 }
+// const initialRawDraftContentState = {
+// 	"entityMap": {
+// 		"0": {
+// 			"type": "LINK",
+// 			"mutability": "MUTABLE",
+// 			"data": {
+// 				"url": "http://www.menkor.com/"
+// 			}
+// 		},
+// 		"1": {
+// 			"type": "table",
+// 			"mutability": "MUTABLE",
+// 			"data": {
+// 				"columnCount": 4,
+// 				"rowCount": 2,
+// 				"data":[['a1','a2','a3','a4'],['b1','b2','b3','b4']],
+// 			}
+// 		},
+// 		"2": {
+// 			"type": "MEDIA",
+// 			"mutability": "IMMUTABLE",
+// 			"data": {
+// 				"scr": "http://img4.imgtn.bdimg.com/it/u=2898212038,3221700425&fm=214&gp=0.jpg"
+// 			}
+// 		}
+// 	},
+// 	"blocks": [{
+// 		"key": "1dpia",
+// 		"text": "Most of the lectures have been video-recorded, and you can watch them at home. The weekly quizzes and programming homeworks will be automatically uploaded and graded. Lecture, quizzes, and homeworks are available on Coursera.",
+// 		"type": "unstyled",
+// 		"depth": 0,
+// 		"inlineStyleRanges": [],
+// 		"entityRanges": [{
+// 			"offset": 37,
+// 			"length": 8,
+// 			"key": 0
+// 		}],
+// 		"data": {}
+// 	}, {
+// 		"key": "3n0l8",
+// 		"text": " ",
+// 		"type": "atomic",
+// 		"depth": 0,
+// 		"inlineStyleRanges": [],
+// 		"entityRanges": [{
+// 			"offset": 0,
+// 			"length": 1,
+// 			"key": 1
+// 		}],
+// 		"data": {}
+// 	}, {
+// 		"key": "7s8uh",
+// 		"text": "5 of the in-class sessions will be for group problem-solving activities. The remainder will be for some lectures on material not in the videos, a few redundant lectures by me (covering the same material as the videos), a few guest speakers, review sessions, and occasional presentation of state-of-the-art research.",
+// 		"type": "unstyled",
+// 		"depth": 0,
+// 		"inlineStyleRanges": [],
+// 		"entityRanges": [],
+// 		"data": {}
+// 	}]
+// }
 
 const AnnouncementEditor = React.createClass({
 	getInitialState() {
@@ -202,6 +213,7 @@ const AnnouncementEditor = React.createClass({
     //
 		// 		})
 		// })
+		// imageURL = res.url + key;
 	},
 
 	// Render
@@ -282,6 +294,18 @@ const AnnouncementEditor = React.createClass({
 			progressStatus,
 			isMarkDownMode,
 		} = this.state
+
+		const options = {
+			blockRenderers: {
+				atomic: (block) => {
+					let data = block.getData();
+					const entity = Entity.get(block.getEntityAt(0)).toJS();
+					if(entity.type=="MEDIA"){
+						return '<img src="' + entity.data.src + '" />';
+					}
+				},
+			},
+		}
 
 
 		return (
