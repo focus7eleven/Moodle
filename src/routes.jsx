@@ -6,11 +6,15 @@ import BaseInfoContainer from './containers/BaseInfoContainer'
 import NoticeManagerContainer from './containers/NoticeManagerContainer'
 import MainContainer from './containers/MainContainer'
 
+
+import Naviagtion from './containers/Navigation'
+
 const routes = (
 	<Router history={browserHistory}>
 		<Route path="/" component={AppContainer}>
 			<Route path="test">
 				<Route path="editor" component={AnnouncementEditor}></Route>
+				<Route path='navigation' component={Naviagtion}></Route>
 			</Route>
 			<Route path='index' component={MainContainer}>
 				<Route path='base-info' component={BaseInfoContainer} />

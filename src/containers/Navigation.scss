@@ -1,0 +1,97 @@
+:local(.wrapper){
+  display: flex;
+  position: relative;
+  justify-content: center;
+  background-color: #2B98F0;
+  :local(.naviagtion){
+    display: flex;
+    justify-content: space-between;
+    width: 70%;
+
+    :local(.logo){
+      display:flex;
+      align-items: center;
+      >img{
+        width:110px;
+        height: 40px;
+      }
+    }
+
+    :local(.menu){
+      background-color: rgba(0,0,0,0);
+      color:white;
+      border-bottom: none;
+      .ant-menu-item{
+        &:hover{
+          background-color: #2B98F0;
+          color:white;
+          font-weight: bold;
+          border-bottom: 2px solid white;
+        }
+      }
+      .ant-menu-item-selected{
+        background-color: #2B98F0;
+        color:white;
+        font-weight: bold;
+        border-bottom: 2px solid white;
+      }
+    }
+
+    :local(.avatar){
+      display: flex;
+      align-items: center;
+      :local(.nameDesc){
+        color:white;
+        font-weight: bold;
+        display: block;
+        margin-left: 10px;
+      }
+      >img{
+        width: 25px;
+        height: 25px;
+        border-radius: 13px 13px;
+      }
+    }
+  }
+
+  :local(.dropDownPanel){
+    width: 100%;
+    top:47px;
+    background-color: #276FC0;
+    position: absolute;
+    display:flex;
+    justify-content: center;
+    overflow: hidden;
+
+    :local(.pandelContent){
+      width: 70%;
+      display: flex;
+      color:white;
+      justify-content: space-between;
+      :local(.secondMenu){
+        display:flex;
+        flex-direction: column;
+
+        :local(.secondMenuTitle){
+          display:flex;
+          justify-content: center;
+          align-items: center;
+          height: 30px;
+          flex-shrink: 0;
+        }
+      }
+      :local(.thirdMenu){
+        display: block;
+        padding:9px;
+        height: 30px;
+        width: 110px;
+        line-height: 12px;
+        margin-bottom: 10px;
+        background-color: #195DAB;
+        &:hover{
+          background-color: #2B98F0;
+        }
+      }
+    }
+  }
+}
