@@ -100,9 +100,9 @@ const Naviagtion = React.createClass({
     return (
       <div className={styles.pandelContent}>
       {
-        this.state.subMenu.map( second => {
+        this.state.subMenu.map( (second,key) => {
           return (
-            <div key={second.item} className={styles.secondMenu}>
+            <div key={key} className={styles.secondMenu}>
               <div className={styles.secondMenuTitle}><span>{second.title}</span><Icon type="right" /></div>
               {
                 second.children.map( third => {
