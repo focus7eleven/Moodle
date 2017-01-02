@@ -1,7 +1,10 @@
 import React from 'react'
-import {Menu,Icon} from 'antd'
+import {Menu,Icon,Spin} from 'antd'
 import styles from './Navigation.scss'
 import {Motion,spring} from 'react-motion'
+import {connect} from 'react-redux'
+import {bindActionCreators} from 'redux'
+import {getSubmenu} from '../../actions/menu'
 
 const mockSubMenu = [{
   title:'基础数据',
@@ -75,53 +78,58 @@ const Naviagtion = React.createClass({
 
   getDefaultProps(){
     return {
-      menu:[{title:'基础信息',key:'base-info'},{title:'通知管理',key:'notice-mgr'},{title:'教育资讯',key:'edu-info'},{title:'任务管理',key:''},{title:'课程中心',key:'task-mgr'},{title:'作业中心',key:'homework'},{title:'微课中心',key:'microvideo-mgr'}]
+      menu:[{title:'基础信息',key:'base-info'},{title:'通知管理',key:'notice-mgr'},{title:'教育资讯',key:'edu-info'},{title:'任务管理',key:'task-mgr'},{title:'课程中心',key:'course-center'},{title:'作业中心',key:'homework'},{title:'微课中心',key:'microvideo-mgr'}]
     }
   },
   getInitialState(){
     return {
-      subMenu:[],
-      openSubMenu:false,
+      openSubMenu:true,
+      currentMenu:'',
     }
   },
-  handleDropDownSubmenu(){
+  handleDropDownSubmenu(key){
     this.setState({
-      subMenu:mockSubMenu,
+      currentMenu:key,
       openSubMenu:true,
     })
+    this.props.getSubmenu(key)
   },
   handleFoldSubmenu(){
     this.setState({
-      openSubMenu:false,
+      openSubMenu:true,
     })
   },
 
   renderSubMenu(){
+
+    const {currentMenu} = this.state
+    const subMenu = currentMenu?this.props.menu.findEntry( v => v.get('key')==currentMenu)[1]:null
     return (
-      <div className={styles.pandelContent}>
+      <div className={styles.panelContent}>
       {
-        this.state.subMenu.map( (second,key) => {
+        subMenu?subMenu.get('children').map( (second,key) => {
           return (
             <div key={key} className={styles.secondMenu}>
-              <div className={styles.secondMenuTitle}><span>{second.title}</span><Icon type="right" /></div>
+              <div className={styles.secondMenuTitle}><span>{second.get('title')}</span><Icon type="right" /></div>
               {
-                second.children.map( third => {
+                second.get('children').map( third => {
                   return (
-                    <div key={third.title} className={styles.thirdMenu}>
-                      {third.title}
+                    <div key={third.get('title')} className={styles.thirdMenu}>
+                      {third.get('title')}
                     </div>
                   )
                 })
               }
             </div>
           )
-        })
+        }):null
       }
       </div>
     )
   },
 
   render(){
+    console.log("---->:",this.props.loading)
     return (
       <div className={styles.wrapper}>
         <div className={styles.naviagtion}>
@@ -129,9 +137,9 @@ const Naviagtion = React.createClass({
           <Menu mode="horizontal" className={styles.menu}>
             {
               this.props.menu.map( item => (
-                <Menu.Item key={item.key} >
-                  <div onMouseEnter={this.handleDropDownSubmenu.bind(this,item.key)}>
-                    {item.title}
+                <Menu.Item key={item.get('key')} >
+                  <div onMouseEnter={this.handleDropDownSubmenu.bind(this,item.get('key'))}>
+                    {item.get('title')}
                   </div>
                 </Menu.Item>
               ))
@@ -142,7 +150,7 @@ const Naviagtion = React.createClass({
         <Motion defaultStyle={{x: 0}} style={this.state.openSubMenu?{x:spring(250)}:{x:spring(0)}}>
           {interpolatingStyle => (
             <div className={styles.dropDownPanel} style={{height:interpolatingStyle.x+'px'}} onMouseLeave={this.handleFoldSubmenu}>
-              {this.renderSubMenu()}
+              {this.props.loading?<Spin size="large" />:this.renderSubMenu()}
             </div>
           )}
         </Motion>
@@ -151,4 +159,16 @@ const Naviagtion = React.createClass({
   }
 })
 
-export default Naviagtion
+function mapStateToProps(state) {
+  return {
+    menu:state.get('menu'),
+    loading:state.get('loading')
+  }
+}
+
+function mapDispatchToProps(dispatch){
+  return {
+    getSubmenu:bindActionCreators(getSubmenu,dispatch)
+  }
+}
+export default connect(mapStateToProps,mapDispatchToProps)(Naviagtion)
