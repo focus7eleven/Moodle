@@ -2,12 +2,15 @@ import React from 'react'
 import {connect} from 'react-redux'
 import config from '../config'
 
+
 const AppContainer = React.createClass({
 	contextTypes:{
 		router: React.PropTypes.object,
 	},
 	render(){
-		return this.props.children
+		return (
+        this.props.children
+		)
 	},
 })
 
