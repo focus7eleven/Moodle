@@ -98,25 +98,28 @@ const Naviagtion = React.createClass({
 
   renderSubMenu(){
     return (
-      <div className={styles.pandelContent}>
-      {
-        this.state.subMenu.map( (second,key) => {
-          return (
-            <div key={key} className={styles.secondMenu}>
-              <div className={styles.secondMenuTitle}><span>{second.title}</span><Icon type="right" /></div>
-              {
-                second.children.map( third => {
-                  return (
-                    <div key={third.title} className={styles.thirdMenu}>
-                      {third.title}
-                    </div>
-                  )
-                })
-              }
-            </div>
-          )
-        })
-      }
+      <div className={styles.dropDownContainer}>
+        <div className={styles.pandelContent}>
+          {
+            this.state.subMenu.map( (second,key) => {
+              return (
+                <div key={key} className={styles.secondMenu}>
+                  <div className={styles.secondMenuTitle}><span>{second.title}</span><Icon type="right" /></div>
+                  {
+                    second.children.map( third => {
+                      return (
+                        <div key={third.title} className={styles.thirdMenu}>
+                          {third.title}
+                        </div>
+                      )
+                    })
+                  }
+                </div>
+              )
+            })
+          }
+        </div>
+        <div className={styles.foldIcon}><Icon onClick={this.handleFoldSubmenu} type="up" /></div>
       </div>
     )
   },

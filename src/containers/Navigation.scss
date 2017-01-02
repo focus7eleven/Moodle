@@ -7,6 +7,7 @@
     display: flex;
     justify-content: space-between;
     width: 70%;
+    z-index: 5;
 
     :local(.logo){
       display:flex;
@@ -57,41 +58,75 @@
   :local(.dropDownPanel){
     width: 100%;
     top:47px;
-    background-color: #276FC0;
+    background-color: rgb(24,101,197);
     position: absolute;
     display:flex;
     justify-content: center;
     overflow: hidden;
 
-    :local(.pandelContent){
-      width: 70%;
+    :local(.dropDownContainer){
+      height: 100%;
+      width: 100%;
       display: flex;
-      color:white;
-      justify-content: space-between;
-      :local(.secondMenu){
-        display:flex;
-        flex-direction: column;
+      flex-direction: column;
+      align-items: center;
 
-        :local(.secondMenuTitle){
+      :local(.pandelContent){
+        height: 220px;
+        width: 70%;
+        display: flex;
+        color:white;
+        justify-content: space-between;
+        flex-shrink: 0;
+        :local(.secondMenu){
           display:flex;
-          justify-content: center;
-          align-items: center;
-          height: 30px;
-          flex-shrink: 0;
+          flex-direction: column;
+
+          :local(.secondMenuTitle){
+            display:flex;
+            padding-left: 12px;
+            align-items: center;
+            height: 45px;
+            flex-shrink: 0;
+            user-select: none;
+            >span{
+              margin-right: 5px;
+            }
+          }
+
+          :local(.thirdMenu){
+            display: block;
+            padding-top: 9px;
+            padding-bottom: 9px;
+            padding-left: 12px;
+            height: 30px;
+            width: 110px;
+            line-height: 12px;
+            margin-bottom: 10px;
+            background-color: rgb(14,83,177);
+            cursor: pointer;
+            user-select: none;
+            &:hover{
+              background-color: rgb(0,144,247);
+            }
+          }
         }
       }
-      :local(.thirdMenu){
-        display: block;
-        padding:9px;
+
+      :local(.foldIcon){
         height: 30px;
-        width: 110px;
-        line-height: 12px;
-        margin-bottom: 10px;
-        background-color: #195DAB;
-        &:hover{
-          background-color: #2B98F0;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 20px;
+        color: rgb(224,224,224);
+        >i:hover{
+          cursor: pointer;
+          color: rgb(252,252,252);
         }
       }
+
     }
   }
 }
