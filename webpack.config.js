@@ -20,7 +20,7 @@ module.exports = {
 	debug: true,
 	entry: {
 		app: [
-			'webpack-dev-server/client?http://localhost:8080',
+			'webpack-dev-server/client?http://localhost:8081',
 			'webpack/hot/only-dev-server', // "only" prevents reload on syntax errors
 			'./src/client.jsx',
 		],
