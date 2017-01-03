@@ -7,14 +7,10 @@ import {bindActionCreators} from 'redux'
 import {getSubmenu} from '../../actions/menu'
 import logo from '../../../resource/basic/logo.png'
 import {getMenu} from '../../actions/menu'
+import {setPath} from '../../actions/workspace'
 
 const Naviagtion = React.createClass({
 
-  getDefaultProps(){
-    return {
-      menu:[{title:'基础信息',key:'base-info'},{title:'通知管理',key:'notice-mgr'},{title:'教育资讯',key:'edu-info'},{title:'任务管理',key:'task-mgr'},{title:'课程中心',key:'course-center'},{title:'作业中心',key:'homework'},{title:'微课中心',key:'microvideo-mgr'}]
-    }
-  },
   getInitialState(){
     return {
       openSubMenu:false,
@@ -24,23 +20,33 @@ const Naviagtion = React.createClass({
   componentDidMount(){
     this.props.user.get('accessToken')?this.props.getMenu(this.props.user.get('accessToken')):null
   },
+
   componentWillReceiveProps(nextProps){
     nextProps.user.get('accessToken') && this.props.menu.get('data').isEmpty()?this.props.getMenu(nextProps.user.get('accessToken')):null
   },
+
   handleDropDownSubmenu(key){
     this.setState({
       currentMenu:key,
       openSubMenu:true,
     })
   },
+
   handleFoldSubmenu(){
     this.setState({
       openSubMenu:false,
     })
   },
 
-  renderSubMenu(){
+  handleSelectMenu(e){
+    const subMenu = e.target.getAttribute('data-subMenu');
+    const second = e.target.getAttribute('data-second');
+    const third = e.target.getAttribute('data-third');
+    this.props.setPath([subMenu,second,third]);
+    // console.log(first.get('resourceUrl')+"/"+third.get('resourceUrl'));
+  },
 
+  renderSubMenu(){
     const {currentMenu} = this.state
     const subMenu = currentMenu?this.props.menu.get('data').findEntry( v => v.get('resourceUrl')==currentMenu)[1]:null
     return (
@@ -54,7 +60,7 @@ const Naviagtion = React.createClass({
                 {
                   second.get('childResources').map( third => {
                     return (
-                      <div key={third.get('resourceName')} className={styles.thirdMenu}>
+                      <div data-url={third.get('resourceUrl')} data-subMenu={subMenu.get('resourceName')} data-second={second.get('resourceName')} data-third={third.get('resourceName')} key={third.get('resourceName')} className={styles.thirdMenu} onClick={this.handleSelectMenu}>
                         {third.get('resourceName')}
                       </div>
                     )
@@ -109,7 +115,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch){
   return {
-    getMenu:bindActionCreators(getMenu,dispatch)
+    getMenu:bindActionCreators(getMenu,dispatch),
+    setPath:bindActionCreators(setPath,dispatch),
   }
 }
 export default connect(mapStateToProps,mapDispatchToProps)(Naviagtion)

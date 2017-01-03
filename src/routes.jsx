@@ -3,7 +3,6 @@ import {Router, Route, browserHistory, IndexRoute, IndexRedirect} from 'react-ro
 import AppContainer from './containers/AppContainer'
 import AnnouncementEditor from './containers/editor/AnnouncementEditor'
 import BaseInfoContainer from './containers/base_info/BaseInfoContainer'
-import NoticeManagerContainer from './containers/NoticeManagerContainer'
 import MainContainer from './containers/MainContainer'
 import Navigation from './containers/navigation/Navigation'
 
@@ -15,8 +14,7 @@ const routes = (
 				<Route path='navigation' component={Navigation}></Route>
 			</Route>
 			<Route path='index' component={MainContainer}>
-				<Route path='base_info' component={BaseInfoContainer} />
-				<Route path='notice_mgr' component={NoticeManagerContainer} />
+				<Route path='base-info' component={BaseInfoContainer} />
 			</Route>
 		</Route>
 	</Router>
