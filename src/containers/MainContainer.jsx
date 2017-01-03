@@ -2,6 +2,7 @@ import React from 'react'
 import styles from './MainContainer.scss'
 import {} from 'antd'
 import Navigation from './navigation/Navigation'
+import NavigationMini from './navigation/NavigationMini'
 
 const MainContainer = React.createClass({
   getInitialState(){
@@ -25,6 +26,9 @@ const MainContainer = React.createClass({
       <div className={styles.container}>
         <div className={styles.navigation}>
           <Navigation></Navigation>
+        </div>
+        <div className={styles.navigationMini}>
+          <NavigationMini></NavigationMini>
         </div>
         <div className={styles.workspace}>
           <div className={styles.mainPanel}>

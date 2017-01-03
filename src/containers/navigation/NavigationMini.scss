@@ -1,0 +1,42 @@
+:local(.navigationMini){
+  position: relative;
+  overflow: visible;
+  height: 100%;
+  background-color: rgb(56,186,130);
+  :local(.mask){
+    position:fixed;
+    top:0px;
+    left:0px;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(80,80,80,.5);
+  }
+  :local(.navigationToggle){
+    position:relative;;
+    top:0px;
+    left:0px;
+    height: 47px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    >i{
+      font-size: 40px;
+    }
+    :local(.decoration){
+      display: flex;
+      :local(.logo){
+        display:flex;
+        align-items: center;
+        >img{
+          width:110px;
+          height: 40px;
+        }
+      }
+    }
+  }
+  :local(.leftNavigation){
+    position: absolute;
+    top:0px;
+    height: 100vh;
+  }
+}

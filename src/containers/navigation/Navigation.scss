@@ -9,7 +9,7 @@
     justify-content: space-between;
     width: 75%;
     z-index: 15;
-    min-width: 880px;
+    min-width: 910px;
     :local(.logo){
       display:flex;
       align-items: center;
@@ -77,6 +77,7 @@
       :local(.panelContent){
         height: 220px;
         width: 75%;
+        min-width: 910px;
         display: flex;
         color:white;
         justify-content: space-between;

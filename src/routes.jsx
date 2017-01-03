@@ -6,6 +6,7 @@ import BaseInfoContainer from './containers/base_info/BaseInfoContainer'
 import NoticeManagerContainer from './containers/NoticeManagerContainer'
 import MainContainer from './containers/MainContainer'
 import Navigation from './containers/navigation/Navigation'
+import NavigationMini from './containers/navigation/NavigationMini'
 
 const routes = (
 	<Router history={browserHistory}>
@@ -13,6 +14,7 @@ const routes = (
 			<Route path="test">
 				<Route path="editor" component={AnnouncementEditor}></Route>
 				<Route path='navigation' component={Navigation}></Route>
+				<Route path='navigation-mini' component={NavigationMini}></Route>
 			</Route>
 			<Route path='index' component={MainContainer}>
 				<Route path='base_info' component={BaseInfoContainer} />

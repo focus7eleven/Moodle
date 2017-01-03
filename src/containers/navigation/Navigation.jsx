@@ -4,11 +4,10 @@ import styles from './Navigation.scss'
 import {Motion,spring} from 'react-motion'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
-import {getSubmenu} from '../../actions/menu'
 import logo from '../../../resource/basic/logo.png'
 import {getMenu} from '../../actions/menu'
 
-const Naviagtion = React.createClass({
+const Navigation = React.createClass({
 
   getDefaultProps(){
     return {
@@ -112,4 +111,4 @@ function mapDispatchToProps(dispatch){
     getMenu:bindActionCreators(getMenu,dispatch)
   }
 }
-export default connect(mapStateToProps,mapDispatchToProps)(Naviagtion)
+export default connect(mapStateToProps,mapDispatchToProps)(Navigation)
