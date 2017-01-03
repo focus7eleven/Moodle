@@ -3,12 +3,13 @@
   position: relative;
   justify-content: center;
   background-color: #2AAD6C;
+  min-width: 1000px;
   :local(.naviagtion){
     display: flex;
     justify-content: space-between;
     width: 70%;
     z-index: 5;
-
+    min-width: 880px;
     :local(.logo){
       display:flex;
       align-items: center;
@@ -92,6 +93,7 @@
             user-select: none;
             >span{
               margin-right: 5px;
+              color:rgb(80,80,80);
               &:hover{
                 color:#F2980D;
               }
@@ -124,7 +126,7 @@
         justify-content: center;
         align-items: center;
         font-size: 20px;
-        color: rgb(224,224,224);
+        color: rgb(80,80,80);
         >i:hover{
           cursor: pointer;
           color: rgb(252,252,252);
