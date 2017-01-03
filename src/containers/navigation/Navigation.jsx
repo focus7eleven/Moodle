@@ -83,7 +83,7 @@ const Naviagtion = React.createClass({
   },
   getInitialState(){
     return {
-      openSubMenu:true,
+      openSubMenu:false,
       currentMenu:'',
     }
   },
@@ -96,7 +96,7 @@ const Naviagtion = React.createClass({
   },
   handleFoldSubmenu(){
     this.setState({
-      openSubMenu:true,
+      openSubMenu:false,
     })
   },
 
@@ -132,7 +132,6 @@ const Naviagtion = React.createClass({
   },
 
   render(){
-    console.log("---->:",this.props.loading)
     return (
       <div className={styles.wrapper}>
         <div className={styles.naviagtion}>
