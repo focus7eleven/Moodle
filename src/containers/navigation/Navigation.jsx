@@ -74,7 +74,7 @@ const mockSubMenu = [{
   }]
 }]
 
-const Naviagtion = React.createClass({
+const Navigation = React.createClass({
 
   getDefaultProps(){
     return {
@@ -83,7 +83,7 @@ const Naviagtion = React.createClass({
   },
   getInitialState(){
     return {
-      openSubMenu:true,
+      openSubMenu:false,
       currentMenu:'',
     }
   },
@@ -96,7 +96,7 @@ const Naviagtion = React.createClass({
   },
   handleFoldSubmenu(){
     this.setState({
-      openSubMenu:true,
+      openSubMenu:false,
     })
   },
 
@@ -135,7 +135,7 @@ const Naviagtion = React.createClass({
     console.log("---->:",this.props.loading)
     return (
       <div className={styles.wrapper}>
-        <div className={styles.naviagtion}>
+        <div className={styles.navigation}>
           <div className={styles.logo}><img src='https://unsplash.it/110/40'/></div>
           <Menu mode="horizontal" className={styles.menu}>
             {
@@ -174,4 +174,4 @@ function mapDispatchToProps(dispatch){
     getSubmenu:bindActionCreators(getSubmenu,dispatch)
   }
 }
-export default connect(mapStateToProps,mapDispatchToProps)(Naviagtion)
+export default connect(mapStateToProps,mapDispatchToProps)(Navigation)

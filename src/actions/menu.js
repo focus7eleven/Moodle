@@ -9,6 +9,6 @@ export function getSubmenu(parentMenu){
     setTimeout(()=>dispatch({
       type:GET_SUBMENU,
       payload:parentMenu,
-    }),2000)
+    }),500)
   }
 }

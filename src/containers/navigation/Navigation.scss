@@ -3,11 +3,11 @@
   position: relative;
   justify-content: center;
   background-color: #2B98F0;
-  :local(.naviagtion){
+  :local(.navigation){
     display: flex;
     justify-content: space-between;
     width: 70%;
-    z-index: 5;
+    z-index: 15;
 
     :local(.logo){
       display:flex;
@@ -56,6 +56,7 @@
   }
 
   :local(.dropDownPanel){
+    z-index: 10;
     width: 100%;
     top:47px;
     background-color: rgb(24,101,197);
