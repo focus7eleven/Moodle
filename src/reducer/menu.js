@@ -1,39 +1,42 @@
 import {
   GET_SUBMENU,
-  REQUESTING
+  CHANGE_MENU
 } from '../actions/menu'
 
 import {fromJS} from 'immutable'
 
-const initMenu = fromJS([{
-  title:'基础信息',
-  key:'base-info',
-  children:[]
-},{
-  title:'通知管理',
-  key:'notice-mgr',
-  children:[]
-},{
-  title:'教育资讯',
-  key:'edu-info',
-  children:[]
-},{
-  title:'任务管理',
-  key:'task-mgr',
-  children:[]
-},{
-  title:'课程中心',
-  key:'course-center',
-  children:[]
-},{
-  title:'作业中心',
-  key:'homework',
-  children:[]
-},{
-  title:'微课中心',
-  key:'microvideo-mgr',
-  children:[]
-}])
+const initMenu = fromJS({
+  loading:false,
+  data:[{
+    title:'基础信息',
+    key:'base-info',
+    children:[]
+  },{
+    title:'通知管理',
+    key:'notice-mgr',
+    children:[]
+  },{
+    title:'教育资讯',
+    key:'edu-info',
+    children:[]
+  },{
+    title:'任务管理',
+    key:'task-mgr',
+    children:[]
+  },{
+    title:'课程中心',
+    key:'course-center',
+    children:[]
+  },{
+    title:'作业中心',
+    key:'homework',
+    children:[]
+  },{
+    title:'微课中心',
+    key:'microvideo-mgr',
+    children:[]
+  }]
+})
 
 const mockSubMenu = fromJS([{
   title:'基础数据',
@@ -105,11 +108,13 @@ const mockSubMenu = fromJS([{
 
 export default (state=initMenu,action) => {
   switch (action.type) {
-    case REQUESTING:
+    case CHANGE_MENU:
+      return state.set('loading',false)
+    case GET_SUBMENU[0]:
       return state.set('loading',true)
-    case GET_SUBMENU:
-      let index = state.findIndex( v => v.get('key')==action.payload)
-      return state.setIn([index,'children'],mockSubMenu)
+    case GET_SUBMENU[1]:
+      let index = state.get('data').findIndex( v => v.get('key')==action.key)
+      return state.setIn(['data',index,'children'],action.data).set('loading',false)
     default:
       return state
   }

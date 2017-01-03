@@ -5,6 +5,7 @@ import {Motion,spring} from 'react-motion'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 import {getSubmenu} from '../../actions/menu'
+import logo from '../../../resource/basic/logo.png'
 
 const mockSubMenu = [{
   title:'基础数据',
@@ -74,7 +75,7 @@ const mockSubMenu = [{
   }]
 }]
 
-const Navigation = React.createClass({
+const Naviagtion = React.createClass({
 
   getDefaultProps(){
     return {
@@ -103,7 +104,7 @@ const Navigation = React.createClass({
   renderSubMenu(){
 
     const {currentMenu} = this.state
-    const subMenu = currentMenu?this.props.menu.findEntry( v => v.get('key')==currentMenu)[1]:null
+    const subMenu = currentMenu?this.props.menu.get('data').findEntry( v => v.get('key')==currentMenu)[1]:null
     return (
       <div className={styles.dropDownContainer}>
         <div className={styles.panelContent}>
@@ -111,7 +112,7 @@ const Navigation = React.createClass({
           subMenu?subMenu.get('children').map( (second,key) => {
             return (
               <div key={key} className={styles.secondMenu}>
-                <div className={styles.secondMenuTitle}><span>{second.get('title')}</span><Icon type="right" /></div>
+                <div className={styles.secondMenuTitle}><span>{second.get('title')}</span><Icon style={{color:'rgb(80,80,80)'}} type="right" /></div>
                 {
                   second.get('children').map( third => {
                     return (
@@ -132,14 +133,13 @@ const Navigation = React.createClass({
   },
 
   render(){
-    console.log("---->:",this.props.loading)
     return (
       <div className={styles.wrapper}>
-        <div className={styles.navigation}>
-          <div className={styles.logo}><img src='https://unsplash.it/110/40'/></div>
-          <Menu mode="horizontal" className={styles.menu}>
+        <div className={styles.naviagtion}>
+          <div className={styles.logo}><img src={logo}/></div>
+          <Menu mode="horizontal" className={styles.menu} onMouseLeave={this.handleFoldSubmenu}>
             {
-              this.props.menu.map( item => (
+              this.props.menu.get('data').map( item => (
                 <Menu.Item key={item.get('key')} >
                   <div onMouseEnter={this.handleDropDownSubmenu.bind(this,item.get('key'))}>
                     {item.get('title')}
@@ -153,7 +153,7 @@ const Navigation = React.createClass({
         <Motion defaultStyle={{x: 0}} style={this.state.openSubMenu?{x:spring(250)}:{x:spring(0)}}>
           {interpolatingStyle => (
             <div className={styles.dropDownPanel} style={{height:interpolatingStyle.x+'px'}} onMouseLeave={this.handleFoldSubmenu}>
-              {this.props.loading?<Spin size="large" />:this.renderSubMenu()}
+              {this.props.menu.get('loading')?<div className={styles.loadingContainer}><Spin size="large" /></div>:this.renderSubMenu()}
             </div>
           )}
         </Motion>
@@ -165,7 +165,6 @@ const Navigation = React.createClass({
 function mapStateToProps(state) {
   return {
     menu:state.get('menu'),
-    loading:state.get('loading')
   }
 }
 
@@ -174,4 +173,4 @@ function mapDispatchToProps(dispatch){
     getSubmenu:bindActionCreators(getSubmenu,dispatch)
   }
 }
-export default connect(mapStateToProps,mapDispatchToProps)(Navigation)
+export default connect(mapStateToProps,mapDispatchToProps)(Naviagtion)

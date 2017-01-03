@@ -76,7 +76,7 @@ const BaseInfoContainer = React.createClass({
           <Input className={styles.searchInput} size="large"/>
         </div>
         <div className={styles.body}>
-          <Table columns={tableData.columns} dataSource={tableData.data} />
+          <Table bordered columns={tableData.columns} dataSource={tableData.data} />
         </div>
       </div>
     )

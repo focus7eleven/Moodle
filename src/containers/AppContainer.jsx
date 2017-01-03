@@ -1,11 +1,18 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import config from '../config'
+import {login} from '../actions/user'
+import {bindActionCreators} from 'redux'
 
 
 const AppContainer = React.createClass({
 	contextTypes:{
 		router: React.PropTypes.object,
+	},
+	componentWillMount(){
+		window.login = () => {
+			this.props.login()
+		}
 	},
 	render(){
 		return (
@@ -19,7 +26,9 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-	return {}
+	return {
+		login:bindActionCreators(login,dispatch)
+	}
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(AppContainer)

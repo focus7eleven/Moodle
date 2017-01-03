@@ -34,7 +34,7 @@ export function callAPIMiddleware({
 		}))
 
 		return callAPI().then(response => dispatch(_.extend({}, payload, {
-			response,
+			data:response,
 			type: successType,
 		})), error => dispatch(_.extend({}, payload, {
 			error,
