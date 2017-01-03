@@ -103,7 +103,7 @@ const Naviagtion = React.createClass({
   renderSubMenu(){
 
     const {currentMenu} = this.state
-    const subMenu = currentMenu?this.props.menu.findEntry( v => v.get('key')==currentMenu)[1]:null
+    const subMenu = currentMenu?this.props.menu.get('data').findEntry( v => v.get('key')==currentMenu)[1]:null
     return (
       <div className={styles.dropDownContainer}>
         <div className={styles.panelContent}>
@@ -136,9 +136,9 @@ const Naviagtion = React.createClass({
       <div className={styles.wrapper}>
         <div className={styles.naviagtion}>
           <div className={styles.logo}><img src='https://unsplash.it/110/40'/></div>
-          <Menu mode="horizontal" className={styles.menu}>
+          <Menu mode="horizontal" className={styles.menu} onMouseLeave={this.handleFoldSubmenu}>
             {
-              this.props.menu.map( item => (
+              this.props.menu.get('data').map( item => (
                 <Menu.Item key={item.get('key')} >
                   <div onMouseEnter={this.handleDropDownSubmenu.bind(this,item.get('key'))}>
                     {item.get('title')}
@@ -152,7 +152,7 @@ const Naviagtion = React.createClass({
         <Motion defaultStyle={{x: 0}} style={this.state.openSubMenu?{x:spring(250)}:{x:spring(0)}}>
           {interpolatingStyle => (
             <div className={styles.dropDownPanel} style={{height:interpolatingStyle.x+'px'}} onMouseLeave={this.handleFoldSubmenu}>
-              {this.props.loading?<Spin size="large" />:this.renderSubMenu()}
+              {this.props.menu.get('loading')?<div className={styles.loadingContainer}><Spin size="large" /></div>:this.renderSubMenu()}
             </div>
           )}
         </Motion>
@@ -164,7 +164,6 @@ const Naviagtion = React.createClass({
 function mapStateToProps(state) {
   return {
     menu:state.get('menu'),
-    loading:state.get('loading')
   }
 }
 

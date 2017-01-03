@@ -5,35 +5,38 @@ import {
 
 import {fromJS} from 'immutable'
 
-const initMenu = fromJS([{
-  title:'基础信息',
-  key:'base-info',
-  children:[]
-},{
-  title:'通知管理',
-  key:'notice-mgr',
-  children:[]
-},{
-  title:'教育资讯',
-  key:'edu-info',
-  children:[]
-},{
-  title:'任务管理',
-  key:'task-mgr',
-  children:[]
-},{
-  title:'课程中心',
-  key:'course-center',
-  children:[]
-},{
-  title:'作业中心',
-  key:'homework',
-  children:[]
-},{
-  title:'微课中心',
-  key:'microvideo-mgr',
-  children:[]
-}])
+const initMenu = fromJS({
+  loading:false,
+  data:[{
+    title:'基础信息',
+    key:'base-info',
+    children:[]
+  },{
+    title:'通知管理',
+    key:'notice-mgr',
+    children:[]
+  },{
+    title:'教育资讯',
+    key:'edu-info',
+    children:[]
+  },{
+    title:'任务管理',
+    key:'task-mgr',
+    children:[]
+  },{
+    title:'课程中心',
+    key:'course-center',
+    children:[]
+  },{
+    title:'作业中心',
+    key:'homework',
+    children:[]
+  },{
+    title:'微课中心',
+    key:'microvideo-mgr',
+    children:[]
+  }]
+})
 
 const mockSubMenu = fromJS([{
   title:'基础数据',
@@ -108,8 +111,8 @@ export default (state=initMenu,action) => {
     case REQUESTING:
       return state.set('loading',true)
     case GET_SUBMENU:
-      let index = state.findIndex( v => v.get('key')==action.payload)
-      return state.setIn([index,'children'],mockSubMenu)
+      let index = state.get('data').findIndex( v => v.get('key')==action.payload)
+      return state.setIn(['data',index,'children'],mockSubMenu).set('loading',false)
     default:
       return state
   }
