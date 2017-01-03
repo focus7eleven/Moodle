@@ -1,6 +1,6 @@
 import {
   GET_SUBMENU,
-  REQUESTING
+  CHANGE_MENU
 } from '../actions/menu'
 
 import {fromJS} from 'immutable'
@@ -108,11 +108,13 @@ const mockSubMenu = fromJS([{
 
 export default (state=initMenu,action) => {
   switch (action.type) {
-    case REQUESTING:
+    case CHANGE_MENU:
+      return state.set('loading',false)
+    case GET_SUBMENU[0]:
       return state.set('loading',true)
-    case GET_SUBMENU:
-      let index = state.get('data').findIndex( v => v.get('key')==action.payload)
-      return state.setIn(['data',index,'children'],mockSubMenu).set('loading',false)
+    case GET_SUBMENU[1]:
+      let index = state.get('data').findIndex( v => v.get('key')==action.key)
+      return state.setIn(['data',index,'children'],action.data).set('loading',false)
     default:
       return state
   }
