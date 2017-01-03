@@ -111,7 +111,7 @@ const Naviagtion = React.createClass({
           subMenu?subMenu.get('children').map( (second,key) => {
             return (
               <div key={key} className={styles.secondMenu}>
-                <div className={styles.secondMenuTitle}><span>{second.get('title')}</span><Icon type="right" /></div>
+                <div className={styles.secondMenuTitle}><span>{second.get('title')}</span><Icon style={{color:'rgb(80,80,80)'}} type="right" /></div>
                 {
                   second.get('children').map( third => {
                     return (
