@@ -150,7 +150,7 @@ var hexToChar = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
 RSAUtils.digitToHex = function(n) {
 	var mask = 0xf;
 	var result = "";
-	for (i = 0; i < 4; ++i) {
+	for (let i = 0; i < 4; ++i) {
 		result += hexToChar[n & mask];
 		n >>>= 4;
 	}
@@ -314,7 +314,7 @@ RSAUtils.biMultiply = function(x, y) {
 	for (var i = 0; i <= t; ++i) {
 		c = 0;
 		k = i;
-		for (j = 0; j <= n; ++j, ++k) {
+		for (let j = 0; j <= n; ++j, ++k) {
 			uv = result.digits[k] + x.digits[j] * y.digits[i] + c;
 			result.digits[k] = uv & maxDigitVal;
 			c = uv >>> biRadixBits;
@@ -330,7 +330,7 @@ RSAUtils.biMultiply = function(x, y) {
 RSAUtils.biMultiplyDigit = function(x, y) {
 	var n, c, uv;
 
-	result = new BigInt();
+	var result = new BigInt();
 	n = RSAUtils.biHighIndex(x);
 	c = 0;
 	for (var j = 0; j <= n; ++j) {

@@ -6,6 +6,7 @@ import security from '../utils/security'
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS'
 
 export const login = (user,password)=>{
+
   return dispatch => {
     return fetch(config.api.key.get,{
       headers:{
@@ -13,22 +14,26 @@ export const login = (user,password)=>{
       },
       method:'get'
     }).then(res => res.json()).then( res => {
-      console.log("--->:",res)
-      // let publicKey = security.RSAUtils.getKeyPair(res.exponent,'',res.modulus)
-      // let encryptedPassword = security.RSAUtils.encryptedString(publicKey,password)
-      // fetch(config.api.user.login.post,{
-      //   method:'POST',
-      //   headers:{
-      //     'from':'NODEJS',
-      //     'Content-Type': 'application/json'
-      //   },
-      //   body:JSON.stringify({
-      //     username:user,
-      //     password:password
-      //   })
-      // }).then(res => res.json()).then(res => {
-      //   console.log("--->:",res)
-      // })
+      let publicKey = security.RSAUtils.getKeyPair(res.exponent,'',res.modulus)
+      let encryptedPassword = security.RSAUtils.encryptedString(publicKey,password)
+      let formData = new FormData()
+      formData.append('username',user)
+      formData.append('password',encryptedPassword)
+      fetch(config.api.user.login.post,{
+        method:'POST',
+        headers:{
+          'from':'NODEJS',
+        },
+        body: formData
+      }).then(res => res.json()).then(res => {
+        dispatch({
+          type:LOGIN_SUCCESS,
+          payload:{
+            accessToken:res.resultData.accessToken,
+            expiresIn:res.resultData.expiresIn
+          }
+        })
+      })
     })
   }
 }

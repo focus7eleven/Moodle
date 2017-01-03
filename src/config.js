@@ -13,6 +13,14 @@ const config = _.extend({
 	api:{
 		key:{
 			get:`${baseURL}/key`
+		},
+		user:{
+			login:{
+				post:`${baseURL}/LoginWithToken`
+			}
+		},
+		menu:{
+			get:`${baseURL}/getMenuWithTreeFormat`
 		}
 	}
 })

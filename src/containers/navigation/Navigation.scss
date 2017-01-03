@@ -7,7 +7,7 @@
   :local(.naviagtion){
     display: flex;
     justify-content: space-between;
-    width: 70%;
+    width: 75%;
     z-index: 15;
     min-width: 880px;
     :local(.logo){
@@ -76,7 +76,7 @@
       flex-direction: column;
       :local(.panelContent){
         height: 220px;
-        width: 70%;
+        width: 75%;
         display: flex;
         color:white;
         justify-content: space-between;
@@ -135,12 +135,4 @@
       }
     }
   }
-}
-
-:local(.loadingContainer){
-  width: 100%;
-  height: 250px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }

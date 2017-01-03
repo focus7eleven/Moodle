@@ -1,8 +1,10 @@
 import {combineReducers} from 'redux-immutablejs'
 import menu from './menu'
+import user from './user'
 
 const reducer = combineReducers({
-  menu
+  menu,
+  user
 })
 
 export default reducer

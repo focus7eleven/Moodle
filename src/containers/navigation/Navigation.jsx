@@ -6,74 +6,7 @@ import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 import {getSubmenu} from '../../actions/menu'
 import logo from '../../../resource/basic/logo.png'
-
-const mockSubMenu = [{
-  title:'基础数据',
-  key:'',
-  children:[{
-    title:'学段',
-    key:1,
-  },{
-    title:'学科',
-    key:2,
-  },{
-    title:'年级',
-    key:3,
-  }]
-},{
-  title:'组织架构',
-  key:'',
-  children:[{
-    title:'学校机构',
-    key:1,
-  },{
-    title:'年级管理',
-    key:2,
-  }]
-},{
-  title:'人员管理',
-  key:'',
-  children:[{
-    title:'教师',
-    key:1,
-  },{
-    title:'家长',
-    key:2,
-  },{
-    title:'学生',
-    key:3,
-  }]
-},{
-  title:'群组管理',
-  key:'',
-  children:[{
-    title:'通用群组',
-    key:1,
-  },{
-    title:'定制群组',
-    key:2,
-  }]
-},{
-  title:'教育大纲',
-  key:'',
-  children:[{
-    title:'教育大纲',
-    key:1,
-  }]
-},{
-  title:'工具管理',
-  key:'',
-  children:[{
-    title:'健康档案',
-    key:1,
-  },{
-    title:'课程表',
-    key:2,
-  },{
-    title:'菜谱',
-    key:3,
-  }]
-}]
+import {getMenu} from '../../actions/menu'
 
 const Naviagtion = React.createClass({
 
@@ -88,12 +21,17 @@ const Naviagtion = React.createClass({
       currentMenu:'',
     }
   },
+  componentDidMount(){
+    this.props.user.get('accessToken')?this.props.getMenu(this.props.user.get('accessToken')):null
+  },
+  componentWillReceiveProps(nextProps){
+    nextProps.user.get('accessToken') && this.props.menu.get('data').isEmpty()?this.props.getMenu(nextProps.user.get('accessToken')):null
+  },
   handleDropDownSubmenu(key){
     this.setState({
       currentMenu:key,
       openSubMenu:true,
     })
-    this.props.getSubmenu(key)
   },
   handleFoldSubmenu(){
     this.setState({
@@ -104,20 +42,20 @@ const Naviagtion = React.createClass({
   renderSubMenu(){
 
     const {currentMenu} = this.state
-    const subMenu = currentMenu?this.props.menu.get('data').findEntry( v => v.get('key')==currentMenu)[1]:null
+    const subMenu = currentMenu?this.props.menu.get('data').findEntry( v => v.get('resourceUrl')==currentMenu)[1]:null
     return (
       <div className={styles.dropDownContainer}>
         <div className={styles.panelContent}>
         {
-          subMenu?subMenu.get('children').map( (second,key) => {
+          subMenu?subMenu.get('childResources').map( (second,key) => {
             return (
               <div key={key} className={styles.secondMenu}>
-                <div className={styles.secondMenuTitle}><span>{second.get('title')}</span><Icon style={{color:'rgb(80,80,80)'}} type="right" /></div>
+                <div className={styles.secondMenuTitle}><span>{second.get('resourceName')}</span><Icon style={{color:'rgb(80,80,80)'}} type="right" /></div>
                 {
-                  second.get('children').map( third => {
+                  second.get('childResources').map( third => {
                     return (
-                      <div key={third.get('title')} className={styles.thirdMenu}>
-                        {third.get('title')}
+                      <div key={third.get('resourceName')} className={styles.thirdMenu}>
+                        {third.get('resourceName')}
                       </div>
                     )
                   })
@@ -140,9 +78,9 @@ const Naviagtion = React.createClass({
           <Menu mode="horizontal" className={styles.menu} onMouseLeave={this.handleFoldSubmenu}>
             {
               this.props.menu.get('data').map( item => (
-                <Menu.Item key={item.get('key')} >
-                  <div onMouseEnter={this.handleDropDownSubmenu.bind(this,item.get('key'))}>
-                    {item.get('title')}
+                <Menu.Item key={item.get('resourceUrl')} >
+                  <div onMouseEnter={this.handleDropDownSubmenu.bind(this,item.get('resourceUrl'))}>
+                    {item.get('resourceName')}
                   </div>
                 </Menu.Item>
               ))
@@ -153,7 +91,7 @@ const Naviagtion = React.createClass({
         <Motion defaultStyle={{x: 0}} style={this.state.openSubMenu?{x:spring(250)}:{x:spring(0)}}>
           {interpolatingStyle => (
             <div className={styles.dropDownPanel} style={{height:interpolatingStyle.x+'px'}} onMouseLeave={this.handleFoldSubmenu}>
-              {this.props.menu.get('loading')?<div className={styles.loadingContainer}><Spin size="large" /></div>:this.renderSubMenu()}
+              {this.renderSubMenu()}
             </div>
           )}
         </Motion>
@@ -165,12 +103,13 @@ const Naviagtion = React.createClass({
 function mapStateToProps(state) {
   return {
     menu:state.get('menu'),
+    user:state.get('user'),
   }
 }
 
 function mapDispatchToProps(dispatch){
   return {
-    getSubmenu:bindActionCreators(getSubmenu,dispatch)
+    getMenu:bindActionCreators(getMenu,dispatch)
   }
 }
 export default connect(mapStateToProps,mapDispatchToProps)(Naviagtion)
