@@ -7,20 +7,22 @@
     height: 47px;
     width: 100%;
   }
+  :local(.navigationMini){
+    display: none;
+  }
 
   :local(.workspace){
-    height: calc( 100% - 47px );
+    height: calc(100% - 47px);
     width: 100%;
-    flex-shrink: 0;
-    overflow-y: scroll;
+    overflow: scroll;
     background-image: url(../../resource/basic/backgroud.png);
     background-size: 100%;
     display: flex;
     justify-content: center;
 
     :local(.mainPanel){
-      width: 70%;
-      min-width: 880px;
+      width: 75%;
+      height: 100%;
       padding-top: 10px;
       padding-bottom: 20px;
 
@@ -58,11 +60,28 @@
       }
       :local(.body){
         width: 100%;
-        height: calc( 100% - 40px );
+        height: calc( 100% - 45px );
         background-color: #fff;
         border: 1px solid rgb(217,217,217);
         border-top: none;
+        overflow: auto;
       }
+    }
+  }
+}
+
+@media (max-width:1024px) {
+  :local(.container){
+    :local(.navigation){
+      display:none;
+    }
+    :local(.navigationMini){
+      display: block;
+      position:relative;;
+      top:0px;
+      left:0px;
+      z-index: 1;
+      overflow: visible;
     }
   }
 }

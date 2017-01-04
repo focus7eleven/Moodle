@@ -2,8 +2,12 @@ import React from 'react'
 import styles from './MainContainer.scss'
 import {Breadcrumb} from 'antd'
 import Navigation from './navigation/Navigation'
+import NavigationMini from './navigation/NavigationMini'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
+import schoolLogo from 'images/school.png'
+import teacherLogo from 'images/teacher.png'
+import studentLogo from 'images/student.png'
 
 const MainContainer = React.createClass({
   getInitialState(){
@@ -27,6 +31,9 @@ const MainContainer = React.createClass({
         <div className={styles.navigation}>
           <Navigation></Navigation>
         </div>
+        <div className={styles.navigationMini}>
+          <NavigationMini></NavigationMini>
+        </div>
         {
           this.props.children ?
             <div className={styles.workspace}>
@@ -34,11 +41,11 @@ const MainContainer = React.createClass({
                 <div className={styles.header}>
                   <Breadcrumb separator=">">
                     {
-                      this.props.currentPath.map((item)=><Breadcrumb.Item>{item}</Breadcrumb.Item>)
+                      this.props.currentPath.map((item)=><Breadcrumb.Item key={item}>{item}</Breadcrumb.Item>)
                     }
                   </Breadcrumb>
                   <div className={styles.schooInfo}>
-                    <span className={styles.school}>{schoolInfo.schoolName}</span>
+                    <span className={styles.school}><img src={schoolLogo}/>{schoolInfo.schoolName}</span>
                     <div className={styles.teacherNum}>
                       <span>{schoolInfo.teacherNum}</span>
                       <span>教师人数</span>

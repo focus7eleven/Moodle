@@ -11,7 +11,7 @@ export function getMenu(token){
       method:'GET',
       headers:{
         'from' : 'nodejs',
-        'token' : token
+        'token' : token||sessionStorage.getItem('accessToken')
       }
     }).then(res => res.json()).then(res => {
       dispatch({

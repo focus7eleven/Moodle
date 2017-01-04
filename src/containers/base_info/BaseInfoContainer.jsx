@@ -2,7 +2,6 @@ import React from 'react'
 import {Icon,Input,Table} from 'antd'
 import styles from './BaseInfoContainer.scss'
 
-
 const BaseInfoContainer = React.createClass({
   getInitialState(){
     return {}

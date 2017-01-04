@@ -4,12 +4,11 @@ import styles from './Navigation.scss'
 import {Motion,spring} from 'react-motion'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
-import {getSubmenu} from '../../actions/menu'
-import logo from '../../../resource/basic/logo.png'
+import logo from 'images/logo.png'
 import {getMenu} from '../../actions/menu'
 import {setPath} from '../../actions/workspace'
 
-const Naviagtion = React.createClass({
+const Navigation = React.createClass({
   contextTypes: {
     router: React.PropTypes.object
   },
@@ -22,10 +21,6 @@ const Naviagtion = React.createClass({
   },
   componentDidMount(){
     this.props.user.get('accessToken')?this.props.getMenu(this.props.user.get('accessToken')):null
-  },
-
-  componentWillReceiveProps(nextProps){
-    nextProps.user.get('accessToken') && this.props.menu.get('data').isEmpty()?this.props.getMenu(nextProps.user.get('accessToken')):null
   },
 
   handleDropDownSubmenu(key){
@@ -47,8 +42,10 @@ const Naviagtion = React.createClass({
     const third = e.target.getAttribute('data-third');
     const url = e.target.getAttribute('data-url');
     this.props.setPath([subMenu,second,third]);
+    this.setState({
+      openSubMenu:false,
+    })
     this.context.router.push(`/index/${this.state.currentMenu}/${url}`)
-    // console.log(first.get('resourceUrl')+"/"+third.get('resourceUrl'));
   },
 
   renderSubMenu(){
@@ -84,7 +81,7 @@ const Naviagtion = React.createClass({
   render(){
     return (
       <div className={styles.wrapper}>
-        <div className={styles.naviagtion}>
+        <div className={styles.navigation}>
           <div className={styles.logo}><img src={logo}/></div>
           <Menu mode="horizontal" className={styles.menu} onMouseLeave={this.handleFoldSubmenu}>
             {
@@ -124,4 +121,4 @@ function mapDispatchToProps(dispatch){
     setPath:bindActionCreators(setPath,dispatch),
   }
 }
-export default connect(mapStateToProps,mapDispatchToProps)(Naviagtion)
+export default connect(mapStateToProps,mapDispatchToProps)(Navigation)
