@@ -13,6 +13,7 @@
     :local(.logo){
       display:flex;
       align-items: center;
+      overflow: hidden;
       >img{
         width:110px;
         height: 40px;

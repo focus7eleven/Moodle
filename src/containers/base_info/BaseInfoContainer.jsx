@@ -1,5 +1,5 @@
 import React from 'react'
-import {Icon,Input,Breadcrumb,Table} from 'antd'
+import {Icon,Input,Table} from 'antd'
 import styles from './BaseInfoContainer.scss'
 
 
@@ -68,11 +68,6 @@ const BaseInfoContainer = React.createClass({
     return (
       <div className={styles.container}>
         <div className={styles.header}>
-          <Breadcrumb separator=">">
-            <Breadcrumb.Item>基础信息</Breadcrumb.Item>
-            <Breadcrumb.Item href="">基础数据</Breadcrumb.Item>
-            <Breadcrumb.Item>学科</Breadcrumb.Item>
-          </Breadcrumb>
           <Input className={styles.searchInput} size="large"/>
         </div>
         <div className={styles.body}>

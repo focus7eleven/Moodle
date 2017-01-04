@@ -14,7 +14,11 @@ const routes = (
 				<Route path='navigation' component={Navigation}></Route>
 			</Route>
 			<Route path='index' component={MainContainer}>
-				<Route path='base-info' component={BaseInfoContainer} />
+				<Route path="base-info">
+					<Route path='phase' component={BaseInfoContainer} />
+					<Route path='grade' component={BaseInfoContainer} />
+					<Route path='subject' component={BaseInfoContainer} />
+				</Route>
 			</Route>
 		</Route>
 	</Router>

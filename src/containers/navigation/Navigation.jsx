@@ -10,6 +10,9 @@ import {getMenu} from '../../actions/menu'
 import {setPath} from '../../actions/workspace'
 
 const Naviagtion = React.createClass({
+  contextTypes: {
+    router: React.PropTypes.object
+  },
 
   getInitialState(){
     return {
@@ -42,7 +45,9 @@ const Naviagtion = React.createClass({
     const subMenu = e.target.getAttribute('data-subMenu');
     const second = e.target.getAttribute('data-second');
     const third = e.target.getAttribute('data-third');
+    const url = e.target.getAttribute('data-url');
     this.props.setPath([subMenu,second,third]);
+    this.context.router.push(`/index/${this.state.currentMenu}/${url}`)
     // console.log(first.get('resourceUrl')+"/"+third.get('resourceUrl'));
   },
 
