@@ -21,6 +21,13 @@ const config = _.extend({
 		},
 		menu:{
 			get:`${baseURL}/getMenuWithTreeFormat`
+		},
+		workspace:{
+			baseInfo:{
+				baseData:{
+					get:(type,currentPage,pageShow,search) => `${baseURL}/${type}/page?currentPage=${currentPage}&search=${search}&pageShow=${pageShow}`
+				}
+			}
 		}
 	}
 })

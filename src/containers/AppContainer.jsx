@@ -11,7 +11,7 @@ const AppContainer = React.createClass({
 	},
 	componentWillMount(){
 		window.login = () => {
-			this.props.login('caolaoshi','123456')
+			this.props.login('superadmin','superadmin')
 		}
 	},
 	render(){

@@ -4,7 +4,6 @@ import config from '../config.js'
 
 export const CHANGE_MENU = 'CHANGE_MENU'
 
-
 export const GET_MENU = 'GET_MENU'
 export function getMenu(token){
   return dispatch => {

@@ -3,6 +3,7 @@
   overflow: visible;
   height: 100%;
   background-color: rgb(56,186,130);
+  // min-width: 950px;
   :local(.mask){
     position:fixed;
     top:0px;
@@ -18,15 +19,19 @@
     height: 47px;
     width: 100%;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     >i{
       font-size: 40px;
+      line-height: 47px;
+      color: white;
     }
     :local(.decoration){
       display: flex;
+      width: 100%;
       :local(.logo){
         display:flex;
         align-items: center;
+        margin: 0 auto;
         >img{
           width:110px;
           height: 40px;

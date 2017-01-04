@@ -3,7 +3,6 @@ import {Router, Route, browserHistory, IndexRoute, IndexRedirect} from 'react-ro
 import AppContainer from './containers/AppContainer'
 import AnnouncementEditor from './containers/editor/AnnouncementEditor'
 import BaseInfoContainer from './containers/base_info/BaseInfoContainer'
-import NoticeManagerContainer from './containers/NoticeManagerContainer'
 import MainContainer from './containers/MainContainer'
 import Navigation from './containers/navigation/Navigation'
 import NavigationMini from './containers/navigation/NavigationMini'
@@ -19,10 +18,10 @@ const routes = (
 				<Route path='edu-outline' component={EduOutline}></Route>
 			</Route>
 			<Route path='index' component={MainContainer}>
-				<Route path='base_info/(:type)' >
-					<IndexRoute component={BaseInfoContainer}/>
+				<Route path='base-info/schoolDepart' component={Navigation}></Route>
+				<Route path='base-info/(:type)' component={BaseInfoContainer}>
 				</Route>
-				<Route path='notice_mgr' component={NoticeManagerContainer} />
+				{/*<Route path='notice_mgr' component={NoticeManagerContainer} />*/}
 			</Route>
 		</Route>
 	</Router>

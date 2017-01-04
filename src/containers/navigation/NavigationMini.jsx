@@ -22,12 +22,11 @@ const NavigationMini = React.createClass({
       openMenu:false,
     }
   },
+
   componentDidMount(){
     this.props.user.get('accessToken')||sessionStorage.getItem('accessToken')?this.props.getMenu(this.props.user.get('accessToken')):null
   },
-  componentWillReceiveProps(nextProps){
-    nextProps.user.get('accessToken') && this.props.menu.get('data').isEmpty()?this.props.getMenu(nextProps.user.get('accessToken')):null
-  },
+
   renderNavigate(menu){
     return menu.map( (v,key) => {
       if(!v.get('childResources')){
