@@ -8,6 +8,10 @@ import {fromJS,List} from 'immutable'
 const initMenu = fromJS({
   data:List()
 })
+
+export const findMenuInTree = (tree, targetURL) => tree.find(v => v.get('resourceUrl') == targetURL) || tree.reduce((reduction, v) => {
+	return reduction || v.get('childResources')?findMenuInTree(v.get('childResources'), targetURL):null || null
+}, null)
 // const initMenu = fromJS({
 //   loading:false,
 //   data:[{

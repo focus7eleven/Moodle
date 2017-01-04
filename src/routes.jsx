@@ -7,6 +7,7 @@ import NoticeManagerContainer from './containers/NoticeManagerContainer'
 import MainContainer from './containers/MainContainer'
 import Navigation from './containers/navigation/Navigation'
 import NavigationMini from './containers/navigation/NavigationMini'
+import EduOutline from './containers/edu_outline/EduOutline'
 
 const routes = (
 	<Router history={browserHistory}>
@@ -15,9 +16,12 @@ const routes = (
 				<Route path="editor" component={AnnouncementEditor}></Route>
 				<Route path='navigation' component={Navigation}></Route>
 				<Route path='navigation-mini' component={NavigationMini}></Route>
+				<Route path='edu-outline' component={EduOutline}></Route>
 			</Route>
 			<Route path='index' component={MainContainer}>
-				<Route path='base_info' component={BaseInfoContainer} />
+				<Route path='base_info/(:type)' >
+					<IndexRoute component={BaseInfoContainer}/>
+				</Route>
 				<Route path='notice_mgr' component={NoticeManagerContainer} />
 			</Route>
 		</Route>

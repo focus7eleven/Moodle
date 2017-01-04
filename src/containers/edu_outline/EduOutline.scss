@@ -1,0 +1,20 @@
+:local(.container){
+  display: flex;
+  flex-direction: column;
+  :local(.header){
+    display:flex;
+    justify-content: space-between;
+    :local(.filter){
+      display:flex;
+      justify-content: space-between;
+      .ant-menu{
+        .ant-menu-submenu-open .ant-menu-submenu-active{
+          background-color: red;
+        }
+      }
+    }
+  }
+  :local(.body){
+
+  }
+}

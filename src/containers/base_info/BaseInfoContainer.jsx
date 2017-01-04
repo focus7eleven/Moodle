@@ -1,6 +1,11 @@
 import React from 'react'
 import {Icon,Input,Breadcrumb,Table} from 'antd'
 import styles from './BaseInfoContainer.scss'
+import PermissionDic from '../../utils/permissionDic'
+import { withRouter } from 'react-router'
+import { connect} from 'react-redux'
+import { findMenuInTree } from '../../reducer/menu'
+import {fromJS,List,Map} from 'immutable'
 
 
 const BaseInfoContainer = React.createClass({
@@ -9,61 +14,50 @@ const BaseInfoContainer = React.createClass({
   },
 
   getDefaultProps(){
-    return {
-      tableData:{
-        columns: [{
-            title: 'Name',
-            dataIndex: 'name',
-            key: 'name',
-            render: text => <a href="#">{text}</a>,
-          }, {
-            title: 'Age',
-            dataIndex: 'age',
-            key: 'age',
-          }, {
-            title: 'Address',
-            dataIndex: 'address',
-            key: 'address',
-          }, {
-            title: 'Action',
-            key: 'action',
-            render: (text, record) => (
-              <span>
-                <a href="#">Action 一 {record.name}</a>
-                <span className="ant-divider" />
-                <a href="#">Delete</a>
-                <span className="ant-divider" />
-                <a href="#" className="ant-dropdown-link">
-                  More actions <Icon type="down" />
-                </a>
-              </span>
-            ),
-          }
-        ],
-        data: [{
-            key: '1',
-            name: 'John Brown',
-            age: 32,
-            address: 'New York No. 1 Lake Park',
-          }, {
-            key: '2',
-            name: 'Jim Green',
-            age: 42,
-            address: 'London No. 1 Lake Park',
-          }, {
-            key: '3',
-            name: 'Joe Black',
-            age: 32,
-            address: 'Sidney No. 1 Lake Park',
-          }
-        ],
+    return {}
+  },
 
-      }
+  getTableData(){
+    let {type} = this.props.router.params
+    let tableHeader = List()
+    let currentMenu = !this.props.menu.get('data').isEmpty()?findMenuInTree(this.props.menu.get('data'),'phase'):null
+    let authList = currentMenu?currentMenu.get('authList'):List()
+    console.log("--->:哈哈",currentMenu?currentMenu.toJS():null)
+    switch (type) {
+      case 'phase':
+        tableHeader = fromJS([{
+          title: '学段编号',
+          dataIndex: 'num',
+          key: 'num',
+        },{
+          title: '学段名称',
+          dataIndex: 'name',
+          key: 'name',
+        },{
+          title: '备注',
+          dataIndex: 'comment',
+          key: 'comment',
+        },{
+          title: '所属学科',
+          dataIndex: 'subjects',
+          key: 'subjects',
+        }]).concat(authList.map( v => {
+          return {
+            title: PermissionDic[v.get('authUrl').split('/')[2]],
+            dataIndex: v.get('authUrl').split('/')[2],
+            key: v.get('authUrl').split('/')[2],
+          }
+        }))
+        break;
+      default:
+
     }
+    console.log("-->:",tableHeader.toJS())
+    return {}
   },
 
   render(){
-    const {tableData} = this.props;
+    const tableData = this.getTableData()
 
     return (
       <div className={styles.container}>
@@ -82,5 +76,10 @@ const BaseInfoContainer = React.createClass({
     )
   }
 })
-
-export default BaseInfoContainer
+function mapStateToProps(state){
+  return{
+    menu:state.get('menu'),
+    user:state.get('user'),
+  }
+}
+export default connect(mapStateToProps)(withRouter(BaseInfoContainer))

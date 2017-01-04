@@ -23,9 +23,6 @@ const Navigation = React.createClass({
   componentDidMount(){
     this.props.user.get('accessToken')?this.props.getMenu(this.props.user.get('accessToken')):null
   },
-  componentWillReceiveProps(nextProps){
-    nextProps.user.get('accessToken') && this.props.menu.get('data').isEmpty()?this.props.getMenu(nextProps.user.get('accessToken')):null
-  },
   handleDropDownSubmenu(key){
     this.setState({
       currentMenu:key,
