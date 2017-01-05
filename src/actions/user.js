@@ -27,6 +27,7 @@ export const login = (user,password)=>{
         body: formData
       }).then(res => res.json()).then(res => {
         sessionStorage.setItem('accessToken',res.resultData.accessToken)
+        console.log("user:",res.resultData);
         dispatch({
           type:LOGIN_SUCCESS,
           payload:{
