@@ -7,6 +7,8 @@ import {bindActionCreators} from 'redux'
 import logo from 'images/logo.png'
 import {getMenu} from '../../actions/menu'
 import {setPath} from '../../actions/workspace'
+import ChangeUserDropDown from '../../components/ChangeUserDropdown'
+
 
 const Navigation = React.createClass({
   contextTypes: {
@@ -17,10 +19,17 @@ const Navigation = React.createClass({
     return {
       openSubMenu:false,
       currentMenu:'',
+      showChangeUser:false,
     }
   },
   componentDidMount(){
     this.props.user.get('accessToken')?this.props.getMenu(this.props.user.get('accessToken')):null
+    window.addEventListener('click',this.handleWindowEvent)
+  },
+  handleWindowEvent(){
+    this.setState({
+      showChangeUser:false
+    })
   },
   handleDropDownSubmenu(key){
     this.setState({
@@ -93,7 +102,7 @@ const Navigation = React.createClass({
               ))
             }
           </Menu>
-          <div className={styles.avatar}><img src='https://unsplash.it/25/25' /><span className={styles.nameDesc}>曹老师（任课老师）</span></div>
+          <div className={styles.avatar} onClick={(e)=>{this.setState({showChangeUser:this.state.showChangeUser?false:true});e.stopPropagation()}}><img src='https://unsplash.it/25/25' /><span className={styles.nameDesc}>曹老师（任课老师）</span>{this.state.showChangeUser?<ChangeUserDropDown/>:null}</div>
         </div>
         <Motion defaultStyle={{x: 0}} style={this.state.openSubMenu?{x:spring(250)}:{x:spring(0)}}>
           {interpolatingStyle => (

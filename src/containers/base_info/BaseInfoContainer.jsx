@@ -25,10 +25,8 @@ const BaseInfoContainer = React.createClass({
     return {}
   },
   componentWillReceiveProps(nextProps){
-    if(this.props.workspace.get('data').isEmpty() || (this.props.params.type != nextProps.params.type)){
+    if(nextProps.workspace.get('data').isEmpty() || (this.props.params.type != nextProps.params.type)){
       this.props.getWorkspaceData(this.context.router.params.type,'','','')
-      let path = findPath(this.props.menu.get('data'),this.context.router.params.type).map( v => v.get('resourceName'))
-      this.props.setPath(path)
     }
   },
 
@@ -160,14 +158,12 @@ const BaseInfoContainer = React.createClass({
 function mapStateToProps(state){
   return{
     menu:state.get('menu'),
-    user:state.get('user'),
     workspace:state.get('workspace')
   }
 }
 function mapDispatchToProps(dispatch){
   return {
     getWorkspaceData:bindActionCreators(getWorkspaceData,dispatch),
-    setPath:bindActionCreators(setPath,dispatch)
   }
 }
 export default connect(mapStateToProps,mapDispatchToProps)(BaseInfoContainer)

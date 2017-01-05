@@ -33,8 +33,7 @@ module.exports = {
 			loaders: ['react-hot', 'babel'],
 		}, {
 			test: /\.scss$/,
-			loaders: ["style", 'css?modules&importLoaders=1' +
-        '&localIdentName=[name]__[local]___[hash:base64:5]!postcss', "sass"]
+			loaders: ["style", "css", "postcss", "sass"]
 		}, {
 			test: /\.css$/,
 			loaders: ["style", "css"],

@@ -42,11 +42,13 @@
     :local(.avatar){
       display: flex;
       align-items: center;
+      position: relative;
       :local(.nameDesc){
         color:white;
         font-weight: bold;
         display: block;
         margin-left: 10px;
+        cursor: pointer;
       }
       >img{
         width: 25px;
