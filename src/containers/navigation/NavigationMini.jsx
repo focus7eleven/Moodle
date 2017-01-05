@@ -26,12 +26,6 @@ const NavigationMini = React.createClass({
 
   componentDidMount(){
     this.props.user.get('accessToken')||sessionStorage.getItem('accessToken')?this.props.getMenu(this.props.user.get('accessToken')):null
-    window.addEventListener('click',this.handleWindowEvent)
-  },
-  handleWindowEvent(){
-    this.setState({
-      showChangeUser:false
-    })
   },
   renderNavigate(menu){
     return menu.map( (v,key) => {

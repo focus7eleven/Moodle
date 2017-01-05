@@ -24,12 +24,6 @@ const Navigation = React.createClass({
   },
   componentDidMount(){
     this.props.user.get('accessToken')?this.props.getMenu(this.props.user.get('accessToken')):null
-    window.addEventListener('click',this.handleWindowEvent)
-  },
-  handleWindowEvent(){
-    this.setState({
-      showChangeUser:false
-    })
   },
   handleDropDownSubmenu(key){
     this.setState({
@@ -102,7 +96,7 @@ const Navigation = React.createClass({
               ))
             }
           </Menu>
-          <div className={styles.avatar} onClick={(e)=>{this.setState({showChangeUser:this.state.showChangeUser?false:true});e.stopPropagation()}}><img src='https://unsplash.it/25/25' /><span className={styles.nameDesc}>曹老师（任课老师）</span>{this.state.showChangeUser?<ChangeUserDropDown/>:null}</div>
+          <div className={styles.avatar} onClick={(e)=>{this.setState({showChangeUser:this.state.showChangeUser?false:true});e.stopPropagation()}}><img src='https://unsplash.it/25/25' /><span className={styles.nameDesc}>曹老师（任课老师）</span>{this.state.showChangeUser?<ChangeUserDropDown onClose={()=>{this.setState({showChangeUser:false})}}/>:null}</div>
         </div>
         <Motion defaultStyle={{x: 0}} style={this.state.openSubMenu?{x:spring(250)}:{x:spring(0)}}>
           {interpolatingStyle => (

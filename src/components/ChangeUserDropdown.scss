@@ -52,4 +52,14 @@
       }
     }
   }
+
+}
+
+:local(.modalWrapper){
+  :local(.roleChangeContent){
+    display:flex;
+    align-items: flex-start;;
+    justify-content: center;
+    height: 100px;
+  }
 }
