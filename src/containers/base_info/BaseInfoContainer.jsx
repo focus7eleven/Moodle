@@ -77,7 +77,6 @@ const BaseInfoContainer = React.createClass({
           title: '学段',
           dataIndex: 'phaseName',
           key: 'phaseName',
-          render:()=>{},
           className:styles.tableColumn,
         }])
         break;

@@ -7,6 +7,7 @@ import MainContainer from './containers/MainContainer'
 import Navigation from './containers/navigation/Navigation'
 import NavigationMini from './containers/navigation/NavigationMini'
 import EduOutline from './containers/edu_outline/EduOutline'
+import Filter from './components/Filter'
 
 const routes = (
 	<Router history={browserHistory}>
@@ -16,10 +17,16 @@ const routes = (
 				<Route path='navigation' component={Navigation}></Route>
 				<Route path='navigation-mini' component={NavigationMini}></Route>
 				<Route path='edu-outline' component={EduOutline}></Route>
+				<Route path='filter' component={Filter}></Route>
 			</Route>
 			<Route path='index' component={MainContainer}>
-				<Route path='base-info/schoolDepart' component={Navigation}></Route>
-				<Route path='base-info/(:type)' component={BaseInfoContainer}>
+				<Route path='base-info'>
+					<Route path='schoolDepart' component={Navigation}></Route>
+					<Route path='textbook'>
+						<IndexRoute component={EduOutline}/>
+					</Route>
+
+					<Route path='(:type)' component={BaseInfoContainer}></Route>
 				</Route>
 				{/*<Route path='notice_mgr' component={NoticeManagerContainer} />*/}
 			</Route>
