@@ -1,0 +1,9 @@
+:global(.ant-pagination-item-active){
+  background-color: #38BA82;
+  border-color: #38BA82;
+}
+:global(.ant-pagination-item){
+  &:hover{
+    border-color: #38BA82;
+  }
+}
