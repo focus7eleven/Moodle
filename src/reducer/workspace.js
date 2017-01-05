@@ -2,6 +2,7 @@ import {
   CHANGE_CURRENT_PATH,
   GET_WORKSPACEDATA
 } from '../actions/workspace'
+import {findPath} from '../reducer/menu'
 
 import {fromJS} from 'immutable'
 

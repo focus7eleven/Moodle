@@ -3,10 +3,13 @@ import {Icon,Input,Table,Button} from 'antd'
 import styles from './BaseInfoContainer.scss'
 import PermissionDic from '../../utils/permissionDic'
 import { connect} from 'react-redux'
-import { findMenuInTree } from '../../reducer/menu'
+import { findMenuInTree,findPath} from '../../reducer/menu'
 import {fromJS,List,Map} from 'immutable'
-import { getWorkspaceData } from '../../actions/workspace'
+import { getWorkspaceData,setPath } from '../../actions/workspace'
 import {bindActionCreators} from 'redux'
+import _ from 'lodash'
+
+const Search = Input.Search
 
 const BaseInfoContainer = React.createClass({
   contextTypes: {
@@ -15,9 +18,6 @@ const BaseInfoContainer = React.createClass({
   getInitialState(){
     return {
       searchStr:'',
-      pageShow:10,
-      start:0,
-      nowPage:1,
     }
   },
 
@@ -27,13 +27,8 @@ const BaseInfoContainer = React.createClass({
   componentWillReceiveProps(nextProps){
     if(this.props.workspace.get('data').isEmpty() || (this.props.params.type != nextProps.params.type)){
       this.props.getWorkspaceData(this.context.router.params.type,'','','')
-    }
-    if(!this.props.workspace.get('data').isEmpty()){
-      this.setState({
-        pageShow:this.props.workspace.get('data').get('pageShow'),
-        start:this.props.workspace.get('data').get('start'),
-        nowPage:this.props.workspace.get('data').get('nowPage'),
-      })
+      let path = findPath(this.props.menu.get('data'),this.context.router.params.type).map( v => v.get('resourceName'))
+      this.props.setPath(path)
     }
   },
 
@@ -49,18 +44,22 @@ const BaseInfoContainer = React.createClass({
           title: '学段编号',
           dataIndex: 'phase_code',
           key: 'phase_code',
+          className:styles.tableColumn,
         },{
           title: '学段名称',
           dataIndex: 'phase_name',
           key: 'phase_name',
+          className:styles.tableColumn,
         },{
           title: '备注',
           dataIndex: 'remark',
           key: 'remark',
+          className:styles.tableColumn,
         },{
           title: '所属学科',
           dataIndex: 'subjectStr',
           key: 'subjectStr',
+          className:styles.tableColumn,
         }])
         break;
       case 'grade':
@@ -68,15 +67,18 @@ const BaseInfoContainer = React.createClass({
           title: '名称',
           dataIndex: 'gradeName',
           key: 'gradeName',
+          className:styles.tableColumn,
         },{
           title: '别称',
           dataIndex: 'gradeNickName',
           key: 'gradeNickName',
+          className:styles.tableColumn,
         },{
           title: '学段',
           dataIndex: 'phaseName',
           key: 'phaseName',
-          render:()=>{}
+          render:()=>{},
+          className:styles.tableColumn,
         }])
         break;
       case 'subject':
@@ -84,14 +86,17 @@ const BaseInfoContainer = React.createClass({
           title: '学科名称',
           dataIndex: 'subject_name',
           key: 'subject_name',
+          className:styles.tableColumn,
         },{
           title: '学科短称',
           dataIndex: 'subject_short_name',
           key: 'subject_short_name',
+          className:styles.tableColumn,
         },{
           title: '备注',
           dataIndex: 'remark',
           key: 'remark',
+          className:styles.tableColumn,
         }])
         break;
       default:
@@ -101,6 +106,7 @@ const BaseInfoContainer = React.createClass({
         title: PermissionDic[v.get('authUrl').split('/')[2]],
         dataIndex: v.get('authUrl').split('/')[2],
         key: v.get('authUrl').split('/')[2],
+        className:styles.tableColumn,
         render:(text,record) => {
           return (
             <Button>{PermissionDic[v.get('authUrl').split('/')[2]]}</Button>
@@ -119,27 +125,34 @@ const BaseInfoContainer = React.createClass({
       tableBody:tableBody.toJS(),
     }
   },
+  handleSearchTableData(value){
+    this.props.getWorkspaceData(this.context.router.params.type,this.props.workspace.get('data').get('nowPage'),this.props.workspace.get('data').get('pageShow'),value)
+  },
 
   render(){
     const tableData = this.getTableData()
+    const {workspace} = this.props
     return (
       <div className={styles.container}>
         <div className={styles.header}>
-          <Input className={styles.searchInput} size="large"/>
+          <Search placeholder="input search text" value={this.state.searchStr} onChange={(e)=>{this.setState({searchStr:e.target.value})}} onSearch={this.handleSearchTableData} />
         </div>
         <div className={styles.body}>
-          <Table bordered columns={tableData.tableHeader} dataSource={tableData.tableBody}
-          pagination={!this.props.workspace.get('data').isEmpty()?{
-            total:this.props.workspace.get('data').get('totalCount'),
-            pageSize:this.props.workspace.get('data').get('pageShow'),
-            current:this.props.workspace.get('data').get('nowPage'),
-            onChange:(page)=>{
-              this.props.getWorkspaceData(this.context.router.params.type,page,this.props.workspace.get('data').get('pageShow'),this.state.searchStr)
-            },
-            onShowSizeChange:(current,size)=>{
-              this.props.getWorkspaceData(this.context.router.params.type,this.props.workspace.get('data').get('nowPage'),size,this.state.searchStr)
-            }
-          }:null} />
+          <div className={styles.wrapper}>
+            <Table rowClassName={(record,index)=>index%2?styles.tableDarkRow:styles.tableLightRow} bordered columns={tableData.tableHeader} dataSource={tableData.tableBody}
+            pagination={!this.props.workspace.get('data').isEmpty()?{
+              total:this.props.workspace.get('data').get('totalCount'),
+              pageSize:this.props.workspace.get('data').get('pageShow'),
+              current:this.props.workspace.get('data').get('nowPage'),
+              onChange:(page)=>{
+                this.props.getWorkspaceData(this.context.router.params.type,page,this.props.workspace.get('data').get('pageShow'),this.state.searchStr)
+              },
+              onShowSizeChange:(current,size)=>{
+                this.props.getWorkspaceData(this.context.router.params.type,this.props.workspace.get('data').get('nowPage'),size,this.state.searchStr)
+              }
+            }:null} />
+            <div className={styles.tableMsg}>当前条目{workspace.get('data').get('start')}-{parseInt(workspace.get('data').get('start'))+parseInt(workspace.get('data').get('pageShow'))}/总条目{workspace.get('data').get('totalCount')}</div>
+          </div>
         </div>
       </div>
     )
@@ -154,7 +167,8 @@ function mapStateToProps(state){
 }
 function mapDispatchToProps(dispatch){
   return {
-    getWorkspaceData:bindActionCreators(getWorkspaceData,dispatch)
+    getWorkspaceData:bindActionCreators(getWorkspaceData,dispatch),
+    setPath:bindActionCreators(setPath,dispatch)
   }
 }
 export default connect(mapStateToProps,mapDispatchToProps)(BaseInfoContainer)

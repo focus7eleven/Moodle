@@ -19,5 +19,27 @@
   :local(.body){
     height: calc( 100% - 40px );
     width: 100%;
+    :local(.wrapper){
+      position:relative;
+      :local(.tableDarkRow){
+        text-align: center;
+        background-color: #F5F5F5;
+      }
+      :local(.tableLightRow){
+        text-align: center;
+        background-color: #FFFFFF;
+      }
+      :local(.tableColumn){
+        text-align: center;
+      }
+      :local(.tableMsg){
+        position: absolute;
+        left: 10px;
+        bottom: 30px;
+      }
+      :local(.pagination){
+        background-color: red;
+      }
+    }
   }
 }

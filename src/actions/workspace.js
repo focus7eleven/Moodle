@@ -8,7 +8,7 @@ export function setPath(path){
   return dispatch => {
     dispatch({
       type: CHANGE_CURRENT_PATH,
-      payload: path
+      payload:path
     })
   }
 }

@@ -13,6 +13,25 @@ export const findMenuInTree = (tree, targetURL) => tree.find(v => v.get('resourc
 	return reduction || (v.get('childResources')?findMenuInTree(v.get('childResources'), targetURL):findMenuInTree(List(), targetURL)) || null
 }, null)
 
+export const findPath = (tree,targetURL) => {
+  return tree.reduce((pre,cur) => {
+    if(cur.get('childResources')){
+      let childPath = findPath(cur.get('childResources'),targetURL)
+      if(!childPath.isEmpty()){
+        return pre.concat(List([cur])).concat(childPath)
+      }else{
+        return pre.concat(List())
+      }
+    }else{
+      if(cur.get('resourceUrl') == targetURL){
+        return pre.concat(List([cur]))
+      }else{
+        return pre.concat(List())
+      }
+    }
+  },List())
+}
+
 export default (state=initMenu,action) => {
   switch (action.type) {
     case GET_MENU:
