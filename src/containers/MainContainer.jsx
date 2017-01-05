@@ -46,13 +46,19 @@ const MainContainer = React.createClass({
                   </Breadcrumb>
                   <div className={styles.schooInfo}>
                     <span className={styles.school}><img src={schoolLogo}/>{schoolInfo.schoolName}</span>
-                    <div className={styles.teacherNum}>
-                      <span>{schoolInfo.teacherNum}</span>
-                      <span>教师人数</span>
+                    <div className={styles.teacherNumContainer}>
+                      <img src={teacherLogo} />
+                      <div className={styles.teacherNum}>
+                        <span>{schoolInfo.teacherNum}</span>
+                        <span>教师人数</span>
+                      </div>
                     </div>
-                    <div className={styles.teacherNum}>
-                      <span>{schoolInfo.studentNum}</span>
-                      <span>学生人数</span>
+                    <div className={styles.teacherNumContainer}>
+                      <img src={studentLogo} />
+                      <div className={styles.teacherNum}>
+                        <span>{schoolInfo.studentNum}</span>
+                        <span>学生人数</span>
+                      </div>
                     </div>
                   </div>
                 </div>
