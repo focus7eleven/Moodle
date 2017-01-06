@@ -24,6 +24,7 @@ const BaseInfoContainer = React.createClass({
   getDefaultProps(){
     return {}
   },
+
   componentWillReceiveProps(nextProps){
     if(nextProps.workspace.get('data').isEmpty() || (this.props.params.type != nextProps.params.type)){
       this.props.getWorkspaceData(this.context.router.params.type,'','','')
