@@ -28,7 +28,6 @@ const Navigation = React.createClass({
   },
 
   componentWillReceiveProps(nextProps){
-    console.log(nextProps.menu.get('data').toJS());
     let min = 5;
     nextProps.menu.get('data').map(item=>{
       item.get('childResources').map(item=>{
