@@ -31,6 +31,12 @@ const config = _.extend({
 					get:(type,currentPage,pageShow,search) => `${baseURL}/${type}/page?currentPage=${currentPage}&search=${search}&pageShow=${pageShow}`
 				}
 			}
+		},
+		phase:{
+			post:`${baseURL}/phase/add`,
+			phaseList:{
+				get:`${baseURL}/phase/phaseList`,
+			}
 		}
 	}
 })

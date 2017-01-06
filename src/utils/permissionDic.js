@@ -4,5 +4,4 @@ const permissionDic = {
   'list':'增加学段学科',
   'edit':'操作',
 }
-
 export default permissionDic
