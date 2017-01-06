@@ -12,7 +12,9 @@ import _ from 'lodash'
 const Search = Input.Search
 
 const BaseInfoContainer = React.createClass({
-  _currentMenu:List(),
+  _currentMenu:Map({
+    authList:List()
+  }),
   contextTypes: {
     router: React.PropTypes.object
   },
@@ -29,16 +31,17 @@ const BaseInfoContainer = React.createClass({
   componentWillReceiveProps(nextProps){
     if(nextProps.workspace.get('data').isEmpty() || (this.props.params.type != nextProps.params.type)){
       this.props.getWorkspaceData(this.context.router.params.type,'','','')
-    }if(!this.props.workspace.get('data').isEmpty()){
-      let {type} = this.props.router.params
-      this._currentMenu = findMenuInTree(this.props.menu.get('data'),type)
+    }if(!nextProps.workspace.get('data').isEmpty()){
+      let {type} = nextProps.router.params
+      this._currentMenu = findMenuInTree(nextProps.menu.get('data'),type)
     }
   },
 
   getTableData(){
+    let {type} = this.props.router.params
     let tableHeader = List()
     let tableBody = List()
-    let authList = this._currentMenu
+    let authList = this._currentMenu.get('authList')
     switch (type) {
       case 'phase':
         tableHeader = fromJS([{
