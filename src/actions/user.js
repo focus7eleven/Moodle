@@ -2,6 +2,7 @@ import {actionNames} from "action-utils";
 import config from "../config";
 import _ from "underscore";
 import security from '../utils/security'
+import {notification} from 'antd'
 
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS'
 
@@ -27,14 +28,31 @@ export const login = (user,password)=>{
         body: formData
       }).then(res => res.json()).then(res => {
         sessionStorage.setItem('accessToken',res.resultData.accessToken)
-        console.log("user:",res.resultData);
-        dispatch({
+        res.title=='Success'?dispatch({
           type:LOGIN_SUCCESS,
-          payload:{
-            accessToken:res.resultData.accessToken,
-            expiresIn:res.resultData.expiresIn
-          }
+          isAuth:true
+        }):notification.error({
+          message:'失败',
+          description:'账号与密码不匹配'
         })
+      })
+    })
+  }
+}
+
+export const LOGOUT = 'LOGOUT'
+export const logout = () =>{
+  return dispatch => {
+    return fetch(config.api.user.logout.post,{
+      method:'POST',
+      headers:{
+        'from':'nodejs',
+        'token':sessionStorage.getItem('accessToken')
+      }
+    }).then(res => res.json()).then(res => {
+      sessionStorage.setItem('accessToken','')
+      dispatch({
+        type:LOGOUT
       })
     })
   }

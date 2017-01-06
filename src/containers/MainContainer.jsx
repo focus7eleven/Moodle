@@ -8,10 +8,13 @@ import {bindActionCreators} from 'redux'
 import schoolLogo from 'images/school.png'
 import teacherLogo from 'images/teacher.png'
 import studentLogo from 'images/student.png'
-
+import {List} from 'immutable'
+import {findPath} from '../reducer/menu'
 const MainContainer = React.createClass({
   getInitialState(){
-    return {}
+    return {
+      currentPath:List()
+    }
   },
 
   getDefaultProps(){
@@ -23,7 +26,13 @@ const MainContainer = React.createClass({
       }
     }
   },
-
+  componentWillReceiveProps(nextProps){
+    let menuUrl = nextProps.location.pathname.split('/').slice(-1)[0]
+    let path = !nextProps.menu.get('data').isEmpty()?findPath(nextProps.menu.get('data'),menuUrl):List()
+    this.setState({
+      currentPath:path.map(v => v.get('resourceName'))
+    })
+  },
   render(){
     const {schoolInfo} = this.props;
     return (
@@ -41,7 +50,7 @@ const MainContainer = React.createClass({
                 <div className={styles.header}>
                   <Breadcrumb separator=">">
                     {
-                      this.props.currentPath.map((item)=><Breadcrumb.Item key={item}>{item}</Breadcrumb.Item>)
+                      this.state.currentPath.map((item)=><Breadcrumb.Item key={item}>{item}</Breadcrumb.Item>)
                     }
                   </Breadcrumb>
                   <div className={styles.schooInfo}>
@@ -76,7 +85,7 @@ const MainContainer = React.createClass({
 })
 function mapStateToProps(state) {
   return {
-    currentPath: state.get('workspace').get('currentPath'),
+    menu:state.get('menu')
   }
 }
 

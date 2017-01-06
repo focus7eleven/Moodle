@@ -25,6 +25,24 @@
       line-height: 47px;
       color: white;
     }
+    :local(.avatar){
+      display: flex;
+      align-items: center;
+      position: relative;
+
+      >img{
+        width: 25px;
+        height: 25px;
+        border-radius: 13px 13px;
+      }
+      :local(.nameDesc){
+        color:white;
+        font-weight: bold;
+        display: block;
+        margin-left: 10px;
+        cursor: pointer;
+      }
+    }
     :local(.decoration){
       display: flex;
       width: 100%;
