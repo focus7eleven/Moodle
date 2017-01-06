@@ -39,3 +39,21 @@ export const login = (user,password)=>{
     })
   }
 }
+
+export const LOGOUT = 'LOGOUT'
+export const logout = () =>{
+  return dispatch => {
+    return fetch(config.api.user.logout.post,{
+      method:'POST',
+      headers:{
+        'from':'nodejs',
+        'token':sessionStorage.getItem('accessToken')
+      }
+    }).then(res => res.json()).then(res => {
+      sessionStorage.setItem('accessToken','')
+      dispatch({
+        type:LOGOUT
+      })
+    })
+  }
+}

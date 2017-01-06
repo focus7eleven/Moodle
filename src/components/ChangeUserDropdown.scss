@@ -61,5 +61,12 @@
     align-items: flex-start;;
     justify-content: center;
     height: 100px;
+    :local(.selsctWrapper){
+      diplay:flex;
+      align-items: center;
+      >span{
+        font-size: 14px;
+      }
+    }
   }
 }

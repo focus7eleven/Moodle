@@ -17,6 +17,9 @@ const config = _.extend({
 		user:{
 			login:{
 				post:`${baseURL}/LoginWithToken`
+			},
+			logout:{
+				post:`${baseURL}/account/logout`
 			}
 		},
 		menu:{

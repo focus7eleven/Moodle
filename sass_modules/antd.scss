@@ -8,3 +8,41 @@
     border-color: #38BA82;
   }
 }
+
+:global(.ant-modal){
+  :global(.ant-modal-header){
+    background-color:#E7F9F2;
+    font-weight: normal;
+    :global(.ant-modal-title){
+      font-weight:normal;
+    }
+  }
+}
+
+:global(.ant-select){
+  &:hover{
+    color:#37B781;
+
+  }
+  :global(.ant-select-selection){
+    border:#aaa 1px solid;
+    box-shadow: none;
+    &:hover{
+      border:#37B781 1px solid;
+    }
+  }
+  :global(.ant-select-open){
+    border-color: #37B781;
+    box-shadow: none;
+  }
+}
+:global(.ant-select-dropdown){
+  :global(.ant-select-dropdown-menu){
+    :global(.ant-select-dropdown-menu-item){
+      &:hover{
+        background-color:#E7F9F2;
+        color:red;
+      }
+    }
+  }
+}

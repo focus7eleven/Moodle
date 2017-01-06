@@ -59,11 +59,12 @@ const ChangeUserDropDown = React.createClass({
           width={300}
         >
         <div className={styles.roleChangeContent}>
-          <Select size="large" defaultValue="jack" style={{ width: 200 }}>
+          <div className={styles.selsctWrapper}><span>角色：</span><Select size="large" defaultValue="jack" style={{ width: 200 }}>
             <Option value="jack">学校任课老师</Option>
             <Option value="lucy">学校管理员</Option>
             <Option value="disabled">教育局局长</Option>
           </Select>
+          </div>
         </div>
         </Modal>
       </div>
