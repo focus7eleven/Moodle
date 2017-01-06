@@ -46,3 +46,13 @@
     }
   }
 }
+
+:global(.ant-btn-primary) {
+	background-color: #2AAD6C;
+	border-color: #2AAD6C;
+
+	&:hover, &:focus {
+		background-color: #FC9E0A;
+		border-color: #FC9E0A;
+	}
+}

@@ -30,7 +30,9 @@ const Navigation = React.createClass({
   },
 
   componentWillReceiveProps(nextProps){
-    console.log(nextProps.menu.get('data').toJS());
+    if(!this.props.user.get('isAuth') && nextProps.user.get('isAuth')){
+      this.props.getMenu()
+    }
     let min = 5;
     nextProps.menu.get('data').map(item=>{
       item.get('childResources').map(item=>{

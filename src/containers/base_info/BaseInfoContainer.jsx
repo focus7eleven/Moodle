@@ -12,6 +12,7 @@ import _ from 'lodash'
 const Search = Input.Search
 
 const BaseInfoContainer = React.createClass({
+  _currentMenu:List(),
   contextTypes: {
     router: React.PropTypes.object
   },
@@ -28,15 +29,16 @@ const BaseInfoContainer = React.createClass({
   componentWillReceiveProps(nextProps){
     if(nextProps.workspace.get('data').isEmpty() || (this.props.params.type != nextProps.params.type)){
       this.props.getWorkspaceData(this.context.router.params.type,'','','')
+    }if(!this.props.workspace.get('data').isEmpty()){
+      let {type} = this.props.router.params
+      this._currentMenu = findMenuInTree(this.props.menu.get('data'),type)
     }
   },
 
   getTableData(){
-    let {type} = this.props.router.params
     let tableHeader = List()
     let tableBody = List()
-    let currentMenu = !this.props.menu.get('data').isEmpty()?findMenuInTree(this.props.menu.get('data'),'phase'):null
-    let authList = currentMenu?currentMenu.get('authList'):List()
+    let authList = this._currentMenu
     switch (type) {
       case 'phase':
         tableHeader = fromJS([{
@@ -107,7 +109,7 @@ const BaseInfoContainer = React.createClass({
         className:styles.tableColumn,
         render:(text,record) => {
           return (
-            <Button>{PermissionDic[v.get('authUrl').split('/')[2]]}</Button>
+            <Button type="primary" style={{backgroundColor:'#30D18E',borderColor:'#30D18E'}}>{PermissionDic[v.get('authUrl').split('/')[2]]}</Button>
           )
         }
       }
@@ -133,7 +135,7 @@ const BaseInfoContainer = React.createClass({
     return (
       <div className={styles.container}>
         <div className={styles.header}>
-          <Search placeholder="input search text" value={this.state.searchStr} onChange={(e)=>{this.setState({searchStr:e.target.value})}} onSearch={this.handleSearchTableData} />
+          {<Button type="primary" style={{backgroundColor:'#FD9B09',borderColor:'#FD9B09'}}>新建</Button>}<Search placeholder="input search text" value={this.state.searchStr} onChange={(e)=>{this.setState({searchStr:e.target.value})}} onSearch={this.handleSearchTableData} />
         </div>
         <div className={styles.body}>
           <div className={styles.wrapper}>
