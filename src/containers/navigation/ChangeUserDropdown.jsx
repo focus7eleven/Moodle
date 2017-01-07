@@ -6,6 +6,7 @@ import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 const Option = Select.Option
 
+// 导航栏右侧的用户个人信息展示框
 const ChangeUserDropDown = React.createClass({
   contextTypes:{
     router: React.PropTypes.object,

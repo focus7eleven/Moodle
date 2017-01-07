@@ -17,13 +17,14 @@ const LoginContainer = React.createClass({
   },
 
   componentWillReceiveProps(nextProps) {
+    // 登录成功后的页面跳转
 		if (nextProps.isAuth && !this.props.isAuth) {
 			this.context.router.push(`/index`);
-			// this.context.router.push(this.props.location.pathname);
 		}
 	},
 
   handleSubmit(e) {
+    // 登录表单验证
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {

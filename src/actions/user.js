@@ -4,10 +4,9 @@ import _ from "underscore";
 import security from '../utils/security'
 import {notification} from 'antd'
 
+// 声明登录的action操作
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS'
-
 export const login = (user,password)=>{
-
   return dispatch => {
     return fetch(config.api.key.get,{
       headers:{
@@ -44,6 +43,7 @@ export const login = (user,password)=>{
   }
 }
 
+// 声明登出的action操作
 export const LOGOUT = 'LOGOUT'
 export const logout = () =>{
   return dispatch => {

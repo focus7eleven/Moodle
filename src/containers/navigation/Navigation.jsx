@@ -33,6 +33,7 @@ const Navigation = React.createClass({
     if(!this.props.user.get('isAuth') && nextProps.user.get('isAuth')){
       this.props.getMenu()
     }
+    // 计算导航栏下拉菜单的最小高度
     let min = 5;
     nextProps.menu.get('data').map(item=>{
       item.get('childResources').map(item=>{
@@ -67,6 +68,7 @@ const Navigation = React.createClass({
   renderSubMenu(){
     const {currentMenu} = this.state
     const subMenu = currentMenu?this.props.menu.get('data').findEntry( v => v.get('resourceUrl')==currentMenu)[1]:null
+    // 当二级菜单数量小于等于3个时，三级菜单水平排列
     const isVertical = subMenu?subMenu.get('childResources').size>3:true;
     return (
       subMenu?

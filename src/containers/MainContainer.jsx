@@ -37,6 +37,7 @@ const MainContainer = React.createClass({
     const {schoolInfo} = this.props;
     return (
       <div className={styles.container}>
+        {/* 当页面宽度小于1024px时，会加载NavigationMini这个导航栏*/}
         <div className={styles.navigation}>
           <Navigation></Navigation>
         </div>
@@ -45,8 +46,10 @@ const MainContainer = React.createClass({
         </div>
         {
           this.props.children ?
+            { /* workspace是主题内容显示区域 */}
             <div className={styles.workspace}>
               <div className={styles.mainPanel}>
+                { /* 顶部的学校信息 */}
                 <div className={styles.header}>
                   <Breadcrumb separator=">">
                     {
@@ -71,6 +74,7 @@ const MainContainer = React.createClass({
                     </div>
                   </div>
                 </div>
+                {/* 内容显示区域 */}
                 <div className={styles.body}>
                   {this.props.children}
                 </div>

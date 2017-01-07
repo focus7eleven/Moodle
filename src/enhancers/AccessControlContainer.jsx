@@ -16,8 +16,8 @@ function mapDispatchToProps(dispatch) {
 
 export const LoginControlHOC = (Component) => connect(mapStateToProps, mapDispatchToProps)(React.createClass({
 	render() {
+		// 用来判断当用户以url方式访问时，如果storage里面没有accessToken，需要跳转到登录页面。
 		const isAuth = sessionStorage.getItem('accessToken')
-
 		return isAuth?<Component {...this.props}></Component>:<LoginContainer {...this.props}></LoginContainer>
 	},
 }))
