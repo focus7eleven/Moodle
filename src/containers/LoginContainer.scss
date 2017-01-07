@@ -11,6 +11,7 @@
     background-size: cover;
     padding-left: 55%;
     padding-top: 80px;
+    overflow-y: scroll;
 
     :local(.panel){
       width: 385px;
