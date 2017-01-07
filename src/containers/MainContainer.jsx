@@ -46,7 +46,6 @@ const MainContainer = React.createClass({
         </div>
         {
           this.props.children ?
-            { /* workspace是主题内容显示区域 */}
             <div className={styles.workspace}>
               <div className={styles.mainPanel}>
                 { /* 顶部的学校信息 */}
