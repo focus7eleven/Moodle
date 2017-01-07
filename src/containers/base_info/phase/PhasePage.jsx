@@ -16,14 +16,14 @@ const FormItem = Form.Item
 const Option = Select.Option
 
 const PhasePage = React.createClass({
+  //当前所在的三级菜单
   _currentMenu:Map({
     authList:List()
   }),
+  //学段列表，用户判断新家学段的编号是否重复
   _phaseList:[],
+  //所有的学科列表
   _subjectList:[],
-  contextTypes: {
-    router: React.PropTypes.object
-  },
 
   getInitialState(){
     return {
@@ -35,17 +35,21 @@ const PhasePage = React.createClass({
   getDefaultProps(){
     return {}
   },
+  //life cycle
   componentWillMount(){
+    //当menu数据不为空的时候，找到当前menu
     if(!this.props.menu.get('data').isEmpty()){
       this._currentMenu = findMenuInTree(this.props.menu.get('data'),'phase')
     }
   },
   componentWillReceiveProps(nextProps){
+    //当mnue数据不为空的时候，找到当前menu
     if(!nextProps.menu.get('data').isEmpty()){
       this._currentMenu = findMenuInTree(nextProps.menu.get('data'),'phase')
     }
   },
   componentDidMount(){
+    //组件挂载的时候获取所有学科的列表
     fetch(config.api.subject.subjectList.get,{
       method:'get',
       headers:{
@@ -56,6 +60,7 @@ const PhasePage = React.createClass({
       this._subjectList = res
     })
   },
+  //生成表格数据
   getTableData(){
     let {type} = this.props.router.params
     let tableHeader = List()
@@ -81,8 +86,7 @@ const PhasePage = React.createClass({
       dataIndex: 'subjectStr',
       key: 'subjectStr',
       className:styles.tableColumn,
-    }])
-    tableHeader = tableHeader.concat(authList.filter(v => (v.get('authUrl').split('/')[2] != 'view')&&(v.get('authUrl').split('/')[2] != 'add')).map( v => {
+    }]).concat(authList.filter(v => (v.get('authUrl').split('/')[2] != 'view')&&(v.get('authUrl').split('/')[2] != 'add')).map( v => {
       return {
         title: PermissionDic[v.get('authUrl').split('/')[2]],
         dataIndex: v.get('authUrl').split('/')[2],
@@ -111,14 +115,17 @@ const PhasePage = React.createClass({
         ...(v.toJS())
       }
     }):List()
+    //构造表格数据结构
     return {
       tableHeader:tableHeader.toJS(),
       tableBody:tableBody.toJS(),
     }
   },
+  //搜索框输入的change事件
   handleSearchTableData(value){
     this.props.getWorkspaceData('phase',this.props.workspace.get('data').get('nowPage'),this.props.workspace.get('data').get('pageShow'),value)
   },
+  //显示编辑学段对话框
   handleShowEditPhaseModal(key){
     const {setFieldsValue} = this.props.form
     const currentRow = this.props.workspace.get('data').get('result').get(key)
@@ -142,6 +149,7 @@ const PhasePage = React.createClass({
       'remark':currentRow.get('remark'),
     })
   },
+  //控制显示添加学段对话框
   handleShowAddPhaseModal(){
     this._phaseList.length==0?fetch(config.api.phase.phaseList.get,{
       method:'get',
@@ -158,6 +166,7 @@ const PhasePage = React.createClass({
       showAddPhaseModal:true
     })
   },
+  //添加学段
   handleAddPhase(){
     const {getFieldValue,getFieldError} = this.props.form
     if(getFieldValue('phaseId') && getFieldValue('phaseName') && !(getFieldError('phaseId') || getFieldError('phaseName'))){
@@ -171,6 +180,7 @@ const PhasePage = React.createClass({
       })
     }
   },
+  //关闭对话框
   handleAddPhaseModalCancel(type){
     switch (type) {
       case 'edit':
@@ -186,6 +196,7 @@ const PhasePage = React.createClass({
 
     }
   },
+  //编辑学段
   handleEditPhase(){
     const {getFieldValue,getFieldError} = this.props.form
     if(getFieldValue('phaseId') && getFieldValue('phaseName') && !(getFieldError('phaseId') || getFieldError('phaseName'))){
@@ -199,6 +210,7 @@ const PhasePage = React.createClass({
       })
     }
   },
+  //删除学段
   handleDeletePhase(){
     const {getFieldValue} = this.props.form
     this.props.deletePhase({
@@ -210,9 +222,11 @@ const PhasePage = React.createClass({
       showAddPhaseModal:false
     })
   },
+  //添加学段对应的学科
   handleShowAddSubjectModal(key){
     const {setFieldsValue} = this.props.form
     const currentRow = this.props.workspace.get('data').get('result').get(key)
+    //获取学段对应的学科列表
     fetch(config.api.phase.subjectList.get(currentRow.get('phase_code')),{
       method:'get',
       headers:{
@@ -230,12 +244,14 @@ const PhasePage = React.createClass({
       'phase_code':currentRow.get('phase_code')
     })
   },
+  //选择某一个学段
   handleSelectSubject(value){
     this._phaseSubjectList = value
     this.setState({
       phaseSubjectList:value
     })
   },
+  //添加一个学科
   handleAddSubject(){
     const {getFieldValue} = this.props.form
     this.props.addPhaseSubject({
@@ -243,6 +259,7 @@ const PhasePage = React.createClass({
       subjectIds:this.state.phaseSubjectList,
     })
   },
+  //渲染对话框
   renderAddPhaseModal(type){
     const { getFieldDecorator } = this.props.form;
     const phaseList = this._phaseList
@@ -338,13 +355,7 @@ const PhasePage = React.createClass({
         title='添加学段学科'
        visible={true} onOk={this.handleAddSubject} onCancel={()=>{this.setState({showAddSubjectModal:false})}}>
         <div className={styles.phaseSubject}>
-          <Select
-          multiple
-          style={{ width: '100%' }}
-          placeholder="Please select"
-          onChange={this.handleSelectSubject}
-          value={this.state.phaseSubjectList}
-          >
+          <Select multiple style={{ width: '100%' }} onChange={this.handleSelectSubject} value={this.state.phaseSubjectList}>
             {
               this._subjectList.map((v,key )=> (
                 <Option key={key} title={v.text} value={v.id}>{v.text}</Option>
@@ -395,11 +406,11 @@ function mapStateToProps(state){
 }
 function mapDispatchToProps(dispatch){
   return {
-    getWorkspaceData:bindActionCreators(getWorkspaceData,dispatch),
-    addPhase:bindActionCreators(addPhase,dispatch),
-    editPhase:bindActionCreators(editPhase,dispatch),
-    deletePhase:bindActionCreators(deletePhase,dispatch),
-    addPhaseSubject:bindActionCreators(addPhaseSubject,dispatch),
+    getWorkspaceData:bindActionCreators(getWorkspaceData,dispatch),//获取表格数据
+    addPhase:bindActionCreators(addPhase,dispatch),//添加学段
+    editPhase:bindActionCreators(editPhase,dispatch),//编辑学段
+    deletePhase:bindActionCreators(deletePhase,dispatch),//删除学段
+    addPhaseSubject:bindActionCreators(addPhaseSubject,dispatch),//添加学科
   }
 }
 export default connect(mapStateToProps,mapDispatchToProps)(Form.create()(PhasePage))

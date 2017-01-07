@@ -2,18 +2,7 @@ import {actionNames} from '../utils/action-utils'
 import {fromJS} from 'immutable'
 import config from '../config.js'
 import {notification} from 'antd'
-
-export const CHANGE_CURRENT_PATH = 'CHANGE_CURRENT_PATH'
-
-export function setPath(path){
-  return dispatch => {
-    dispatch({
-      type: CHANGE_CURRENT_PATH,
-      payload:path
-    })
-  }
-}
-
+//获取表格数据
 export const GET_WORKSPACEDATA = actionNames('GET_WORKSPACEDATA')
 
 export function getWorkspaceData(type,currentPage,search,pageShow){
@@ -31,6 +20,7 @@ export function getWorkspaceData(type,currentPage,search,pageShow){
   }
 }
 
+//添加一个新的学段，添加成功后再获取一遍数据
 export function addPhase(data){
   return dispatch => {
     let formData = new FormData()
@@ -65,6 +55,7 @@ export function addPhase(data){
   }
 }
 
+//编辑一个新的学段，添加成功后再获取一遍数据
 export function editPhase(data){
   return dispatch => {
     let formData = new FormData()
@@ -99,7 +90,7 @@ export function editPhase(data){
     })
   }
 }
-
+//删除一个新的学段，添加成功后再获取一遍数据
 export function deletePhase(data){
   return dispatch => {
     let formData = new FormData()
@@ -134,7 +125,7 @@ export function deletePhase(data){
     })
   }
 }
-
+//添加学段对应的学科
 export function addPhaseSubject(data){
   return dispatch => {
     let formData = new FormData()

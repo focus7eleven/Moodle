@@ -58,6 +58,12 @@
 	}
 }
 
+:global(.ant-btn-ghost){
+  &:hover, &:focus {
+  	border-color: #2AAD6C;
+    color:#2AAD6C;
+	}
+}
 :global(.ant-input){
   &:hover, &:active, &:focus {
     border-color: $primary-color;
