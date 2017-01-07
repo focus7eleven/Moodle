@@ -4,7 +4,7 @@ import PermissionDic from '../../../utils/permissionDic'
 import { connect} from 'react-redux'
 import { findMenuInTree,findPath} from '../../../reducer/menu'
 import {fromJS,List,Map} from 'immutable'
-import { getWorkspaceData,addPhase,editPhase,deletePhase } from '../../../actions/workspace'
+import { getWorkspaceData,addPhase,editPhase,deletePhase,addPhaseSubject } from '../../../actions/workspace'
 import {bindActionCreators} from 'redux'
 import _ from 'lodash'
 import config from '../../../config'
@@ -21,7 +21,6 @@ const PhasePage = React.createClass({
   }),
   _phaseList:[],
   _subjectList:[],
-  _phaseSubjectList:[],
   contextTypes: {
     router: React.PropTypes.object
   },
@@ -29,6 +28,7 @@ const PhasePage = React.createClass({
   getInitialState(){
     return {
       searchStr:'',
+      phaseSubjectList:[]
     }
   },
 
@@ -206,7 +206,7 @@ const PhasePage = React.createClass({
   handleShowAddSubjectModal(key){
     const {setFieldsValue} = this.props.form
     const currentRow = this.props.workspace.get('data').get('result').get(key)
-    this._phaseSubjectList.length==0?fetch(config.api.phase.subjectList.get(currentRow.get('phase_code')),{
+    fetch(config.api.phase.subjectList.get(currentRow.get('phase_code')),{
       method:'get',
       headers:{
         'from':'NODEJS',
@@ -215,17 +215,26 @@ const PhasePage = React.createClass({
     }).then(res => res.json()).then(res => {
       this._phaseSubjectList = res
       this.setState({
-        showAddSubjectModal:true
+        showAddSubjectModal:true,
+        phaseSubjectList:res
       })
-    }):this.setState({
-      showAddSubjectModal:true
     })
     setFieldsValue({
       'phase_code':currentRow.get('phase_code')
     })
   },
-  handleSelectSubject(){
-    
+  handleSelectSubject(value){
+    this._phaseSubjectList = value
+    this.setState({
+      phaseSubjectList:value
+    })
+  },
+  handleAddSubject(){
+    const {getFieldValue} = this.props.form
+    this.props.addPhaseSubject({
+      phaseCode:getFieldValue('phase_code'),
+      subjectIds:this.state.phaseSubjectList,
+    })
   },
   renderAddPhaseModal(type){
     const { getFieldDecorator } = this.props.form;
@@ -318,15 +327,16 @@ const PhasePage = React.createClass({
   },
   renderAddSubjectModal(){
     return (
-      <Modal visible={true} onOk={this.handleAddSubject} onCancel={()=>{this.setState({showAddSubjectModal:false})}}>
-        <div>
+      <Modal
+        title='添加学段学科'
+       visible={true} onOk={this.handleAddSubject} onCancel={()=>{this.setState({showAddSubjectModal:false})}}>
+        <div className={styles.phaseSubject}>
           <Select
           multiple
           style={{ width: '100%' }}
           placeholder="Please select"
-          defaultValue={['a10', 'c12']}
           onChange={this.handleSelectSubject}
-          value={this._phaseSubjectList}
+          value={this.state.phaseSubjectList}
           >
             {
               this._subjectList.map((v,key )=> (
@@ -382,6 +392,7 @@ function mapDispatchToProps(dispatch){
     addPhase:bindActionCreators(addPhase,dispatch),
     editPhase:bindActionCreators(editPhase,dispatch),
     deletePhase:bindActionCreators(deletePhase,dispatch),
+    addPhaseSubject:bindActionCreators(addPhaseSubject,dispatch),
   }
 }
 export default connect(mapStateToProps,mapDispatchToProps)(Form.create()(PhasePage))

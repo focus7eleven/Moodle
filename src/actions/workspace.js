@@ -134,3 +134,36 @@ export function deletePhase(data){
     })
   }
 }
+
+export function addPhaseSubject(data){
+  return dispatch => {
+    let formData = new FormData()
+    formData.append('phaseCode',data.phaseCode)
+    formData.append('subjectIds',JSON.stringify(data.subjectIds))
+    return fetch(config.api.phase.subjectList.update,{
+      method:'post',
+      headers:{
+        'from':'nodejs',
+        'token':sessionStorage.getItem('accessToken')
+      },
+      body:formData
+    }).then(res => res.json()).then(res => {
+      if(res.title=='Success'){
+        dispatch({
+          types:GET_WORKSPACEDATA,
+          callAPI:()=>{
+            return fetch(config.api.workspace.baseInfo.baseData.get('phase','','',''),{
+              method:'GET',
+              headers:{
+                'from':'nodejs',
+                'token':sessionStorage.getItem('accessToken'),
+              }
+            }).then(res => res.json()).then(res => {notification.success({message:'添加成功'});return res})
+          }
+        })
+      }else{
+        notification.error({message:'添加失败',description:'网络错误'})
+      }
+    })
+  }
+}

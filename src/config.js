@@ -39,7 +39,8 @@ const config = _.extend({
 				get:`${baseURL}/phase/phaseList`,
 			},
 			subjectList:{
-				get:(phaseCode)=>`${baseURL}/phase/subject?phaseCode=${phaseCode}`
+				get:(phaseCode)=>`${baseURL}/phase/subject?phaseCode=${phaseCode}`,
+				update:`${baseURL}/phase/subject/set`
 			}
 		},
 		subject:{

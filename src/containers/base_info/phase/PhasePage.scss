@@ -50,3 +50,10 @@
     }
   }
 }
+:local(.phaseSubject){
+  width: 100%;
+  height: 150px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
