@@ -1,11 +1,12 @@
+@import './theme.scss';
 
 :global(.ant-pagination-item-active){
-  background-color: #38BA82;
-  border-color: #38BA82;
+  background-color: $primary-color;
+  border-color: $primary-color;
 }
 :global(.ant-pagination-item){
   &:hover{
-    border-color: #38BA82;
+    border-color: $primary-color;
   }
 }
 
@@ -55,4 +56,41 @@
 		background-color: #FC9E0A;
 		border-color: #FC9E0A;
 	}
+}
+
+:global(.ant-input){
+  &:hover, &:active, &:focus {
+    border-color: $primary-color;
+    box-shadow: 0 0 0 2px rgba(56, 186, 130, 0.2);
+  }
+}
+
+:global(.ant-input-search-wrapper:hover .ant-input-search:not([disabled])){
+  &:hover {
+    border: 1px solid $primary-color;
+  }
+}
+
+:global(.ant-checkbox-checked .ant-checkbox-inner){
+  background-color: $primary-color;
+  border-color: $primary-color;
+}
+:global(.ant-checkbox-wrapper){
+  &:hover{
+    border-color: $primary-color;
+  }
+}
+:global(.ant-checkbox-inner){
+  &:hover{
+    border-color: $primary-color;
+  }
+}
+:global(.ant-checkbox-focused){
+  border-color: $primary-color;
+}
+
+:global(.ant-checkbox .ant-checkbox-inner){
+  &:hover{
+    border-color: $primary-color;
+  }
 }

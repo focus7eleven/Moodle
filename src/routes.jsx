@@ -7,7 +7,9 @@ import MainContainer from './containers/MainContainer'
 import Navigation from './containers/navigation/Navigation'
 import NavigationMini from './containers/navigation/NavigationMini'
 import EduOutline from './containers/edu_outline/EduOutline'
+import LoginContainer from './containers/LoginContainer'
 import Filter from './components/Filter'
+import {LoginControlHOC} from './enhancers/AccessControlContainer'
 
 const routes = (
 	<Router history={browserHistory}>
@@ -19,13 +21,13 @@ const routes = (
 				<Route path='edu-outline' component={EduOutline}></Route>
 				<Route path='filter' component={Filter}></Route>
 			</Route>
-			<Route path='index' component={MainContainer}>
+			<Route path='login' component={LoginContainer}></Route>
+			<Route path='index' component={LoginControlHOC(MainContainer)}>
 				<Route path='base-info'>
 					<Route path='schoolDepart' component={Navigation}></Route>
 					<Route path='textbook'>
 						<IndexRoute component={EduOutline}/>
 					</Route>
-
 					<Route path='(:type)' component={BaseInfoContainer}></Route>
 				</Route>
 				{/*<Route path='notice_mgr' component={NoticeManagerContainer} />*/}

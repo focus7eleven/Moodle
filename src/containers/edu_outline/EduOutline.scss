@@ -7,18 +7,37 @@
   min-width: 930px;
   :local(.header){
     display:flex;
-    justify-content: space-between;
+    justify-content: space-around;
+    height: 35px;
+    width: 100%;
+    position: relative;
+    :local(.filterButton){
+      text-align: center;
+      border: 1px solid pink;
+      height: 32px;
+      width: 200px;
+      line-height: 32px;
+      background-color: white;
+    }
     :local(.filter){
-      display:flex;
-      justify-content: space-between;
-      .ant-menu{
-        .ant-menu-submenu-open .ant-menu-submenu-active{
-          background-color: red;
-        }
-      }
+      position: absolute;
+      border: 1px solid pink;
+      height: 70px;
+      top: 31px;
+      z-index: -2;
+      width: 100%;
+      background-color: white;
     }
   }
   :local(.body){
-
+    height: calc( 100% - 35px );
   }
+}
+
+:local(.dropdownOverlay){
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background-color: white;
+  padding: 10px 30px;
 }
