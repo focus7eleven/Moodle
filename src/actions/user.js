@@ -54,7 +54,7 @@ export const logout = () =>{
         'token':sessionStorage.getItem('accessToken')
       }
     }).then(res => res.json()).then(res => {
-      sessionStorage.setItem('accessToken','')
+      sessionStorage.removeItem('accessToken')
       dispatch({
         type:LOGOUT
       })

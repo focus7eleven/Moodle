@@ -30,7 +30,14 @@ const GradePage = React.createClass({
     return {}
   },
   componentWillMount(){
-    this._currentMenu = findMenuInTree(this.props.menu.get('data'),'grade')
+    if(!this.props.menu.get('data').isEmpty()){
+      this._currentMenu = findMenuInTree(this.props.menu.get('data'),'grade')
+    }
+  },
+  componentWillReceiveProps(nextProps){
+    if(!nextProps.menu.get('data').isEmpty()){
+      this._currentMenu = findMenuInTree(nextProps.menu.get('data'),'grade')
+    }
   },
 
   getTableData(){

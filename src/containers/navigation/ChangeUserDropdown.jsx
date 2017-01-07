@@ -1,9 +1,16 @@
 import React from 'react'
 import {Icon,Modal,Select} from 'antd'
 import styles from './ChangeUserDropdown.scss'
+import {logout} from '../../actions/user'
+import {connect} from 'react-redux'
+import {bindActionCreators} from 'redux'
 const Option = Select.Option
 
 const ChangeUserDropDown = React.createClass({
+  contextTypes:{
+    router: React.PropTypes.object,
+  },
+
   getInitialState(){
     return ({
       showRoleChange:false
@@ -42,6 +49,10 @@ const ChangeUserDropDown = React.createClass({
       showRoleChange:false
     })
   },
+  handleLogout(){
+    this.props.logout();
+    this.context.router.push(`/login`);
+  },
   render(){
     return (
       <div className={styles.changeUser} onClick={(e)=>{e.stopPropagation()}}>
@@ -52,7 +63,7 @@ const ChangeUserDropDown = React.createClass({
           <div className={styles.item}><Icon type="user" />个人资料</div>
           <div className={styles.item}><Icon type="lock" />修改密码</div>
           <div className={styles.item} onClick={this.handleChangeRole}><Icon type="retweet" />更换角色</div>
-          <div className={styles.item}><Icon type="logout" />退出</div>
+          <div className={styles.item} onClick={this.handleLogout}><Icon type="logout" />退出</div>
         </div>
         <Modal wrapClassName={styles.modalWrapper} title='角色切换' visible={this.state.showRoleChange}
           onOk={this.handleConfirmRoleChange} onCancel={this.handleCancelRoleChange}
@@ -72,4 +83,14 @@ const ChangeUserDropDown = React.createClass({
   }
 })
 
-export default ChangeUserDropDown
+function mapStateToProps(state) {
+  return {}
+}
+
+function mapDispatchToProps(dispatch){
+  return {
+    logout:bindActionCreators(logout,dispatch),
+  }
+}
+
+export default connect(mapStateToProps,mapDispatchToProps)(ChangeUserDropDown)

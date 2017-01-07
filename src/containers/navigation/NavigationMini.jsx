@@ -7,7 +7,7 @@ import {bindActionCreators} from 'redux'
 import {getMenu} from '../../actions/menu'
 import styles from './NavigationMini.scss'
 import logo from '../../../resource/basic/logo.png'
-import ChangeUserDropDown from '../../components/ChangeUserDropdown'
+import ChangeUserDropDown from './ChangeUserDropdown'
 const SubMenu = Menu.SubMenu;
 const MenuItemGroup = Menu.ItemGroup;
 

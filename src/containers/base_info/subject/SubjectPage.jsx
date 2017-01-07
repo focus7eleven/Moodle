@@ -35,7 +35,7 @@ const SubjectPage = React.createClass({
     }
   },
   componentWillReceiveProps(nextProps){
-    if(this.props.menu.get('data').isEmpty() && !nextProps.menu.get('data').isEmpty()){
+    if(!nextProps.menu.get('data').isEmpty()){
       this._currentMenu = findMenuInTree(nextProps.menu.get('data'),'subject')
     }
   },

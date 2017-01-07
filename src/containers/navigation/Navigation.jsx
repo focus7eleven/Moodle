@@ -6,7 +6,7 @@ import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 import logo from 'images/logo.png'
 import {getMenu} from '../../actions/menu'
-import ChangeUserDropDown from '../../components/ChangeUserDropdown'
+import ChangeUserDropDown from './ChangeUserDropdown'
 import classNames from 'classnames'
 
 const Navigation = React.createClass({
