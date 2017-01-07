@@ -16,7 +16,7 @@ function mapDispatchToProps(dispatch) {
 
 export const LoginControlHOC = (Component) => connect(mapStateToProps, mapDispatchToProps)(React.createClass({
 	render() {
-		const isAuth = this.props.user.get('auth')
+		const isAuth = this.props.user.get('isAuth')
 
 		return isAuth?<Component {...this.props}></Component>:<LoginContainer {...this.props}></LoginContainer>
 	},

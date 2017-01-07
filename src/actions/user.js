@@ -27,14 +27,18 @@ export const login = (user,password)=>{
         },
         body: formData
       }).then(res => res.json()).then(res => {
-        sessionStorage.setItem('accessToken',res.resultData.accessToken)
-        res.title=='Success'?dispatch({
-          type:LOGIN_SUCCESS,
-          isAuth:true
-        }):notification.error({
-          message:'失败',
-          description:'账号与密码不匹配'
-        })
+        if(res.title==='Success'){
+          sessionStorage.setItem('accessToken',res.resultData.accessToken)
+          dispatch({
+            type:LOGIN_SUCCESS,
+            isAuth:true
+          })
+        }else{
+          notification.error({
+            message:'失败',
+            description:'账号与密码不匹配'
+          })
+        }
       })
     })
   }
