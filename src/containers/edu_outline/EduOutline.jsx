@@ -1,5 +1,5 @@
 import React from 'react'
-import {Table, Icon, Menu, Button, Dropdown} from 'antd'
+import {Table, Icon, Button, Dropdown} from 'antd'
 import styles from './EduOutline.scss'
 
 const columns = [{
@@ -48,59 +48,66 @@ const data = [{
   address: 'Sidney No. 1 Lake Park',
 }];
 
-// const menu = (
-//   <div className={styles.dropdownOverlay}>
-//     <span>选项</span>
-//     <span>选项</span>
-//     <span>选项</span>
-//     <span>选项</span>
-//     <span>选项</span>
-//     <span>选项</span>
-//     <span>选项</span>
-//     <span>选项</span>
-//     <span>选项</span>
-//     <span>选项</span>
-//   </div>
-// );
-
-const menu = (
-  <Menu>
-    <Menu.Item key="1">1st menu item</Menu.Item>
-    <Menu.Item key="2">2nd menu item</Menu.Item>
-    <Menu.Item key="3">3d menu item</Menu.Item>
-    <Menu.Item key="4">3d menu item</Menu.Item>
-    <Menu.Item key="5">3d menu item</Menu.Item>
-    <Menu.Item key="6">3d menu item</Menu.Item>
-    <Menu.Item key="7">3d menu item</Menu.Item>
-    <Menu.Item key="8">3d menu item</Menu.Item>
-    <Menu.Item key="9">3d menu item</Menu.Item>
-    <Menu.Item key="19">3d menu item</Menu.Item>
-    <Menu.Item key="29">3d menu item</Menu.Item>
-    <Menu.Item key="39">3d menu item</Menu.Item>
-    <Menu.Item key="49">3d menu item</Menu.Item>
-  </Menu>
-);
-
 const EduOutline = React.createClass({
+  getInitialState(){
+    return {
+      filterIndex:0,
+    }
+  },
+
+  getDefaultProps(){
+    return{
+      filterOptions: [{
+          'name': "所有学科",
+          'options': ["语文","语文","语文","语文","语文","语文","语文","语文","语文","语文","语文","语文","语文","语文","语文"]
+        },{
+          'name': "所有年级",
+          'options': ["一年级","二年级","三年级","四年级","五年级","六年级"]
+        },{
+          'name': "所有学段",
+          'options': ["语文","语文","语文","语文","语文","语文","语文","语文","语文","语文","语文","语文","语文","语文","语文"]
+        },
+      ]
+    }
+  },
   handleFilterFadeIn(evt){
     const ref = evt.target.getAttribute('data-ref');
-    this.refs.filter.style.zIndex = 1;
-    this.refs[ref].style.zIndex = 2;
+    this.setState({filterIndex:parseInt(ref.slice(6))});
+    this.refs.filter.style.zIndex = 2;
+    this.refs[ref].style.zIndex = 3;
+    this.refs[ref].style.border = "1px solid #38BA82";
     this.refs[ref].style.borderBottom = "none";
-    console.log(this.refs.header.offsetWidth);
+    this.refs[ref].style.borderBottomLeftRadius = "0px";
+    this.refs[ref].style.borderBottomRightRadius = "0px";
   },
   handleFilterFadeOut(evt){
     const ref = evt.target.getAttribute('data-ref');
     this.refs.filter.style.zIndex = -2;
-    this.refs[ref].style.borderBottom = "1px solid pink";
+    this.refs[ref].style.zIndex = 1;
+    this.refs[ref].style.border = "1px solid #DDDDDD";
+    this.refs[ref].style.borderBottomLeftRadius = "4px";
+    this.refs[ref].style.borderBottomRightRadius = "4px";
   },
   render(){
+    const {filterOptions} = this.props;
+    const {filterIndex} = this.state;
+
     return (
       <div className={styles.container}>
         <div className={styles.header} ref="header">
-          <div data-ref="filterButton" ref="filterButton" onMouseEnter={this.handleFilterFadeIn} onMouseLeave={this.handleFilterFadeOut} className={styles.filterButton}>新建</div>
-          <div data-ref="filterButton2" ref="filterButton2" onMouseEnter={this.handleFilterFadeIn} onMouseLeave={this.handleFilterFadeOut} className={styles.filterButton}>新建2</div>
+          {
+            filterOptions.map((item,index)=>{
+              return <div key={index} data-ref={"filter"+index} ref={"filter"+index}
+                          onMouseEnter={this.handleFilterFadeIn}
+                          onMouseLeave={this.handleFilterFadeOut}
+                          className={styles.filterButton}>
+                    {item.name}</div>
+            })
+          }
           <div ref="filter" className={styles.filter}>
+            {
+              filterOptions[filterIndex].options.map((item,index)=><span key={index}>{item}</span>)
+            }
           </div>
         </div>
         <div className={styles.body}>
