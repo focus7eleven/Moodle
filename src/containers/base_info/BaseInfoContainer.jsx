@@ -14,9 +14,10 @@ const BaseInfoContainer = React.createClass({
     }
   },
   componentWillReceiveProps(nextProps){
-    if( !nextProps.workspace.get('loading') && (nextProps.workspace.get('data').isEmpty() || (this.props.location.pathname != nextProps.location.pathname))){
+    if(!this.props.workspace.get('loading') && (nextProps.workspace.get('data').isEmpty() || (this.props.location.pathname != nextProps.location.pathname))){
       this.props.getWorkspaceData(nextProps.location.pathname.split('/').slice(-1)[0],'','','')
     }
+
   },
   render(){
     return this.props.workspace.get('loading')?<div className={styles.loading}><Spin size="large" /></div>:this.props.children

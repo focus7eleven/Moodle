@@ -26,7 +26,8 @@ const routes = (
 			</Route>
 			<Route path='login' component={LoginContainer}></Route>
 			<Route path='index' component={LoginControlHOC(MainContainer)}>
-				<Route path='base-info'>
+				<Route path='base-info' component={BaseInfoContainer}>
+					<IndexRedirect to='phase' component={PhasePage} />
 					<Route path='phase' component={PhasePage}></Route>
 					<Route path='grade' component={GradePage}></Route>
 					<Route path='subject' component={SubjectPage}></Route>

@@ -36,7 +36,14 @@ const PhasePage = React.createClass({
     return {}
   },
   componentWillMount(){
-    this._currentMenu = findMenuInTree(this.props.menu.get('data'),'phase')
+    if(!this.props.menu.get('data').isEmpty()){
+      this._currentMenu = findMenuInTree(this.props.menu.get('data'),'phase')
+    }
+  },
+  componentWillReceiveProps(nextProps){
+    if(!nextProps.menu.get('data').isEmpty()){
+      this._currentMenu = findMenuInTree(nextProps.menu.get('data'),'phase')
+    }
   },
   componentDidMount(){
     fetch(config.api.subject.subjectList.get,{

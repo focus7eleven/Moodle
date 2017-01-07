@@ -18,7 +18,7 @@ const LoginContainer = React.createClass({
 
   componentWillReceiveProps(nextProps) {
 		if (nextProps.isAuth && !this.props.isAuth) {
-			this.context.router.push(`/index`);
+			this.context.router.push(this.props.location.pathname);
 		}
 	},
 
