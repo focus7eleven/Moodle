@@ -9,7 +9,7 @@ import {fromJS} from 'immutable'
 
 const initialState = fromJS({
   data:[],
-  loading:false,
+  loading:true,
 })
 
 export default (state = initialState,action)=>{

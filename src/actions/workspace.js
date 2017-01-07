@@ -31,7 +31,6 @@ export function getWorkspaceData(type,currentPage,search,pageShow){
   }
 }
 
-export const ADD_PHASE = 'ADD_PHASE'
 export function addPhase(data){
   return dispatch => {
     let formData = new FormData()
@@ -61,6 +60,76 @@ export function addPhase(data){
         })
       }else{
         notification.error({message:'添加失败',description:'网络错误'})
+      }
+    })
+  }
+}
+
+export function editPhase(data){
+  return dispatch => {
+    let formData = new FormData()
+    formData.append('phase_code',data.phaseCode)
+    formData.append('phase_name',data.phaseName)
+    formData.append('remark',data.remark)
+    formData.append('action','edit')
+    return fetch(config.api.phase.update,{
+      method:'post',
+      headers:{
+        'from':'nodejs',
+        'token':sessionStorage.getItem('accessToken')
+      },
+      body:formData,
+    }).then(res => res.json()).then(res => {
+      if(res.title == 'Success'){
+        dispatch({
+          types:GET_WORKSPACEDATA,
+          callAPI:()=>{
+            return fetch(config.api.workspace.baseInfo.baseData.get('phase','','',''),{
+              method:'GET',
+              headers:{
+                'from':'nodejs',
+                'token':sessionStorage.getItem('accessToken'),
+              }
+            }).then(res => res.json())
+          }
+        })
+      }else{
+        notification.error({message:'修改失败',description:'网络错误'})
+      }
+    })
+  }
+}
+
+export function deletePhase(data){
+  return dispatch => {
+    let formData = new FormData()
+    formData.append('phase_code',data.phaseCode)
+    formData.append('phase_name',data.phaseName)
+    formData.append('remark',data.remark)
+    formData.append('action','delete')
+    return fetch(config.api.phase.update,{
+      method:'post',
+      headers:{
+        'from':'nodejs',
+        'token':sessionStorage.getItem('accessToken')
+      },
+      body:formData,
+    }).then(res => res.json()).then(res => {
+      if(res.title == 'Success'){
+        dispatch({
+          types:GET_WORKSPACEDATA,
+          callAPI:()=>{
+            return fetch(config.api.workspace.baseInfo.baseData.get('phase','','',''),{
+              method:'GET',
+              headers:{
+                'from':'nodejs',
+                'token':sessionStorage.getItem('accessToken'),
+              }
+            }).then(res => res.json()).then(res => {notification.success({message:'删除成功'});return res})
+          }
+        })
+      }else{
+        notification.error({message:'删除失败',description:'网络错误'})
       }
     })
   }
