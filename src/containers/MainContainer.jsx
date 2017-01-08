@@ -55,7 +55,7 @@ const MainContainer = React.createClass({
                       this.state.currentPath.map((item)=><Breadcrumb.Item key={item}>{item}</Breadcrumb.Item>)
                     }
                   </Breadcrumb>
-                  <div className={styles.schooInfo}>
+                  <div className={styles.schoolInfo}>
                     <span className={styles.school}><img src={schoolLogo}/>{schoolInfo.schoolName}</span>
                     <div className={styles.teacherNumContainer}>
                       <img src={teacherLogo} />

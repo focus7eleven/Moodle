@@ -48,6 +48,15 @@
         padding: 30px;
         :local(.loginForm){
           width: 100%;
+          :local(.formInput){
+            i{
+              font-size: 16px;
+            }
+            input{
+              height: 40px;
+              font-size: 16px;
+            }
+          }
           >div:nth-child(2){
             margin-bottom: 50px;
           }

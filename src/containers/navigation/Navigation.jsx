@@ -110,7 +110,7 @@ const Navigation = React.createClass({
             {
               this.props.menu.get('data').map( item => (
                 <Menu.Item key={item.get('resourceUrl')} >
-                  <div onMouseEnter={this.handleDropDownSubmenu.bind(this,item.get('resourceUrl'))}>
+                  <div className={styles.firstMenu} onMouseEnter={this.handleDropDownSubmenu.bind(this,item.get('resourceUrl'))}>
                     {item.get('resourceName')}
                   </div>
                 </Menu.Item>

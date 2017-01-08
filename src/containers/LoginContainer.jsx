@@ -45,14 +45,14 @@ const LoginContainer = React.createClass({
             </div>
             <div className={styles.formArea}>
               <Form onSubmit={this.handleSubmit} className={styles.loginForm}>
-                <FormItem>
+                <FormItem className={styles.formInput}>
                   {getFieldDecorator('username', {
                     rules: [{ required: true, message: '请输入用户名！' }],
                   })(
                     <Input addonBefore={<Icon type="user" />} placeholder="工号" />
                   )}
                 </FormItem>
-                <FormItem>
+                <FormItem className={styles.formInput}>
                   {getFieldDecorator('password', {
                     rules: [{ required: true, message: '请输入密码！' }],
                   })(

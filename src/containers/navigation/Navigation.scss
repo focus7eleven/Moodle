@@ -23,6 +23,10 @@
       background-color: rgba(0,0,0,0);
       color:white;
       border-bottom: none;
+      :local(.firstMenu){
+        font-size: 14px;
+        font-weight: bold;
+      }
       :global(.ant-menu-item){
         &:hover{
           background-color: #2AAD6C;
@@ -50,6 +54,7 @@
         display: block;
         margin-left: 10px;
         cursor: pointer;
+        font-size: 14px;
       }
       >img{
         width: 25px;
@@ -139,7 +144,7 @@
         }
         :local(.secondMenuHori){
           display:flex;
-          flex-direction: row;
+          flex-direction: column;
 
           :local(.secondMenuTitleHori){
             display:flex;
@@ -149,10 +154,12 @@
             flex-shrink: 0;
             user-select: none;
             cursor: default;
-            width: 90px;
-            justify-content: flex-end;
+            // width: 90px;
+            width: 100%;
+            // justify-content: flex-end;
+            justify-content: flex-start;
             margin-right: 10px;
-            margin-top: 5px;
+            margin-top: 3px;
             >span{
               margin-right: 5px;
               color:rgb(80,80,80);
