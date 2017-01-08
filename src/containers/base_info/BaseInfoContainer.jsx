@@ -20,7 +20,7 @@ const BaseInfoContainer = React.createClass({
 
   },
   render(){
-    return this.props.workspace.get('loading')?<div className={styles.loading}><Spin size="large" /></div>:this.props.children
+    return this.props.workspace.get('loading') || this.props.menu.get('data').isEmpty()?<div className={styles.loading}><Spin size="large" /></div>:this.props.children
   }
 })
 function mapStateToProps(state){

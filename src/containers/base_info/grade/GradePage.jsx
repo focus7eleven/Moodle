@@ -1,22 +1,26 @@
 import React from 'react'
-import {Icon,Input,Table,Button,Modal,Form,Spin} from 'antd'
+import {Icon,Input,Table,Button,Modal,Form,Spin,Select} from 'antd'
 import PermissionDic from '../../../utils/permissionDic'
-import {getWorkspaceData} from '../../../actions/workspace'
+import {getWorkspaceData,addGrade,editGrade} from '../../../actions/workspace'
 import {fromJS,Map,List} from 'immutable'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 import { findMenuInTree,findPath} from '../../../reducer/menu'
 import styles from './GradePage.scss'
 import _ from 'lodash'
+import config from '../../../config'
 
 const FormItem = Form.Item
 const Search = Input.Search
+const Option = Select.Option
+const confirm = Modal.confirm
 
 
 const GradePage = React.createClass({
   _currentMenu:Map({
     authList:List()
   }),
+  _phaseList:List(),
   contextTypes: {
     router: React.PropTypes.object
   },
@@ -38,6 +42,17 @@ const GradePage = React.createClass({
     if(!nextProps.menu.get('data').isEmpty()){
       this._currentMenu = findMenuInTree(nextProps.menu.get('data'),'grade')
     }
+  },
+  componentDidMount(){
+    fetch(config.api.phase.phaseList.get,{
+      method:'get',
+      headers:{
+        'from':'nodejs',
+        'token':sessionStorage.getItem('accessToken')
+      }
+    }).then(res => res.json()).then(res => {
+      this._phaseList = fromJS(res)
+    })
   },
 
   getTableData(){
@@ -68,7 +83,10 @@ const GradePage = React.createClass({
         className:styles.tableColumn,
         render:(text,record) => {
           return (
-            <Button type="primary" style={{backgroundColor:'#30D18E',borderColor:'#30D18E'}} onClick={this.handleShowEditPhaseModal.bind(this,record.key)}>{PermissionDic[v.get('authUrl').split('/')[2]]}</Button>
+            <div>
+              <Button type="primary" style={{backgroundColor:'#30D18E',borderColor:'#30D18E'}} onClick={this.handleShowEditGradeModal.bind(this,record.key)}>{PermissionDic[v.get('authUrl').split('/')[2]]}</Button>
+              <Button type="primary" style={{backgroundColor:'#FD9B09',borderColor:'#FD9B09',marginLeft:'10px'}} onClick={this.handleShowDeleteModal.bind(this,record.key)}>删除</Button>
+            </div>
           )
         }
       }
@@ -84,9 +102,131 @@ const GradePage = React.createClass({
       tableBody:tableBody.toJS(),
     }
   },
-  handleShowEditPhaseModal(type){
-
+  handleShowDeleteModal(key){
+    const that = this
+    const currentRow = this.props.workspace.get('data').get('result').get(key)
+    confirm({
+      title: '你先删除这条记录吗？',
+      content: '删除后不可恢复',
+      onOk() {
+        that.props.editGrade({
+          gradeId:currentRow.get('gradeId'),
+          action:'delete'
+        })
+      },
+      onCancel() {},
+    });
   },
+  handleCloseAddGradeModal(type){
+    switch (type) {
+      case 'create':
+        this.setState({
+          showAddGradeModal:false
+        })
+        break;
+      case 'edit':
+        this.setState({
+          showEditGradeModal:false
+        })
+      default:
+
+    }
+  },
+  handleShowEditGradeModal(key){
+    console.log(key)
+    const {setFieldsValue} = this.props.form
+    this._currentRow = this.props.workspace.get('data').get('result').get(key)
+    this.setState({
+      showEditGradeModal:true
+    })
+    setFieldsValue({
+      gradeName:this._currentRow.get('gradeName'),
+      gradeNickName:this._currentRow.get('gradeNickName'),
+      phaseName:this._currentRow.get('phaseCode'),
+    })
+  },
+  handleAddGrade(){
+    const {getFieldValue,getFieldError} = this.props.form
+    let errors = [getFieldError('gradeName'),getFieldError('gradeNickName'),getFieldError('phaseName')]
+    if(!errors.reduce((pre,cur)=>pre||cur,false)){
+      this.props.addGrade({
+        gradeName:getFieldValue('gradeName'),
+        gradeNickName:getFieldValue('gradeNickName'),
+        phaseCode:getFieldValue('phaseName')
+      })
+    }
+  },
+  handleEditGrade(){
+    const {getFieldValue,getFieldError} = this.props.form
+    let errors = [getFieldError('gradeName'),getFieldError('gradeNickName'),getFieldError('phaseName')]
+    if(!errors.reduce((pre,cur)=>pre||cur,false)){
+      this.props.editGrade({
+        gradeName:getFieldValue('gradeName'),
+        gradeNickName:getFieldValue('gradeNickName'),
+        phaseCode:getFieldValue('phaseName'),
+        action:'edit',
+        gradeId:this._currentRow.get('gradeId')
+      })
+    }
+  },
+  renderAddGradeModal(type){
+    const {getFieldDecorator,getFieldValue} = this.props.form
+    return (
+      <Modal title='添加年级' visible={true} onCancel={this.handleCloseAddGradeModal.bind(this,type)}
+      footer={[
+        <Button key='cancel' type='ghost' onClick={this.handleCloseAddGradeModal.bind(this,type)}>取消</Button>,
+        <Button key='ok' type='primary'
+        disabled={!getFieldValue('gradeName')&&!getFieldValue('phaseName')}
+        onClick={type=='edit'?this.handleEditGrade:this.handleAddGrade}>确认</Button>
+      ]}
+      >
+        <div>
+          <Form>
+            <FormItem
+            label='年级名称'
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 12 }}
+            key='gradeName'>
+            {getFieldDecorator('gradeName', {
+              rules: [{ required: true, message: '输入年级名称' },{max:10,message:'输入不超过10个字'}],
+            })(
+              <Input placeholder="输入不超过10个字"/>
+            )}
+            </FormItem>
+            <FormItem
+            label='学段'
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 12 }}
+            key='phaseName'>
+            {getFieldDecorator('phaseName', {
+              rules: [{ required: true, message: '选择学段' }],
+            })(
+              <Select placeholder='选择学段' style={{ width: 244 }} onChange={this.handleSelectPhase}>
+                {
+                  this._phaseList.map(v => (
+                    <Option key={v.get('phase_code')} value={v.get('phase_code')} title={v.get('phase_name')}>{v.get('phase_name')}</Option>
+                  ))
+                }
+              </Select>
+            )}
+            </FormItem>
+            <FormItem
+            label='年级别称'
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 12 }}
+            key='gradeNickName'>
+            {getFieldDecorator('gradeNickName', {
+              rules: [{ max:10, message: '输入不超过10个字' }],
+            })(
+              <Input placeholder='输入不超过10个字'/>
+            )}
+            </FormItem>
+          </Form>
+        </div>
+      </Modal>
+    )
+  },
+
   render(){
     const tableData = this.getTableData()
 
@@ -94,7 +234,7 @@ const GradePage = React.createClass({
     return (
       <div className={styles.container}>
         <div className={styles.header}>
-          <Button type="primary" style={{backgroundColor:'#FD9B09',borderColor:'#FD9B09'}} onClick={this.handleShowAddPhaseModal}>新建</Button><Search placeholder="input search text" value={this.state.searchStr} onChange={(e)=>{this.setState({searchStr:e.target.value})}} onSearch={this.handleSearchTableData} />
+          <Button type="primary" style={{backgroundColor:'#FD9B09',borderColor:'#FD9B09'}} onClick={()=>{this.setState({showAddGradeModal:true})}}>新建</Button><Search placeholder="input search text" value={this.state.searchStr} onChange={(e)=>{this.setState({searchStr:e.target.value})}} onSearch={this.handleSearchTableData} />
         </div>
         <div className={styles.body}>
           <div className={styles.wrapper}>
@@ -113,6 +253,8 @@ const GradePage = React.createClass({
             <div className={styles.tableMsg}>当前条目{workspace.get('data').get('start')}-{parseInt(workspace.get('data').get('start'))+parseInt(workspace.get('data').get('pageShow'))}/总条目{workspace.get('data').get('totalCount')}</div>
           </div>
         </div>
+        {this.state.showAddGradeModal?this.renderAddGradeModal('create'):null}
+        {this.state.showEditGradeModal?this.renderAddGradeModal('edit'):null}
       </div>
     )
   }
@@ -121,12 +263,14 @@ const GradePage = React.createClass({
 function mapStateToProps(state){
   return{
     menu:state.get('menu'),
-    workspace:state.get('workspace')
+    workspace:state.get('workspace'),
   }
 }
 function mapDispatchToProps(dispatch){
   return {
     getWorkspaceData:bindActionCreators(getWorkspaceData,dispatch),
+    addGrade:bindActionCreators(addGrade,dispatch),
+    editGrade:bindActionCreators(editGrade,dispatch)
   }
 }
 
