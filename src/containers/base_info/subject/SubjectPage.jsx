@@ -17,12 +17,17 @@ const SubjectPage = React.createClass({
   _currentMenu:Map({
     authList:List()
   }),
+
+  _subjectList: [],
+
   contextTypes: {
     router: React.PropTypes.object
   },
+
   getInitialState(){
     return {
       searchStr:'',
+      showAddSubjectModal: false,
     }
   },
 
@@ -43,7 +48,6 @@ const SubjectPage = React.createClass({
     let tableHeader = List()
     let tableBody = List()
     let authList = this._currentMenu.get('authList')
-    console.log("authList: ",authList.toJS());
     tableHeader = fromJS([{
       title: '学科名称',
       dataIndex: 'subject_name',
@@ -85,8 +89,104 @@ const SubjectPage = React.createClass({
     }
   },
   handleShowEditPhaseModal(type){
+    const {getFieldValue,getFieldError} = this.props.form
+    if(getFieldValue('subjectName') && !(getFieldError('subjectName') || getFieldError('subjectShortName') || getFieldError('remark'))){
+      // this.props.addPhase({
+      //   phaseCode:getFieldValue('phaseId'),
+      //   phaseName:getFieldValue('phaseName'),
+      //   remark:getFieldValue('remark')
+      // })
+      this.setState({
+        showAddPhaseModal:false
+      })
+    }
+  },
+
+  handleShowAddSubjectModal(){
+    this.setState({showAddSubjectModal:true})
+  },
+
+  handleHideAddSubjectModal(){
+    this.setState({showAddSubjectModal:false})
+  },
+
+  handlePostSubject(){
 
   },
+
+  renderAddSubjectModal(){
+    const { getFieldDecorator } = this.props.form;
+    const subjectList = this._subjectList
+    return (
+      <Modal title="添加学科" visible={this.state.showAddSubjectModal}
+          onOk={this.handlePostSubject} onCancel={this.handleHideAddSubjectModal}
+        >
+        <div>
+          <Form>
+            {
+              <FormItem
+                label='学科名称'
+                labelCol={{ span: 5 }}
+                wrapperCol={{ span: 12 }}
+                key='subjectName'
+              >
+              {
+                getFieldDecorator('subjectName', {
+                  rules: [{ required: true, message: '请填写学科名称' },{
+                    validator(rule, value, callback, source, options) {
+                      var errors = [];
+                      if(value.length > 15){
+                        errors.push(
+                          new Error('学科名称应不超过15个字')
+                        )
+                      }
+                      callback(errors);
+                    }
+                  }],
+                })(<Input placeholder='输入不超过15个字'/>)
+              }
+              </FormItem>
+            }
+            <FormItem
+              label="学科短称"
+              labelCol={{ span: 5 }}
+              wrapperCol={{ span: 12 }}
+              key='subjectShortName'
+            >
+            {
+              getFieldDecorator('subjectShortName', {
+                rules: [{
+                  validator(rule, value, callback, source, options) {
+                    var errors = [];
+                    if(value.length > 5){
+                      errors.push(
+                        new Error('学科短称应不超过5个字')
+                      )
+                    }
+                    callback(errors);
+                  }
+                }],
+              })(<Input placeholder='输入不超过5个字'/>)
+            }
+            </FormItem>
+            <FormItem
+              label="备注"
+              labelCol={{ span: 5 }}
+              wrapperCol={{ span: 12 }}
+              key='remark'
+            >
+            {
+              getFieldDecorator('remark', {
+                rules: [{max:40, message: '输入不超过40个字' }],
+              })(<Input type="textarea" placeholder='输入不超过40个字' rows={3}/>)
+            }
+            </FormItem>
+          </Form>
+        </div>
+      </Modal>
+    )
+  },
+
   render(){
     const tableData = this.getTableData()
     const {workspace} = this.props
@@ -95,11 +195,11 @@ const SubjectPage = React.createClass({
         <div className={styles.header}>
           {
             this._currentMenu.get('authList').find((v)=>v.get('authName')=='增加') ?
-            <Button type="primary" style={{backgroundColor:'#FD9B09',borderColor:'#FD9B09'}} onClick={this.handleShowAddPhaseModal}>
+            <Button type="primary" style={{backgroundColor:'#FD9B09',borderColor:'#FD9B09'}} onClick={this.handleShowAddSubjectModal}>
               新建
             </Button>:null
           }
-          <Search classNameplaceholder="请输入学科名称" value={this.state.searchStr} onChange={(e)=>{this.setState({searchStr:e.target.value})}} onSearch={this.handleSearchTableData} />
+          <Search placeholder="请输入学科名称" value={this.state.searchStr} onChange={(e)=>{this.setState({searchStr:e.target.value})}} onSearch={this.handleSearchTableData} />
         </div>
         <div className={styles.body}>
           <div className={styles.wrapper}>
@@ -118,6 +218,7 @@ const SubjectPage = React.createClass({
             <div className={styles.tableMsg}>当前条目{workspace.get('data').get('start')}-{parseInt(workspace.get('data').get('start'))+parseInt(workspace.get('data').get('pageShow'))}/总条目{workspace.get('data').get('totalCount')}</div>
           </div>
         </div>
+        {this.renderAddSubjectModal()}
       </div>
     )
   }

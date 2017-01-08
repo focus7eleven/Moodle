@@ -19,9 +19,6 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 10px;
-    :global(.ant-input-search-wrapper){
-      width: 200px;
-    }
     :local(.searchInput){
       width: 300px;
     }

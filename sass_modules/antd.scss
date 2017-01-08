@@ -100,3 +100,7 @@
     border-color: $primary-color;
   }
 }
+
+:global(.ant-input-search-wrapper){
+  width: 230px;
+}
