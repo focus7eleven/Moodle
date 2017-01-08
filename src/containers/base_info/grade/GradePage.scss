@@ -12,6 +12,9 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 10px;
+    :global(.ant-input-search-wrapper){
+      width: 200px;
+    }
     :local(.searchInput){
       width: 300px;
     }
@@ -32,6 +35,10 @@
       }
       :local(.tableColumn){
         text-align: center;
+      }
+      :local(.editColumn){
+        text-align: center;
+        width: 200px
       }
       :local(.tableMsg){
         position: absolute;

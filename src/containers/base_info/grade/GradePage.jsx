@@ -80,7 +80,7 @@ const GradePage = React.createClass({
         title: PermissionDic[v.get('authUrl').split('/')[2]],
         dataIndex: v.get('authUrl').split('/')[2],
         key: v.get('authUrl').split('/')[2],
-        className:styles.tableColumn,
+        className:styles.editColumn,
         render:(text,record) => {
           return (
             <div>
@@ -234,7 +234,7 @@ const GradePage = React.createClass({
     return (
       <div className={styles.container}>
         <div className={styles.header}>
-          <Button type="primary" style={{backgroundColor:'#FD9B09',borderColor:'#FD9B09'}} onClick={()=>{this.setState({showAddGradeModal:true})}}>新建</Button><Search placeholder="input search text" value={this.state.searchStr} onChange={(e)=>{this.setState({searchStr:e.target.value})}} onSearch={this.handleSearchTableData} />
+          {this._currentMenu.get('authList').some(v => v.get('authUrl')=='/grade/add')?<Button type="primary" style={{backgroundColor:'#FD9B09',borderColor:'#FD9B09'}} onClick={()=>{this.setState({showAddGradeModal:true})}}>新建</Button>:<div> </div>}<Search placeholder="请输入名称" value={this.state.searchStr} onChange={(e)=>{this.setState({searchStr:e.target.value})}} onSearch={this.handleSearchTableData} />
         </div>
         <div className={styles.body}>
           <div className={styles.wrapper}>

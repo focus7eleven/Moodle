@@ -19,6 +19,9 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 10px;
+    :global(.ant-input-search-wrapper){
+      width: 200px;
+    }
     :local(.searchInput){
       width: 300px;
     }
@@ -40,8 +43,20 @@
       :local(.tableColumn){
         text-align: center;
       }
-      :local(.actionColumn){
+      :local(.listColumn){
         padding:16px 5px;
+        width: 200px;
+        text-align: center;
+      }
+      :local(.editColumn){
+        padding:16px 5px;
+        width: 110px;
+        text-align: center;
+        :local(.editAction){
+          display: flex;
+          padding: 0 10px;
+          justify-content: space-around;
+        }
       }
       :local(.tableMsg){
         position: absolute;

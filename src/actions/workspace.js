@@ -2,6 +2,10 @@ import {actionNames} from '../utils/action-utils'
 import {fromJS} from 'immutable'
 import config from '../config.js'
 import {notification} from 'antd'
+notification.config({
+  top: window.screen.availHeight-200,
+  duration: 3,
+});
 //获取表格数据
 export const GET_WORKSPACEDATA = actionNames('GET_WORKSPACEDATA')
 
@@ -45,7 +49,7 @@ export function addPhase(data){
                 'from':'nodejs',
                 'token':sessionStorage.getItem('accessToken'),
               }
-            }).then(res => res.json())
+            }).then(res => {notification.success({message:'添加成功'});return res.json()})
           }
         })
       }else{
@@ -81,7 +85,7 @@ export function editPhase(data){
                 'from':'nodejs',
                 'token':sessionStorage.getItem('accessToken'),
               }
-            }).then(res => res.json())
+            }).then(res => {notification.success({message:'编辑成功'});res.json()})
           }
         })
       }else{
