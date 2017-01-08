@@ -88,22 +88,26 @@ const PhasePage = React.createClass({
       className:styles.tableColumn,
     }])
     if(authList.some(v => v.get('authUrl')=='/subject/list')){
-      tableHeader.push({
+      tableHeader = tableHeader.push({
         title: PermissionDic['list'],
         dataIndex: 'list',
         key: 'list',
-        className:styles.tableColumn,
+        className:styles.listColumn,
         render:(text,record) => <Button type="primary" style={{backgroundColor:'#30D18E',borderColor:'#30D18E'}} onClick={this.handleShowAddSubjectModal.bind(this,record.key)}>{PermissionDic['list']}</Button>
       })
     }
-    console.log("-->:",authList.toJS())
     if(authList.some(v => v.get('authUrl')=='/phase/edit')){
-      tableHeader.push({
+      tableHeader = tableHeader.push({
         title: PermissionDic['edit'],
         dataIndex: 'edit',
         key: 'edit',
-        className:styles.tableColumn,
-        render:(text,record) => <Button type="primary" style={{backgroundColor:'#30D18E',borderColor:'#30D18E'}} onClick={this.handleShowAddSubjectModal.bind(this,record.key)}>{PermissionDic['edit']}</Button>
+        className:styles.editColumn,
+        render:(text,record) => (
+          <div className={styles.editAction}>
+            <a onClick={this.handleShowEditPhaseModal.bind(this,record.key)} style={{color:'#30D18E'}}>编辑<Icon type="edit" /></a>
+            <a onClick={this.handleShowDeleteModal.bind(this,record.key)} style={{color:'#F69709'}}>删除<Icon type="delete" /></a>
+          </div>
+        )
       })
     }
     tableBody = !this.props.workspace.get('data').isEmpty()?this.props.workspace.get('data').get('result').map( (v,key) => {
@@ -117,6 +121,20 @@ const PhasePage = React.createClass({
       tableHeader:tableHeader.toJS(),
       tableBody:tableBody.toJS(),
     }
+  },
+  handleShowDeleteModal(key){
+    const that = this
+    const currentRow = this.props.workspace.get('data').get('result').get(key)
+    Modal.confirm({
+    title: '你要删除该记录吗',
+    content: '删除不可恢复',
+    onOk() {
+      that.props.deletePhase({
+        phaseCode:currentRow.get('phase_code'),
+      })
+    },
+    onCancel() {},
+  });
   },
   //搜索框输入的change事件
   handleSearchTableData(value){
@@ -207,18 +225,6 @@ const PhasePage = React.createClass({
       })
     }
   },
-  //删除学段
-  handleDeletePhase(){
-    const {getFieldValue} = this.props.form
-    this.props.deletePhase({
-      phaseCode:getFieldValue('phaseId'),
-      phaseName:getFieldValue('phaseName'),
-      remark:getFieldValue('remark')
-    })
-    this.setState({
-      showAddPhaseModal:false
-    })
-  },
   //添加学段对应的学科
   handleShowAddSubjectModal(key){
     const {setFieldsValue} = this.props.form
@@ -266,7 +272,6 @@ const PhasePage = React.createClass({
           onOk={this.handleAddPhase} onCancel={this.handleAddPhaseModalCancel.bind(this,type)}
           footer={[
             <div key='footer'>
-              {type=='edit'?<Button key='delete' type='primary' style={{backgroundColor:'#FD9B09',borderColor:'#FD9B09'}} onClick={this.handleDeletePhase}>删除</Button>:null}
               <Button key='cancel' type='ghost' onClick={this.handleAddPhaseModalCancel.bind(this,type)}>取消</Button>
               <Button key='ok' type='primary' onClick={type=='edit'?this.handleEditPhase:this.handleAddPhase}>确认</Button>
             </div>
@@ -295,13 +300,13 @@ const PhasePage = React.createClass({
                       }
                       if(isNaN(value) || value.length != 2){
                         errors.push(
-                          new Error('学段号必须是2位数字')
+                          new Error('学段号必须是两位数字')
                         )
                       }
                       callback(errors);
                     }
                   }],
-                })(<Input/>)
+                })(<Input placeholder='学段号必须是两位数字'/>)
               }
               </FormItem>
             }
@@ -326,7 +331,7 @@ const PhasePage = React.createClass({
                     callback(errors);
                   }
                 }],
-              })(<Input />)
+              })(<Input placeholder='输入不超过10个字'/>)
             }
             </FormItem>
             <FormItem
@@ -337,8 +342,8 @@ const PhasePage = React.createClass({
             >
             {
               getFieldDecorator('remark', {
-                rules: [{ message: 'Please input your note!' }],
-              })(<Input type="textarea" rows={3}/>)
+                rules: [{max:40, message: '输入不超过40个字' }],
+              })(<Input type="textarea" placeholder='输入不超过40个字' rows={3}/>)
             }
             </FormItem>
           </Form>
@@ -369,7 +374,7 @@ const PhasePage = React.createClass({
     return (
       <div className={styles.container}>
         <div className={styles.header}>
-          <Button type="primary" style={{backgroundColor:'#FD9B09',borderColor:'#FD9B09'}} onClick={this.handleShowAddPhaseModal}>新建</Button><Search placeholder="input search text" value={this.state.searchStr} onChange={(e)=>{this.setState({searchStr:e.target.value})}} onSearch={this.handleSearchTableData} />
+          {this._currentMenu.get('authList').some(v => v.get('authUrl')=='/phase/add')?<Button type="primary" style={{backgroundColor:'#FD9B09',borderColor:'#FD9B09'}} onClick={this.handleShowAddPhaseModal}>新建</Button>:<div> </div>}<Search placeholder="输入学段名称" value={this.state.searchStr} onChange={(e)=>{this.setState({searchStr:e.target.value})}} onSearch={this.handleSearchTableData} />
         </div>
         <div className={styles.body}>
           <div className={styles.wrapper}>

@@ -9,9 +9,7 @@ import {getWorkspaceData} from '../../actions/workspace'
 
 const BaseInfoContainer = React.createClass({
   componentDidMount(){
-    if(this.props.workspace.get('data').isEmpty()){
-      this.props.getWorkspaceData(this.props.location.pathname.split('/').slice(-1)[0],'','','')
-    }
+    this.props.getWorkspaceData(this.props.location.pathname.split('/').slice(-1)[0],'','','')
   },
   componentWillReceiveProps(nextProps){
     if(!this.props.workspace.get('loading') && (nextProps.workspace.get('data').isEmpty() || (this.props.location.pathname != nextProps.location.pathname))){

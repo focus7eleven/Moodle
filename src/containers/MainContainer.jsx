@@ -75,7 +75,7 @@ const MainContainer = React.createClass({
                 </div>
                 {/* 内容显示区域 */}
                 <div className={styles.body}>
-                  {this.props.children}
+                  {this.props.menu.get('data')?this.props.children:null}
                 </div>
               </div>
             </div>
