@@ -44,6 +44,8 @@ const config = _.extend({
 			}
 		},
 		subject:{
+			post: `${baseURL}/subject/add`,
+			update: `${baseURL}/subject/edit`,
 			subjectList:{
 				get:`${baseURL}/subject/list`
 			}

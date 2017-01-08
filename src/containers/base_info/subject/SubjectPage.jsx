@@ -34,15 +34,16 @@ const SubjectPage = React.createClass({
       this._currentMenu = findMenuInTree(this.props.menu.get('data'),'subject')
     }
   },
-  componentWillReceiveProps(nextProps){
-    if(!nextProps.menu.get('data').isEmpty()){
-      this._currentMenu = findMenuInTree(nextProps.menu.get('data'),'subject')
-    }
-  },
+  // componentWillReceiveProps(nextProps){
+  //   if(!nextProps.menu.get('data').isEmpty()){
+  //     this._currentMenu = findMenuInTree(nextProps.menu.get('data'),'subject')
+  //   }
+  // },
   getTableData(){
     let tableHeader = List()
     let tableBody = List()
     let authList = this._currentMenu.get('authList')
+    console.log("authList: ",authList.toJS());
     tableHeader = fromJS([{
       title: '学科名称',
       dataIndex: 'subject_name',
@@ -92,7 +93,13 @@ const SubjectPage = React.createClass({
     return (
       <div className={styles.container}>
         <div className={styles.header}>
-          <Button type="primary" style={{backgroundColor:'#FD9B09',borderColor:'#FD9B09'}} onClick={this.handleShowAddPhaseModal}>新建</Button><Search placeholder="input search text" value={this.state.searchStr} onChange={(e)=>{this.setState({searchStr:e.target.value})}} onSearch={this.handleSearchTableData} />
+          {
+            this._currentMenu.get('authList').find((v)=>v.get('authName')=='增加') ?
+            <Button type="primary" style={{backgroundColor:'#FD9B09',borderColor:'#FD9B09'}} onClick={this.handleShowAddPhaseModal}>
+              新建
+            </Button>:null
+          }
+          <Search classNameplaceholder="请输入学科名称" value={this.state.searchStr} onChange={(e)=>{this.setState({searchStr:e.target.value})}} onSearch={this.handleSearchTableData} />
         </div>
         <div className={styles.body}>
           <div className={styles.wrapper}>

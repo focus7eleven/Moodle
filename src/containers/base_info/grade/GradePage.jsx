@@ -38,11 +38,11 @@ const GradePage = React.createClass({
       this._currentMenu = findMenuInTree(this.props.menu.get('data'),'grade')
     }
   },
-  componentWillReceiveProps(nextProps){
-    if(!nextProps.menu.get('data').isEmpty()){
-      this._currentMenu = findMenuInTree(nextProps.menu.get('data'),'grade')
-    }
-  },
+  // componentWillReceiveProps(nextProps){
+  //   if(!nextProps.menu.get('data').isEmpty()){
+  //     this._currentMenu = findMenuInTree(nextProps.menu.get('data'),'grade')
+  //   }
+  // },
   componentDidMount(){
     fetch(config.api.phase.phaseList.get,{
       method:'get',
