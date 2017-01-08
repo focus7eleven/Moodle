@@ -8,9 +8,9 @@
   :local(.navigation){
     display: flex;
     justify-content: space-between;
-    width: 75%;
+    width: 80%;
     z-index: 15;
-    min-width: 950px;
+    min-width: 990px;
     :local(.logo){
       display:flex;
       align-items: center;
