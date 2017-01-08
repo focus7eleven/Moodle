@@ -1,7 +1,6 @@
 import {
   CHANGE_CURRENT_PATH,
   GET_WORKSPACEDATA,
-  ADD_PHASE,
 } from '../actions/workspace'
 import {findPath} from '../reducer/menu'
 

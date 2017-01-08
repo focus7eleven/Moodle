@@ -86,29 +86,26 @@ const PhasePage = React.createClass({
       dataIndex: 'subjectStr',
       key: 'subjectStr',
       className:styles.tableColumn,
-    }]).concat(authList.filter(v => (v.get('authUrl').split('/')[2] != 'view')&&(v.get('authUrl').split('/')[2] != 'add')).map( v => {
-      return {
-        title: PermissionDic[v.get('authUrl').split('/')[2]],
-        dataIndex: v.get('authUrl').split('/')[2],
-        key: v.get('authUrl').split('/')[2],
+    }])
+    if(authList.some(v => v.get('authUrl')=='/subject/list')){
+      tableHeader.push({
+        title: PermissionDic['list'],
+        dataIndex: 'list',
+        key: 'list',
         className:styles.tableColumn,
-        render:(text,record) => {
-          switch (v.get('authUrl').split('/')[2]) {
-            case 'edit':
-              return (
-                <Button type="primary" style={{backgroundColor:'#30D18E',borderColor:'#30D18E'}} onClick={this.handleShowEditPhaseModal.bind(this,record.key)}>{PermissionDic[v.get('authUrl').split('/')[2]]}</Button>
-              )
-            case 'list':
-              return (
-                <Button type="primary" style={{backgroundColor:'#30D18E',borderColor:'#30D18E'}} onClick={this.handleShowAddSubjectModal.bind(this,record.key)}>{PermissionDic[v.get('authUrl').split('/')[2]]}</Button>
-              )
-            default:
-
-          }
-
-        }
-      }
-    }))
+        render:(text,record) => <Button type="primary" style={{backgroundColor:'#30D18E',borderColor:'#30D18E'}} onClick={this.handleShowAddSubjectModal.bind(this,record.key)}>{PermissionDic['list']}</Button>
+      })
+    }
+    console.log("-->:",authList.toJS())
+    if(authList.some(v => v.get('authUrl')=='/phase/edit')){
+      tableHeader.push({
+        title: PermissionDic['edit'],
+        dataIndex: 'edit',
+        key: 'edit',
+        className:styles.tableColumn,
+        render:(text,record) => <Button type="primary" style={{backgroundColor:'#30D18E',borderColor:'#30D18E'}} onClick={this.handleShowAddSubjectModal.bind(this,record.key)}>{PermissionDic['edit']}</Button>
+      })
+    }
     tableBody = !this.props.workspace.get('data').isEmpty()?this.props.workspace.get('data').get('result').map( (v,key) => {
       return {
         key:key,

@@ -158,3 +158,7 @@ export function addPhaseSubject(data){
     })
   }
 }
+
+
+export const addGrade = require('./grade').addGrade
+export const editGrade = require('./grade').editGrade

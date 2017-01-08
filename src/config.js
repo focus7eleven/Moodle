@@ -47,6 +47,10 @@ const config = _.extend({
 			subjectList:{
 				get:`${baseURL}/subject/list`
 			}
+		},
+		grade:{
+			post:`${baseURL}/grade/add`,
+			update:`${baseURL}/grade/edit`,
 		}
 	}
 })
