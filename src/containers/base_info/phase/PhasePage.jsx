@@ -93,7 +93,8 @@ const PhasePage = React.createClass({
         dataIndex: 'list',
         key: 'list',
         className:styles.listColumn,
-        render:(text,record) => <Button type="primary" style={{backgroundColor:'#30D18E',borderColor:'#30D18E'}} onClick={this.handleShowAddSubjectModal.bind(this,record.key)}>{PermissionDic['list']}</Button>
+        // render:(text,record) => <Button type="primary" style={{backgroundColor:'#30D18E',borderColor:'#30D18E'}} onClick={this.handleShowAddSubjectModal.bind(this,record.key)}>{PermissionDic['list']}</Button>
+        render:(text,record) => <a onClick={this.handleShowAddSubjectModal.bind(this,record.key)} style={{color:'#30D18E'}}>{PermissionDic['list']}</a>
       })
     }
     if(authList.some(v => v.get('authUrl')=='/phase/edit')){
