@@ -1,7 +1,7 @@
 import React from 'react'
 import {Icon,Input,Table,Button,Modal,Form,Spin} from 'antd'
 import PermissionDic from '../../../utils/permissionDic'
-import {getWorkspaceData} from '../../../actions/workspace'
+import {getWorkspaceData,addSubject,editSubject} from '../../../actions/workspace'
 import {fromJS,Map,List} from 'immutable'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
@@ -11,14 +11,13 @@ import _ from 'lodash'
 
 const FormItem = Form.Item
 const Search = Input.Search
+const confirm = Modal.confirm
 
 
 const SubjectPage = React.createClass({
   _currentMenu:Map({
     authList:List()
   }),
-
-  _subjectList: [],
 
   contextTypes: {
     router: React.PropTypes.object
@@ -28,6 +27,7 @@ const SubjectPage = React.createClass({
     return {
       searchStr:'',
       showAddSubjectModal: false,
+      modalType: "",
     }
   },
 
@@ -69,10 +69,13 @@ const SubjectPage = React.createClass({
         title: PermissionDic[v.get('authUrl').split('/')[2]],
         dataIndex: v.get('authUrl').split('/')[2],
         key: v.get('authUrl').split('/')[2],
-        className:styles.tableColumn,
+        className:styles.editColumn,
         render:(text,record) => {
           return (
-            <Button type="primary" style={{backgroundColor:'#30D18E',borderColor:'#30D18E'}} onClick={this.handleShowEditPhaseModal.bind(this,record.key)}>{PermissionDic[v.get('authUrl').split('/')[2]]}</Button>
+            <div>
+              <Button data-action="edit" type="primary" style={{backgroundColor:'#30D18E',borderColor:'#30D18E'}} onClick={this.handleShowEditSubjectModal.bind(this,record.key)}>{PermissionDic[v.get('authUrl').split('/')[2]]}</Button>
+              <Button type="primary" style={{backgroundColor:'#FD9B09',borderColor:'#FD9B09',marginLeft:'10px'}} onClick={this.handleShowDeleteModal.bind(this,record.key)}>删除</Button>
+            </div>
           )
         }
       }
@@ -88,22 +91,52 @@ const SubjectPage = React.createClass({
       tableBody:tableBody.toJS(),
     }
   },
-  handleShowEditPhaseModal(type){
+
+  handleShowEditSubjectModal(key){
+    const {setFieldsValue} = this.props.form
+    this._currentRow = this.props.workspace.get('data').get('result').get(key)
+    setFieldsValue({
+      'subjectName':this._currentRow.get('subject_name'),
+      'subjectShortName':this._currentRow.get('subject_short_name'),
+      'remark':this._currentRow.get('remark'),
+    })
+    this.setState({modalType:"edit",showAddSubjectModal:true})
+  },
+
+  handleEditSubject(){
     const {getFieldValue,getFieldError} = this.props.form
-    if(getFieldValue('subjectName') && !(getFieldError('subjectName') || getFieldError('subjectShortName') || getFieldError('remark'))){
-      // this.props.addPhase({
-      //   phaseCode:getFieldValue('phaseId'),
-      //   phaseName:getFieldValue('phaseName'),
-      //   remark:getFieldValue('remark')
-      // })
-      this.setState({
-        showAddPhaseModal:false
+    let errors = [getFieldError('subjectName'),getFieldError('subjectShortName'),getFieldError('remark')]
+    if(!errors.reduce((pre,cur)=>pre||cur,false)){
+      this.props.editSubject({
+        subjectName:getFieldValue('subjectName'),
+        subjectShortName:getFieldValue('subjectShortName'),
+        phaseCode:getFieldValue('phaseName'),
+        action:'edit',
+        subjectId:this._currentRow.get('subject_id')
       })
     }
   },
 
-  handleShowAddSubjectModal(){
-    this.setState({showAddSubjectModal:true})
+  handleShowDeleteModal(key){
+    const that = this
+    const currentRow = this.props.workspace.get('data').get('result').get(key)
+    confirm({
+      title: '你先删除这条记录吗？',
+      content: '删除后不可恢复',
+      onOk() {
+        that.props.editSubject({
+          subjectName:currentRow.get('subject_name'),
+          subjectId:currentRow.get('subject_id'),
+          action:'delete'
+        })
+      },
+      onCancel() {},
+    });
+  },
+
+  handleShowAddSubjectModal(evt){
+    this.props.form.resetFields();
+    this.setState({modalType: "add",showAddSubjectModal:true})
   },
 
   handleHideAddSubjectModal(){
@@ -111,15 +144,25 @@ const SubjectPage = React.createClass({
   },
 
   handlePostSubject(){
-
+    const {getFieldValue,getFieldError} = this.props.form
+    if(getFieldValue('subjectName') && !(getFieldError('subjectName') || getFieldError('subjectShortName') || getFieldError('remark'))){
+      this.props.addSubject({
+        subjectName:getFieldValue('subjectName'),
+        subjectShortName:getFieldValue('subjectShortName'),
+        remark:getFieldValue('remark')
+      })
+      this.setState({
+        showAddSubjectModal:false
+      })
+    }
   },
 
   renderAddSubjectModal(){
     const { getFieldDecorator } = this.props.form;
-    const subjectList = this._subjectList
+    const { modalType, showAddSubjectModal } = this.state;
     return (
-      <Modal title="添加学科" visible={this.state.showAddSubjectModal}
-          onOk={this.handlePostSubject} onCancel={this.handleHideAddSubjectModal}
+      <Modal title="添加学科" visible={showAddSubjectModal}
+          onOk={modalType==="add"?this.handlePostSubject:this.handleEditSubject} onCancel={this.handleHideAddSubjectModal}
         >
         <div>
           <Form>
@@ -195,7 +238,7 @@ const SubjectPage = React.createClass({
         <div className={styles.header}>
           {
             this._currentMenu.get('authList').find((v)=>v.get('authName')=='增加') ?
-            <Button type="primary" style={{backgroundColor:'#FD9B09',borderColor:'#FD9B09'}} onClick={this.handleShowAddSubjectModal}>
+            <Button data-action="add" type="primary" style={{backgroundColor:'#FD9B09',borderColor:'#FD9B09'}} onClick={this.handleShowAddSubjectModal}>
               新建
             </Button>:null
           }
@@ -233,6 +276,8 @@ function mapStateToProps(state){
 function mapDispatchToProps(dispatch){
   return {
     getWorkspaceData:bindActionCreators(getWorkspaceData,dispatch),
+    addSubject:bindActionCreators(addSubject,dispatch),
+    editSubject:bindActionCreators(editSubject,dispatch)
   }
 }
 

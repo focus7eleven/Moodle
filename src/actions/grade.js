@@ -60,7 +60,7 @@ export function editGrade(data){
                 'from':'nodejs',
                 'token':sessionStorage.getItem('accessToken'),
               }
-            }).then(res => res.json()).then(res => {notification.success(data.action=='edit'?{message:'修改成功'}:{message:'删除成功'});return res})
+            }).then(res => res.json()).then(res => {notification.success(data.action=='edit'?{message:'编辑成功'}:{message:'删除成功'});return res})
           }
         })
       }

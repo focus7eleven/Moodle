@@ -33,6 +33,10 @@
       :local(.tableColumn){
         text-align: center;
       }
+      :local(.editColumn){
+        text-align: center;
+        width: 200px
+        }
       :local(.tableMsg){
         position: absolute;
         left: 10px;

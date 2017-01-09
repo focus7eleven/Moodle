@@ -166,3 +166,6 @@ export function addPhaseSubject(data){
 
 export const addGrade = require('./grade').addGrade
 export const editGrade = require('./grade').editGrade
+
+export const addSubject = require('./subject').addSubject
+export const editSubject = require('./subject').editSubject
