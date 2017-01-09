@@ -20,7 +20,7 @@ module.exports = {
 	debug: true,
 	entry: {
 		app: [
-			'webpack-dev-server/client?http://localhost:8081',
+			'webpack-dev-server/client?http://localhost:8082',
 			'webpack/hot/only-dev-server', // "only" prevents reload on syntax errors
 			'./src/client.jsx',
 		],
@@ -35,7 +35,7 @@ module.exports = {
 			test: /\.scss$/,
 			loaders: ["style", 'css?modules&importLoaders=1' +
         '&localIdentName=[name]__[local]___[hash:base64:5]!postcss', "sass"]
-		}, {
+		},{
 			test: /\.css$/,
 			loaders: ["style", "css"],
 		}, {

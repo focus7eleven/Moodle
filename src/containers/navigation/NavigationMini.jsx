@@ -7,7 +7,7 @@ import {bindActionCreators} from 'redux'
 import {getMenu} from '../../actions/menu'
 import styles from './NavigationMini.scss'
 import logo from '../../../resource/basic/logo.png'
-
+import ChangeUserDropDown from './ChangeUserDropdown'
 const SubMenu = Menu.SubMenu;
 const MenuItemGroup = Menu.ItemGroup;
 
@@ -20,13 +20,13 @@ const NavigationMini = React.createClass({
   getInitialState(){
     return {
       openMenu:false,
+      showChangeUser:false,
     }
   },
 
   componentDidMount(){
     this.props.user.get('accessToken')||sessionStorage.getItem('accessToken')?this.props.getMenu(this.props.user.get('accessToken')):null
   },
-
   renderNavigate(menu){
     return menu.map( (v,key) => {
       if(!v.get('childResources')){
@@ -49,7 +49,11 @@ const NavigationMini = React.createClass({
       <div className={styles.navigationMini}>
         {this.state.openMenu?<div className={styles.mask} onClick={()=>{this.setState({openMenu:false})}}></div>:null}
         <div className={styles.navigationToggle} >
-          <Icon type="bars" onClick={()=>{this.setState({openMenu:true})}}/><div className={styles.decoration}><div className={styles.logo}><img src={logo}/></div></div>
+          <Icon type="bars" onClick={()=>{this.setState({openMenu:true})}}/><div className={styles.decoration}><div className={styles.logo}><img src={logo}/></div>
+          <div className={styles.avatar} onClick={(e)=>{this.setState({showChangeUser:this.state.showChangeUser?false:true});e.stopPropagation()}}>
+            <img src='https://unsplash.it/25/25' /><span className={styles.nameDesc}>曹老师（任课老师）</span>{this.state.showChangeUser?<ChangeUserDropDown/>:null}
+          </div>
+        </div>
         </div>
         <Motion defaultStyle={{x: -240}} style={this.state.openMenu?{x:spring(0)}:{x:spring(-240)}}>
         {interpolatingStyle => (

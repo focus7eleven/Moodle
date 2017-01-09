@@ -17,6 +17,9 @@ const config = _.extend({
 		user:{
 			login:{
 				post:`${baseURL}/LoginWithToken`
+			},
+			logout:{
+				post:`${baseURL}/account/logout`
 			}
 		},
 		menu:{
@@ -28,6 +31,28 @@ const config = _.extend({
 					get:(type,currentPage,pageShow,search) => `${baseURL}/${type}/page?currentPage=${currentPage}&search=${search}&pageShow=${pageShow}`
 				}
 			}
+		},
+		phase:{
+			post:`${baseURL}/phase/add`,
+			update:`${baseURL}/phase/edit`,
+			phaseList:{
+				get:`${baseURL}/phase/phaseList`,
+			},
+			subjectList:{
+				get:(phaseCode)=>`${baseURL}/phase/subject?phaseCode=${phaseCode}`,
+				update:`${baseURL}/phase/subject/set`
+			}
+		},
+		subject:{
+			post: `${baseURL}/subject/add`,
+			update: `${baseURL}/subject/edit`,
+			subjectList:{
+				get:`${baseURL}/subject/list`
+			}
+		},
+		grade:{
+			post:`${baseURL}/grade/add`,
+			update:`${baseURL}/grade/edit`,
 		}
 	}
 })

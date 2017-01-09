@@ -2,8 +2,7 @@ import {actionNames} from '../utils/action-utils'
 import {fromJS} from 'immutable'
 import config from '../config.js'
 
-export const CHANGE_MENU = 'CHANGE_MENU'
-
+// 声明登录之后获取菜单的action操作
 export const GET_MENU = 'GET_MENU'
 export function getMenu(token){
   return dispatch => {
@@ -11,7 +10,7 @@ export function getMenu(token){
       method:'GET',
       headers:{
         'from' : 'nodejs',
-        'token' : token||sessionStorage.getItem('accessToken')
+        'token' : sessionStorage.getItem('accessToken')
       }
     }).then(res => res.json()).then(res => {
       dispatch({

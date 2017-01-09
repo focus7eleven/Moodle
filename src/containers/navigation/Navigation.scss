@@ -8,13 +8,12 @@
   :local(.navigation){
     display: flex;
     justify-content: space-between;
-    width: 75%;
+    width: 80%;
     z-index: 15;
-    min-width: 950px;
+    min-width: 990px;
     :local(.logo){
       display:flex;
       align-items: center;
-      overflow: hidden;
       >img{
         transform: scale(0.85);
       }
@@ -24,7 +23,11 @@
       background-color: rgba(0,0,0,0);
       color:white;
       border-bottom: none;
-      .ant-menu-item{
+      :local(.firstMenu){
+        font-size: 14px;
+        font-weight: bold;
+      }
+      :global(.ant-menu-item){
         &:hover{
           background-color: #2AAD6C;
           color:white;
@@ -32,7 +35,8 @@
           border-bottom: 2px solid #E59C14;
         }
       }
-      .ant-menu-item-selected{
+
+      :global(.ant-menu-item-selected){
         background-color: #2AAD6C;
         color:white;
         font-weight: bold;
@@ -43,11 +47,14 @@
     :local(.avatar){
       display: flex;
       align-items: center;
+      position: relative;
       :local(.nameDesc){
         color:white;
         font-weight: bold;
         display: block;
         margin-left: 10px;
+        cursor: pointer;
+        font-size: 14px;
       }
       >img{
         width: 25px;
@@ -76,11 +83,10 @@
       align-items: center;
       flex-direction: column;
       :local(.panelContent){
-        height: 220px;
         width: 850px;
         display: flex;
         color:white;
-        justify-content: space-between;
+        justify-content: flex-start;
         flex-shrink: 0;
         >div{
           margin-right: 20px;
@@ -88,6 +94,7 @@
         :local(.secondMenu){
           display:flex;
           flex-direction: column;
+          padding-top: 15px;
 
           :local(.secondMenuTitle){
             display:flex;
@@ -115,6 +122,70 @@
             width: 110px;
             line-height: 12px;
             margin-bottom: 10px;
+            background-color: #51CD92;
+            cursor: pointer;
+            user-select: none;
+            &:hover{
+              background-color: #F2980D;
+            }
+          }
+        }
+      }
+
+      :local(.panelContentHori){
+        width: 850px;
+        display: flex;
+        flex-direction: column;
+        color:white;
+        justify-content: flex-start;
+        flex-shrink: 0;
+        >div{
+          margin-top: 20px;
+        }
+        :local(.secondMenuHori){
+          display:flex;
+          flex-direction: column;
+
+          :local(.secondMenuTitleHori){
+            display:flex;
+            padding-left: 12px;
+            align-items: center;
+            height: 30px;
+            flex-shrink: 0;
+            user-select: none;
+            cursor: default;
+            // width: 90px;
+            width: 100%;
+            // justify-content: flex-end;
+            justify-content: flex-start;
+            margin-right: 10px;
+            margin-top: 3px;
+            >span{
+              margin-right: 5px;
+              color:rgb(80,80,80);
+              &:hover{
+                color:#F2980D;
+              }
+            }
+          }
+          :local(.thirdMenuHoriWrapper){
+            display: flex;
+            justify-content: flex-start;
+            flex-direction: row;
+            flex-wrap: wrap;
+          }
+          :local(.thirdMenuHori){
+            flex-shrink: 0;
+            display: block;
+            padding-top: 9px;
+            padding-bottom: 9px;
+            padding-left: 12px;
+            height: 30px;
+            width: 110px;
+            line-height: 12px;
+            margin-bottom: 5px;
+            margin-top: 5px;
+            margin-right: 10px;
             background-color: #51CD92;
             cursor: pointer;
             user-select: none;

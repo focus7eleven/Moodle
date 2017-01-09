@@ -8,10 +8,13 @@ import {bindActionCreators} from 'redux'
 import schoolLogo from 'images/school.png'
 import teacherLogo from 'images/teacher.png'
 import studentLogo from 'images/student.png'
-
+import {List} from 'immutable'
+import {findPath} from '../reducer/menu'
 const MainContainer = React.createClass({
   getInitialState(){
-    return {}
+    return {
+      currentPath:List()
+    }
   },
 
   getDefaultProps(){
@@ -23,11 +26,18 @@ const MainContainer = React.createClass({
       }
     }
   },
-
+  componentWillReceiveProps(nextProps){
+    let menuUrl = nextProps.location.pathname.split('/').slice(-1)[0]
+    let path = !nextProps.menu.get('data').isEmpty()?findPath(nextProps.menu.get('data'),menuUrl):List()
+    this.setState({
+      currentPath:path.map(v => v.get('resourceName'))
+    })
+  },
   render(){
     const {schoolInfo} = this.props;
     return (
       <div className={styles.container}>
+        {/* 当页面宽度小于1024px时，会加载NavigationMini这个导航栏*/}
         <div className={styles.navigation}>
           <Navigation></Navigation>
         </div>
@@ -38,26 +48,34 @@ const MainContainer = React.createClass({
           this.props.children ?
             <div className={styles.workspace}>
               <div className={styles.mainPanel}>
+                { /* 顶部的学校信息 */}
                 <div className={styles.header}>
                   <Breadcrumb separator=">">
                     {
-                      this.props.currentPath.map((item)=><Breadcrumb.Item key={item}>{item}</Breadcrumb.Item>)
+                      this.state.currentPath.map((item)=><Breadcrumb.Item key={item}>{item}</Breadcrumb.Item>)
                     }
                   </Breadcrumb>
-                  <div className={styles.schooInfo}>
+                  <div className={styles.schoolInfo}>
                     <span className={styles.school}><img src={schoolLogo}/>{schoolInfo.schoolName}</span>
-                    <div className={styles.teacherNum}>
-                      <span>{schoolInfo.teacherNum}</span>
-                      <span>教师人数</span>
+                    <div className={styles.teacherNumContainer}>
+                      <img src={teacherLogo} />
+                      <div className={styles.teacherNum}>
+                        <span>{schoolInfo.teacherNum}</span>
+                        <span>教师人数</span>
+                      </div>
                     </div>
-                    <div className={styles.teacherNum}>
-                      <span>{schoolInfo.studentNum}</span>
-                      <span>学生人数</span>
+                    <div className={styles.teacherNumContainer}>
+                      <img src={studentLogo} />
+                      <div className={styles.teacherNum}>
+                        <span>{schoolInfo.studentNum}</span>
+                        <span>学生人数</span>
+                      </div>
                     </div>
                   </div>
                 </div>
+                {/* 内容显示区域 */}
                 <div className={styles.body}>
-                  {this.props.children}
+                  {this.props.menu.get('data')?this.props.children:null}
                 </div>
               </div>
             </div>
@@ -70,7 +88,7 @@ const MainContainer = React.createClass({
 })
 function mapStateToProps(state) {
   return {
-    currentPath: state.get('workspace').get('currentPath'),
+    menu:state.get('menu')
   }
 }
 
