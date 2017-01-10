@@ -9,11 +9,11 @@ notification.config({
 //获取表格数据
 export const GET_WORKSPACEDATA = actionNames('GET_WORKSPACEDATA')
 
-export function getWorkspaceData(type,currentPage,search,pageShow){
+export function getWorkspaceData(type,currentPage,pageShow,search){
   return {
     types:GET_WORKSPACEDATA,
     callAPI:()=>{
-      return fetch(config.api.workspace.baseInfo.baseData.get(type,currentPage,search,pageShow),{
+      return fetch(config.api.workspace.baseInfo.baseData.get(type,currentPage,pageShow,search),{
         method:'GET',
         headers:{
           'from':'nodejs',
