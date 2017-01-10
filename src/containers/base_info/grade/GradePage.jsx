@@ -246,6 +246,7 @@ const GradePage = React.createClass({
               onChange:(page)=>{
                 this.props.getWorkspaceData('grade',page,this.props.workspace.get('data').get('pageShow'),this.state.searchStr)
               },
+              showQuickJumper:true,
               onShowSizeChange:(current,size)=>{
                 this.props.getWorkspaceData('grade',this.props.workspace.get('data').get('nowPage'),size,this.state.searchStr)
               }

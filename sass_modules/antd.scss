@@ -16,10 +16,16 @@
     font-weight: normal;
     :global(.ant-modal-title){
       font-weight:normal;
+      color: black;
+      font-size: 16px;
     }
   }
 }
 
+:global(label){
+  font-size: 16px;
+  line-height: 16px;
+}
 :global(.ant-select){
   &:hover{
     color:#37B781;

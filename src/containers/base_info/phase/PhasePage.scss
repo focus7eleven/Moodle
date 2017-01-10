@@ -49,9 +49,8 @@
         text-align: center;
       }
       :local(.editColumn){
-        padding:16px 5px;
-        width: 110px;
         text-align: center;
+        width: 200px
         :local(.editAction){
           display: flex;
           justify-content: space-around;

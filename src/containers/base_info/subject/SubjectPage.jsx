@@ -104,6 +104,7 @@ const SubjectPage = React.createClass({
               onChange:(page)=>{
                 this.props.getWorkspaceData('subject',page,this.props.workspace.get('data').get('pageShow'),this.state.searchStr)
               },
+              showQuickJumper:true,
               onShowSizeChange:(current,size)=>{
                 this.props.getWorkspaceData('subject',this.props.workspace.get('data').get('nowPage'),size,this.state.searchStr)
               }

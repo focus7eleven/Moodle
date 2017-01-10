@@ -1,7 +1,6 @@
 .DS_Store
 node_modules/
 .idea/
-dist/*
 !dist/index.html
 .idea/
 npm-debug.log

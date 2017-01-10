@@ -94,7 +94,7 @@ const PhasePage = React.createClass({
         key: 'list',
         className:styles.listColumn,
         // render:(text,record) => <Button type="primary" style={{backgroundColor:'#30D18E',borderColor:'#30D18E'}} onClick={this.handleShowAddSubjectModal.bind(this,record.key)}>{PermissionDic['list']}</Button>
-        render:(text,record) => <a onClick={this.handleShowAddSubjectModal.bind(this,record.key)} style={{color:'#30D18E'}}>{PermissionDic['list']}</a>
+        render:(text,record) => <a onClick={this.handleShowAddSubjectModal.bind(this,record.key)} >{PermissionDic['list']}</a>
       })
     }
     if(authList.some(v => v.get('authUrl')=='/phase/edit')){
@@ -104,10 +104,11 @@ const PhasePage = React.createClass({
         key: 'edit',
         className:styles.editColumn,
         render:(text,record) => (
-          <div className={styles.editAction}>
-            <a onClick={this.handleShowEditPhaseModal.bind(this,record.key)} style={{color:'#30D18E'}}>编辑<Icon type="edit" /></a>
-            <a onClick={this.handleShowDeleteModal.bind(this,record.key)} style={{color:'#F69709'}}>删除<Icon type="delete" /></a>
+          <div>
+            <Button type="primary" style={{backgroundColor:'#30D18E',borderColor:'#30D18E'}} onClick={this.handleShowEditPhaseModal.bind(this,record.key)}>编辑</Button>
+            <Button type="primary" style={{backgroundColor:'#FD9B09',borderColor:'#FD9B09',marginLeft:'10px'}} onClick={this.handleShowDeleteModal.bind(this,record.key)}>删除</Button>
           </div>
+
         )
       })
     }
@@ -387,6 +388,7 @@ const PhasePage = React.createClass({
               onChange:(page)=>{
                 this.props.getWorkspaceData('phase',page,this.props.workspace.get('data').get('pageShow'),this.state.searchStr)
               },
+              showQuickJumper:true,
               onShowSizeChange:(current,size)=>{
                 this.props.getWorkspaceData('phase',this.props.workspace.get('data').get('nowPage'),size,this.state.searchStr)
               }

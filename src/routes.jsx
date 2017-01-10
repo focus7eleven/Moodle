@@ -13,6 +13,8 @@ import PhasePage from './containers/base_info/phase/PhasePage'
 import GradePage from './containers/base_info/grade/GradePage'
 import SubjectPage from './containers/base_info/subject/SubjectPage'
 import {LoginControlHOC} from './enhancers/AccessControlContainer'
+import SubjectMenuTree from './containers/subject_menu_tree/SubjectMenuTree'
+import UeditorContainer from './containers/ueditor/UeditorContainer'
 
 const routes = (
 	<Router history={browserHistory}>
@@ -23,6 +25,8 @@ const routes = (
 				<Route path='navigation-mini' component={NavigationMini}></Route>
 				<Route path='edu-outline' component={EduOutline}></Route>
 				<Route path='filter' component={Filter}></Route>
+				<Route path='subject-menu-tree' component={SubjectMenuTree}></Route>
+				<Route path='ueditor' component={UeditorContainer}></Route>
 			</Route>
 			<Route path='login' component={LoginContainer}></Route>
 			<Route path='index' component={LoginControlHOC(MainContainer)}>
