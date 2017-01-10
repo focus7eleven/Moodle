@@ -110,7 +110,7 @@ const SubjectPage = React.createClass({
       this.props.editSubject({
         subjectName:getFieldValue('subjectName'),
         subjectShortName:getFieldValue('subjectShortName'),
-        phaseCode:getFieldValue('phaseName'),
+        remark:getFieldValue('remark'),
         action:'edit',
         subjectId:this._currentRow.get('subject_id')
       })
@@ -155,6 +155,11 @@ const SubjectPage = React.createClass({
         showAddSubjectModal:false
       })
     }
+  },
+
+  //搜索框输入的change事件
+  handleSearchTableData(value){
+    this.props.getWorkspaceData('subject',this.props.workspace.get('data').get('nowPage'),this.props.workspace.get('data').get('pageShow'),value)
   },
 
   renderAddSubjectModal(){
