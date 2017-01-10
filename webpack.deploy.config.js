@@ -56,8 +56,9 @@ module.exports = {
 			loaders: ['react-hot', 'babel'],
 		}, {
 			test: /\.scss$/,
-			loaders: ["style", "css", "postcss", "sass"]
-		}, {
+			loaders: ["style", 'css?modules&importLoaders=1' +
+        '&localIdentName=[name]__[local]___[hash:base64:5]!postcss', "sass"]
+		},{
 			test: /\.css$/,
 			loaders: ["style", "css"],
 		}, {
@@ -66,9 +67,6 @@ module.exports = {
 				'file?hash=sha512&digest=hex&name=[hash].[ext]',
 				'image-webpack?bypassOnDebug&optimizationLevel=7&interlaced=false',
 			]
-		}, {
-			test: /\.(ttf|eot|svg|woff(2)?)(\?[a-z0-9=&.]+)?$/,
-			loader: 'file-loader'
 		}, {
 			test: /(\.swf$|\.xap$)/,
 			loader: 'file-loader'
