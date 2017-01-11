@@ -169,3 +169,5 @@ export const editGrade = require('./grade').editGrade
 
 export const addSubject = require('./subject').addSubject
 export const editSubject = require('./subject').editSubject
+
+export const addDict = require('./dict').addDict
