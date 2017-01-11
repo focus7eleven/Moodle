@@ -15,9 +15,16 @@
     background-color:#E7F9F2;
     font-weight: normal;
     :global(.ant-modal-title){
+      color:black;
+      font-size: 16px;
       font-weight:normal;
     }
   }
+}
+
+:global(label){
+  font-size: 16px;
+  line-height: 16x;
 }
 
 :global(.ant-select){

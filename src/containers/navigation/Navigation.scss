@@ -4,7 +4,7 @@
   justify-content: center;
   // background-color: #2AAD6C;
   background-color: rgb(56,186,130);
-  height: 47px;
+  height: 55px;
   :local(.navigation){
     display: flex;
     justify-content: space-between;
@@ -24,10 +24,16 @@
       color:white;
       border-bottom: none;
       :local(.firstMenu){
-        font-size: 14px;
-        font-weight: bold;
+        font-size: 16px;
+        font-weight: normal;
+        &:hover{
+          font-weight: bold;
+        }
       }
       :global(.ant-menu-item){
+        height: 55px;
+        line-height: 55px;
+        font-size: 16px;
         &:hover{
           background-color: #2AAD6C;
           color:white;
@@ -67,7 +73,7 @@
   :local(.dropDownPanel){
     z-index: 10;
     width: 100%;
-    top:47px;
+    top:55px;
     background-color: rgba(145,223,177,0.8)	;
     left:0px;
     position: absolute;
