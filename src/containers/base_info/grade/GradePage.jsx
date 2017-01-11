@@ -227,6 +227,11 @@ const GradePage = React.createClass({
     )
   },
 
+  //搜索框输入的change事件
+  handleSearchTableData(value){
+    this.props.getWorkspaceData('grade',this.props.workspace.get('data').get('nowPage'),this.props.workspace.get('data').get('pageShow'),value)
+  },
+
   render(){
     const tableData = this.getTableData()
 

@@ -1,0 +1,45 @@
+@mixin loading {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin headerWithoutFilter {
+  height: 35px;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  :local(.searchInput){
+    width: 300px;
+  }
+}
+
+@mixin tableDarkRow{
+  text-align: center;
+  background-color: #F5F5F5;
+}
+
+@mixin tableLightRow {
+  text-align: center;
+  background-color: #FFFFFF;
+}
+
+@mixin tableColumn {
+  text-align: center;
+}
+
+@mixin editColumn {
+  text-align: center;
+  width: 200px
+}
+
+@mixin tableMsg {
+  position: absolute;
+  left: 10px;
+  bottom: 30px;
+}

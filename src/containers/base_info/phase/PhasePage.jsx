@@ -167,6 +167,7 @@ const PhasePage = React.createClass({
   },
   //控制显示添加学段对话框
   handleShowAddPhaseModal(){
+    this.props.form.resetFields();
     this._phaseList.length==0?fetch(config.api.phase.phaseList.get,{
       method:'get',
       headers:{
