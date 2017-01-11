@@ -44,7 +44,7 @@ export function editDict(data){
     formData.append('dictCode',data.dictCode)
     formData.append('action',data.action)
     formData.append('dictId',data.dictId)
-    return fetch(config.api.dict.post,{
+    return fetch(config.api.dict.update,{
       method:'post',
       headers:{
         'from':'nodejs',

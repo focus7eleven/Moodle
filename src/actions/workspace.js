@@ -171,3 +171,4 @@ export const addSubject = require('./subject').addSubject
 export const editSubject = require('./subject').editSubject
 
 export const addDict = require('./dict').addDict
+export const editDict = require('./dict').editDict

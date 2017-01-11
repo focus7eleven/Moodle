@@ -1,7 +1,7 @@
 import React from 'react'
 import {Icon,Input,Table,Button,Modal,Form,Spin,Select} from 'antd'
 import PermissionDic from '../../../utils/permissionDic'
-import {getWorkspaceData,addDict，editDict} from '../../../actions/workspace'
+import {getWorkspaceData,addDict,editDict} from '../../../actions/workspace'
 import {fromJS,Map,List} from 'immutable'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
@@ -20,7 +20,6 @@ const DictPage = React.createClass({
   _currentMenu:Map({
     authList:List()
   }),
-  _phaseList:List(),
   contextTypes: {
     router: React.PropTypes.object
   },
@@ -44,15 +43,6 @@ const DictPage = React.createClass({
   //   }
   // },
   componentDidMount(){
-    fetch(config.api.phase.phaseList.get,{
-      method:'get',
-      headers:{
-        'from':'nodejs',
-        'token':sessionStorage.getItem('accessToken')
-      }
-    }).then(res => res.json()).then(res => {
-      this._phaseList = fromJS(res)
-    })
   },
 
   getTableData(){
@@ -115,12 +105,13 @@ const DictPage = React.createClass({
   handleShowDeleteModal(key){
     const that = this
     const currentRow = this.props.workspace.get('data').get('result').get(key)
+    console.log("-->",currentRow.toJS())
     confirm({
       title: '你先删除这条记录吗？',
       content: '删除后不可恢复',
       onOk() {
-        that.props.editGrade({
-          gradeId:currentRow.get('dictId'),
+        that.props.editDict({
+          dictId:currentRow.get('dictId'),
           action:'delete'
         })
       },
@@ -150,10 +141,10 @@ const DictPage = React.createClass({
       showEditDictModal:true
     })
     setFieldsValue({
-      dictStyle:getFieldValue('dictStyle'),
-      styleDesc:getFieldValue('styleDesc'),
-      dictName:getFieldValue('dictName'),
-      dictCode:getFieldValue('dictCode'),
+      dictStyle:this._currentRow.get('dictStyle'),
+      styleDesc:this._currentRow.get('styleDesc'),
+      dictName:this._currentRow.get('dictName'),
+      dictCode:this._currentRow.get('dictCode'),
     })
   },
   handleAddDict(){
@@ -178,7 +169,7 @@ const DictPage = React.createClass({
         dictName:getFieldValue('dictName'),
         dictCode:getFieldValue('dictCode'),
         action:'edit',
-        gradeId:this._currentRow.get('dictId')
+        dictId:this._currentRow.get('dictId')
       })
     }
   },
@@ -190,7 +181,7 @@ const DictPage = React.createClass({
         <Button key='cancel' type='ghost' onClick={this.handleCloseAddDictModal.bind(this,type)}>取消</Button>,
         <Button key='ok' type='primary'
         disabled={!getFieldValue('dictStyle')&&!getFieldValue('dictName')&&!getFieldValue('dictCode')}
-        onClick={type=='edit'?this.handleEditGrade:this.handleAddDict}>确认</Button>
+        onClick={type=='edit'?this.handleEditDict:this.handleAddDict}>确认</Button>
       ]}
       >
         <div>
@@ -289,6 +280,7 @@ function mapDispatchToProps(dispatch){
   return {
     getWorkspaceData:bindActionCreators(getWorkspaceData,dispatch),
     addDict:bindActionCreators(addDict,dispatch),
+    editDict:bindActionCreators(editDict,dispatch),
   }
 }
 
