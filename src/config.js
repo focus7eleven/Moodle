@@ -53,6 +53,10 @@ const config = _.extend({
 		grade:{
 			post:`${baseURL}/grade/add`,
 			update:`${baseURL}/grade/edit`,
+		},
+		dict:{
+			post:`${baseURL}/dict/add`,
+			update:`${baseURL}/dict/edit`,
 		}
 	}
 })

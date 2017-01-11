@@ -102,11 +102,13 @@ const Navigation = React.createClass({
   },
 
   render(){
+    console.log("-->:",this.context.router)
+    const currentUrl = this.context.router.location.pathname.split('/').slice(-2)[0]
     return (
       <div className={styles.wrapper}>
         <div className={styles.navigation}>
           <div className={styles.logo}><img src={logo}/></div>
-          <Menu mode="horizontal" className={styles.menu} onMouseLeave={this.handleFoldSubmenu}>
+          <Menu selectedKeys={[currentUrl]} mode="horizontal" className={styles.menu} onMouseLeave={this.handleFoldSubmenu}>
             {
               this.props.menu.get('data').map( item => (
                 <Menu.Item key={item.get('resourceUrl')} >

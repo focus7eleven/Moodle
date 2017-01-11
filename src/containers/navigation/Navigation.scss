@@ -1,16 +1,17 @@
+@import "~theme.scss";
+
 :local(.wrapper){
   display: flex;
   position: relative;
   justify-content: center;
-  // background-color: #2AAD6C;
-  background-color: rgb(56,186,130);
-  height: 55px;
+  background-color: $primary-color;
+  height: $navigation-height;
   :local(.navigation){
     display: flex;
     justify-content: space-between;
     width: 80%;
     z-index: 15;
-    min-width: 990px;
+    min-width: 1020px;
     :local(.logo){
       display:flex;
       align-items: center;
@@ -24,18 +25,21 @@
       color:white;
       border-bottom: none;
       :local(.firstMenu){
-        font-size: 14px;
-        font-weight: bold;
+        font-size: 15px;
+        font-weight: normal;
+        &:hover{
+          font-weight: bold;
+        }
       }
       :global(.ant-menu-item){
-        height: 55px;
-        line-height: 55px;
-        font-size: 16px;
+        height: $navigation-height;
+        line-height: $navigation-height;
+        font-size: 15px;
         &:hover{
           background-color: #2AAD6C;
           color:white;
           font-weight: bold;
-          border-bottom: 2px solid #E59C14;
+          border-bottom: 2px solid $highlight-color;
         }
       }
 
@@ -43,7 +47,7 @@
         background-color: #2AAD6C;
         color:white;
         font-weight: bold;
-        border-bottom: 2px solid #E59C14;
+        border-bottom: 2px solid $highlight-color;
       }
     }
 
@@ -70,7 +74,7 @@
   :local(.dropDownPanel){
     z-index: 10;
     width: 100%;
-    top:55px;
+    top: $navigation-height;
     background-color: rgba(145,223,177,0.8)	;
     left:0px;
     position: absolute;
@@ -111,7 +115,7 @@
               margin-right: 5px;
               color:rgb(80,80,80);
               &:hover{
-                color:#F2980D;
+                color: $highlight-color;
               }
             }
           }
@@ -129,7 +133,7 @@
             cursor: pointer;
             user-select: none;
             &:hover{
-              background-color: #F2980D;
+              background-color: $highlight-color;
             }
           }
         }
@@ -157,9 +161,7 @@
             flex-shrink: 0;
             user-select: none;
             cursor: default;
-            // width: 90px;
             width: 100%;
-            // justify-content: flex-end;
             justify-content: flex-start;
             margin-right: 10px;
             margin-top: 3px;
@@ -167,7 +169,7 @@
               margin-right: 5px;
               color:rgb(80,80,80);
               &:hover{
-                color:#F2980D;
+                color: $highlight-color;
               }
             }
           }
@@ -193,7 +195,7 @@
             cursor: pointer;
             user-select: none;
             &:hover{
-              background-color: #F2980D;
+              background-color: $highlight-color;
             }
           }
         }

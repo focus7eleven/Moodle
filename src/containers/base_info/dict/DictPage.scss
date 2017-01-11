@@ -1,0 +1,50 @@
+:local(.container){
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+  min-width: 930px;
+
+  :local(.header){
+    height: 35px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    :local(.searchInput){
+      width: 300px;
+    }
+  }
+
+  :local(.body){
+    height: calc( 100% - 40px );
+    width: 100%;
+    :local(.wrapper){
+      position:relative;
+      :local(.tableDarkRow){
+        text-align: center;
+        background-color: #F5F5F5;
+      }
+      :local(.tableLightRow){
+        text-align: center;
+        background-color: #FFFFFF;
+      }
+      :local(.tableColumn){
+        text-align: center;
+      }
+      :local(.editColumn){
+        text-align: center;
+        width: 200px
+      }
+      :local(.tableMsg){
+        position: absolute;
+        left: 10px;
+        bottom: 30px;
+      }
+      :local(.pagination){
+        background-color: red;
+      }
+    }
+  }
+}

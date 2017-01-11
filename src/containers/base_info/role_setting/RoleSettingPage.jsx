@@ -1,12 +1,12 @@
 import React from 'react'
 import {Icon,Input,Table,Button,Modal,Form,Spin,Select} from 'antd'
 import PermissionDic from '../../../utils/permissionDic'
-import {getWorkspaceData,addGrade,editGrade} from '../../../actions/workspace'
+import {getWorkspaceData} from '../../../actions/workspace'
 import {fromJS,Map,List} from 'immutable'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 import { findMenuInTree,findPath} from '../../../reducer/menu'
-import styles from './GradePage.scss'
+import styles from './RoleSettingPage.scss'
 import _ from 'lodash'
 import config from '../../../config'
 
@@ -16,11 +16,10 @@ const Option = Select.Option
 const confirm = Modal.confirm
 
 
-const GradePage = React.createClass({
+const RoleSettingPage = React.createClass({
   _currentMenu:Map({
     authList:List()
   }),
-  _phaseList:List(),
   contextTypes: {
     router: React.PropTypes.object
   },
@@ -35,7 +34,7 @@ const GradePage = React.createClass({
   },
   componentWillMount(){
     if(!this.props.menu.get('data').isEmpty()){
-      this._currentMenu = findMenuInTree(this.props.menu.get('data'),'grade')
+      this._currentMenu = findMenuInTree(this.props.menu.get('data'),'role')
     }
   },
   // componentWillReceiveProps(nextProps){
@@ -44,15 +43,6 @@ const GradePage = React.createClass({
   //   }
   // },
   componentDidMount(){
-    fetch(config.api.phase.phaseList.get,{
-      method:'get',
-      headers:{
-        'from':'nodejs',
-        'token':sessionStorage.getItem('accessToken')
-      }
-    }).then(res => res.json()).then(res => {
-      this._phaseList = fromJS(res)
-    })
   },
 
   getTableData(){
@@ -60,20 +50,26 @@ const GradePage = React.createClass({
     let tableBody = List()
     let authList = this._currentMenu.get('authList')
     tableHeader = fromJS([{
-      title: '名称',
-      dataIndex: 'gradeName',
-      key: 'gradeName',
+      title: '角色名称',
+      dataIndex: 'dictId',
+      key: 'dictId',
       className:styles.tableColumn,
     },{
-      title: '别称',
-      dataIndex: 'gradeNickName',
-      key: 'gradeNickName',
+      title: '角色描述',
+      dataIndex: 'dictStyle',
+      key: 'dictStyle',
       className:styles.tableColumn,
+      render:(text,record)=>{
+        <a onClick={this.handleShowRoleDescEditModal.bind(this,text)}><Icon type='edit'/>{text}</a>
+      }
     },{
-      title: '学段',
-      dataIndex: 'phaseName',
-      key: 'phaseName',
+      title: '权限配置',
+      dataIndex: 'styleDesc',
+      key: 'styleDesc',
       className:styles.tableColumn,
+      render:(text,record)=>{
+        <Icon type='search' onClick={this.handleShowPermissionModal.bind(this,)}/>
+      }
     }])
     tableHeader = tableHeader.concat(authList.filter(v => (v.get('authUrl').split('/')[2] != 'view')&&(v.get('authUrl').split('/')[2] != 'add')).map( v => {
       return {
@@ -84,7 +80,7 @@ const GradePage = React.createClass({
         render:(text,record) => {
           return (
             <div>
-              <Button type="primary" style={{backgroundColor:'#30D18E',borderColor:'#30D18E'}} onClick={this.handleShowEditGradeModal.bind(this,record.key)}>{PermissionDic[v.get('authUrl').split('/')[2]]}</Button>
+              <Button type="primary" style={{backgroundColor:'#30D18E',borderColor:'#30D18E'}} onClick={this.handleShowEditDictModal.bind(this,record.key)}>{PermissionDic[v.get('authUrl').split('/')[2]]}</Button>
               <Button type="primary" style={{backgroundColor:'#FD9B09',borderColor:'#FD9B09',marginLeft:'10px'}} onClick={this.handleShowDeleteModal.bind(this,record.key)}>删除</Button>
             </div>
           )
@@ -102,6 +98,12 @@ const GradePage = React.createClass({
       tableBody:tableBody.toJS(),
     }
   },
+  handleShowRoleDescEditModal(){
+
+  },
+  handleShowPermissionModal(){
+
+  },
   handleShowDeleteModal(key){
     const that = this
     const currentRow = this.props.workspace.get('data').get('result').get(key)
@@ -109,127 +111,130 @@ const GradePage = React.createClass({
       title: '你先删除这条记录吗？',
       content: '删除后不可恢复',
       onOk() {
-        that.props.editGrade({
-          gradeId:currentRow.get('gradeId'),
+        that.props.editDict({
+          dictId:currentRow.get('dictId'),
           action:'delete'
         })
       },
       onCancel() {},
     });
   },
-  handleCloseAddGradeModal(type){
+  handleCloseAddDictModal(type){
     switch (type) {
       case 'create':
         this.setState({
-          showAddGradeModal:false
+          showAddDictModal:false
         })
         break;
       case 'edit':
         this.setState({
-          showEditGradeModal:false
+          showEditDictModal:false
         })
       default:
 
     }
   },
-  handleShowEditGradeModal(key){
+  handleShowEditDictModal(key){
     console.log(key)
     const {setFieldsValue} = this.props.form
     this._currentRow = this.props.workspace.get('data').get('result').get(key)
     this.setState({
-      showEditGradeModal:true
+      showEditDictModal:true
     })
     setFieldsValue({
-      gradeName:this._currentRow.get('gradeName'),
-      gradeNickName:this._currentRow.get('gradeNickName'),
-      phaseName:this._currentRow.get('phaseCode'),
+      dictStyle:this._currentRow.get('dictStyle'),
+      styleDesc:this._currentRow.get('styleDesc'),
+      dictName:this._currentRow.get('dictName'),
+      dictCode:this._currentRow.get('dictCode'),
     })
   },
-  handleAddGrade(){
+  handleAddDict(){
     const {getFieldValue,getFieldError} = this.props.form
     let errors = [getFieldError('gradeName'),getFieldError('gradeNickName'),getFieldError('phaseName')]
     if(!errors.reduce((pre,cur)=>pre||cur,false)){
-      this.props.addGrade({
-        gradeName:getFieldValue('gradeName'),
-        gradeNickName:getFieldValue('gradeNickName'),
-        phaseCode:getFieldValue('phaseName')
+      this.props.addDict({
+        dictStyle:getFieldValue('dictStyle'),
+        styleDesc:getFieldValue('styleDesc'),
+        dictName:getFieldValue('dictName'),
+        dictCode:getFieldValue('dictCode'),
       })
     }
   },
-  handleEditGrade(){
+  handleEditDict(){
     const {getFieldValue,getFieldError} = this.props.form
-    let errors = [getFieldError('gradeName'),getFieldError('gradeNickName'),getFieldError('phaseName')]
+    let errors = [getFieldError('dictStyle'),getFieldError('styleDesc'),getFieldError('dictName'),getFieldError('dictCode')]
     if(!errors.reduce((pre,cur)=>pre||cur,false)){
-      this.props.editGrade({
-        gradeName:getFieldValue('gradeName'),
-        gradeNickName:getFieldValue('gradeNickName'),
-        phaseCode:getFieldValue('phaseName'),
+      this.props.editDict({
+        dictStyle:getFieldValue('dictStyle'),
+        styleDesc:getFieldValue('styleDesc'),
+        dictName:getFieldValue('dictName'),
+        dictCode:getFieldValue('dictCode'),
         action:'edit',
-        gradeId:this._currentRow.get('gradeId')
+        dictId:this._currentRow.get('dictId')
       })
     }
   },
-  renderAddGradeModal(type){
+  renderAddDictModal(type){
     const {getFieldDecorator,getFieldValue} = this.props.form
     return (
-      <Modal title='添加年级' visible={true} onCancel={this.handleCloseAddGradeModal.bind(this,type)}
+      <Modal title='添加字典' visible={true} onCancel={this.handleCloseAddDictModal.bind(this,type)}
       footer={[
-        <Button key='cancel' type='ghost' onClick={this.handleCloseAddGradeModal.bind(this,type)}>取消</Button>,
+        <Button key='cancel' type='ghost' onClick={this.handleCloseAddDictModal.bind(this,type)}>取消</Button>,
         <Button key='ok' type='primary'
-        disabled={!getFieldValue('gradeName')&&!getFieldValue('phaseName')}
-        onClick={type=='edit'?this.handleEditGrade:this.handleAddGrade}>确认</Button>
+        disabled={!getFieldValue('dictStyle')&&!getFieldValue('dictName')&&!getFieldValue('dictCode')}
+        onClick={type=='edit'?this.handleEditDict:this.handleAddDict}>确认</Button>
       ]}
       >
         <div>
           <Form>
             <FormItem
-            label='年级名称'
+            label='字段类型'
             labelCol={{ span: 5 }}
             wrapperCol={{ span: 12 }}
-            key='gradeName'>
-            {getFieldDecorator('gradeName', {
-              rules: [{ required: true, message: '输入年级名称' },{max:10,message:'输入不超过10个字'}],
+            key='dictStyle'>
+            {getFieldDecorator('dictStyle', {
+              rules: [{ required: true, message: '输入字段类型' },{max:10,message:'输入不超过10个字'}],
             })(
               <Input placeholder="输入不超过10个字"/>
             )}
             </FormItem>
             <FormItem
-            label='学段'
+            label='类型描述'
             labelCol={{ span: 5 }}
             wrapperCol={{ span: 12 }}
-            key='phaseName'>
-            {getFieldDecorator('phaseName', {
-              rules: [{ required: true, message: '选择学段' }],
+            key='styleDesc'>
+            {getFieldDecorator('styleDesc', {
+              rules: [{max:50,message:'输入不超过50个字'}],
             })(
-              <Select placeholder='选择学段' style={{ width: 244 }} onChange={this.handleSelectPhase}>
-                {
-                  this._phaseList.map(v => (
-                    <Option key={v.get('phase_code')} value={v.get('phase_code')} title={v.get('phase_name')}>{v.get('phase_name')}</Option>
-                  ))
-                }
-              </Select>
+              <Input placeholder="输入不超过50个字"/>
             )}
             </FormItem>
             <FormItem
-            label='年级别称'
+            label='字段名'
             labelCol={{ span: 5 }}
             wrapperCol={{ span: 12 }}
-            key='gradeNickName'>
-            {getFieldDecorator('gradeNickName', {
-              rules: [{ max:10, message: '输入不超过10个字' }],
+            key='dictName'>
+            {getFieldDecorator('dictName', {
+              rules: [{ required: true, message: '输入字段名' },{max:30,message:'输入不超过30个字'}],
             })(
-              <Input placeholder='输入不超过10个字'/>
+              <Input placeholder="输入不超过30个字"/>
+            )}
+            </FormItem>
+            <FormItem
+            label='字段值'
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 12 }}
+            key='dictCode'>
+            {getFieldDecorator('dictCode', {
+              rules: [{ required: true, message: '输入字段值' },{max:2,message:'输入不超过两位'}],
+            })(
+              <Input placeholder="输入不超过两位"/>
             )}
             </FormItem>
           </Form>
         </div>
       </Modal>
     )
-  },
-
-  //搜索框输入的change事件
-  handleSearchTableData(value){
-    this.props.getWorkspaceData('grade',this.props.workspace.get('data').get('nowPage'),this.props.workspace.get('data').get('pageShow'),value)
   },
 
   render(){
@@ -239,7 +244,7 @@ const GradePage = React.createClass({
     return (
       <div className={styles.container}>
         <div className={styles.header}>
-          {this._currentMenu.get('authList').some(v => v.get('authUrl')=='/grade/add')?<Button type="primary" style={{backgroundColor:'#FD9B09',borderColor:'#FD9B09'}} onClick={()=>{this.setState({showAddGradeModal:true})}}>新建</Button>:<div> </div>}<Search placeholder="请输入年级名称" value={this.state.searchStr} onChange={(e)=>{this.setState({searchStr:e.target.value})}} onSearch={this.handleSearchTableData} />
+          {this._currentMenu.get('authList').some(v => v.get('authUrl')=='/grade/add')?<Button type="primary" style={{backgroundColor:'#FD9B09',borderColor:'#FD9B09'}} onClick={()=>{this.setState({showAddDictModal:true})}}>新建</Button>:<div> </div>}<Search placeholder="请输入年级名称" value={this.state.searchStr} onChange={(e)=>{this.setState({searchStr:e.target.value})}} onSearch={this.handleSearchTableData} />
         </div>
         <div className={styles.body}>
           <div className={styles.wrapper}>
@@ -249,18 +254,18 @@ const GradePage = React.createClass({
               pageSize:this.props.workspace.get('data').get('pageShow'),
               current:this.props.workspace.get('data').get('nowPage'),
               onChange:(page)=>{
-                this.props.getWorkspaceData('grade',page,this.props.workspace.get('data').get('pageShow'),this.state.searchStr)
+                this.props.getWorkspaceData('dict',page,this.props.workspace.get('data').get('pageShow'),this.state.searchStr)
               },
               showQuickJumper:true,
               onShowSizeChange:(current,size)=>{
-                this.props.getWorkspaceData('grade',this.props.workspace.get('data').get('nowPage'),size,this.state.searchStr)
+                this.props.getWorkspaceData('dict',this.props.workspace.get('data').get('nowPage'),size,this.state.searchStr)
               }
             }:null} />
             <div className={styles.tableMsg}>当前条目{workspace.get('data').get('start')}-{parseInt(workspace.get('data').get('start'))+parseInt(workspace.get('data').get('pageShow'))}/总条目{workspace.get('data').get('totalCount')}</div>
           </div>
         </div>
-        {this.state.showAddGradeModal?this.renderAddGradeModal('create'):null}
-        {this.state.showEditGradeModal?this.renderAddGradeModal('edit'):null}
+        {this.state.showAddDictModal?this.renderAddDictModal('create'):null}
+        {this.state.showEditDictModal?this.renderAddDictModal('edit'):null}
       </div>
     )
   }
@@ -275,9 +280,9 @@ function mapStateToProps(state){
 function mapDispatchToProps(dispatch){
   return {
     getWorkspaceData:bindActionCreators(getWorkspaceData,dispatch),
-    addGrade:bindActionCreators(addGrade,dispatch),
-    editGrade:bindActionCreators(editGrade,dispatch)
+    addDict:bindActionCreators(addDict,dispatch),
+    editDict:bindActionCreators(editDict,dispatch),
   }
 }
 
-export default connect(mapStateToProps,mapDispatchToProps)(Form.create()(GradePage))
+export default connect(mapStateToProps,mapDispatchToProps)(Form.create()(DictPage))
