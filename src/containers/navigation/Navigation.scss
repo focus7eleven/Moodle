@@ -24,8 +24,11 @@
       color:white;
       border-bottom: none;
       :local(.firstMenu){
-        font-size: 14px;
-        font-weight: bold;
+        font-size: 16px;
+        font-weight: normal;
+        &:hover{
+          font-weight: bold;
+        }
       }
       :global(.ant-menu-item){
         height: 55px;
