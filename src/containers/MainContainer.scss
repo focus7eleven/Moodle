@@ -59,10 +59,27 @@
               }
             }
           }
+          :local(.schoolInfoMini){
+            display: none;
+          }
         }
         @media (max-width:1024px) {
           :local(.schoolInfo){
             display: none;
+          }
+          :local(.schoolInfoMini){
+            display: flex;
+            flex-direction: row;
+            :local(.school){
+              height: 100%;
+              line-height: 45px;
+              font-size: 14px;
+              margin-right:30px;
+              display: flex;
+              flex-direction: row;
+              justify-content: flex-start;
+              align-items: center;
+            }
           }
         }
         :local(.teacherNumContainer){
@@ -87,11 +104,12 @@
     }
     :local(.body){
       width: 100%;
-      height: calc( 100% - 45px );
       background-color: #fff;
       border: 1px solid rgb(217,217,217);
       border-top: none;
-      overflow: auto;
+      margin-bottom: 40px;
+      overflow-x: auto;
+      min-height: 92%;
       :local(.innerContainer){
         min-width: 930px;
         width: 100%;
