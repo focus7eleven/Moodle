@@ -57,6 +57,11 @@ const config = _.extend({
 		dict:{
 			post:`${baseURL}/dict/add`,
 			update:`${baseURL}/dict/edit`,
+		},
+		role:{
+			desc:{update:`${baseURL}/memo/update`},
+			post:`${baseURL}/role/add`,
+			update:`${baseURL}/role/edit`
 		}
 	}
 })

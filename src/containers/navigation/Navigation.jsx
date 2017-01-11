@@ -102,7 +102,6 @@ const Navigation = React.createClass({
   },
 
   render(){
-    console.log("-->:",this.context.router)
     const currentUrl = this.context.router.location.pathname.split('/').slice(-2)[0]
     return (
       <div className={styles.wrapper}>

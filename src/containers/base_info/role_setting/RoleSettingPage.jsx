@@ -1,7 +1,7 @@
 import React from 'react'
-import {Icon,Input,Table,Button,Modal,Form,Spin,Select} from 'antd'
+import {Icon,Input,Table,Button,Modal,Form,Spin,Select,InputNumber} from 'antd'
 import PermissionDic from '../../../utils/permissionDic'
-import {getWorkspaceData} from '../../../actions/workspace'
+import {getWorkspaceData,editRoleDesc,addRole,editRole} from '../../../actions/workspace'
 import {fromJS,Map,List} from 'immutable'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
@@ -51,24 +51,24 @@ const RoleSettingPage = React.createClass({
     let authList = this._currentMenu.get('authList')
     tableHeader = fromJS([{
       title: '角色名称',
-      dataIndex: 'dictId',
-      key: 'dictId',
+      dataIndex: 'roleName',
+      key: 'roleName',
       className:styles.tableColumn,
     },{
       title: '角色描述',
-      dataIndex: 'dictStyle',
-      key: 'dictStyle',
+      dataIndex: 'roleDesc',
+      key: 'roleDesc',
       className:styles.tableColumn,
       render:(text,record)=>{
-        <a onClick={this.handleShowRoleDescEditModal.bind(this,text)}><Icon type='edit'/>{text}</a>
+        return <a onClick={this.handleShowRoleDescEditModal.bind(this,text,record.key)}><Icon type='edit'/>{text}</a>
       }
     },{
       title: '权限配置',
-      dataIndex: 'styleDesc',
-      key: 'styleDesc',
+      dataIndex: 'premissionEdit',
+      key: 'premissionEdit',
       className:styles.tableColumn,
       render:(text,record)=>{
-        <Icon type='search' onClick={this.handleShowPermissionModal.bind(this,)}/>
+        return <Icon type='search' onClick={this.handleShowPermissionModal}/>
       }
     }])
     tableHeader = tableHeader.concat(authList.filter(v => (v.get('authUrl').split('/')[2] != 'view')&&(v.get('authUrl').split('/')[2] != 'add')).map( v => {
@@ -80,7 +80,7 @@ const RoleSettingPage = React.createClass({
         render:(text,record) => {
           return (
             <div>
-              <Button type="primary" style={{backgroundColor:'#30D18E',borderColor:'#30D18E'}} onClick={this.handleShowEditDictModal.bind(this,record.key)}>{PermissionDic[v.get('authUrl').split('/')[2]]}</Button>
+              <Button type="primary" style={{backgroundColor:'#30D18E',borderColor:'#30D18E'}} onClick={this.handleShowEditRoleModal.bind(this,record.key)}>{PermissionDic[v.get('authUrl').split('/')[2]]}</Button>
               <Button type="primary" style={{backgroundColor:'#FD9B09',borderColor:'#FD9B09',marginLeft:'10px'}} onClick={this.handleShowDeleteModal.bind(this,record.key)}>删除</Button>
             </div>
           )
@@ -98,8 +98,15 @@ const RoleSettingPage = React.createClass({
       tableBody:tableBody.toJS(),
     }
   },
-  handleShowRoleDescEditModal(){
-
+  handleShowRoleDescEditModal(text,key){
+    const {setFieldsValue} = this.props.form
+    this._currentRow = this.props.workspace.get('data').get('result').get(key)
+    this.setState({
+      showRoleDescEditModal:true,
+    })
+    setFieldsValue({
+      roleDesc:text
+    })
   },
   handleShowPermissionModal(){
 
@@ -111,126 +118,144 @@ const RoleSettingPage = React.createClass({
       title: '你先删除这条记录吗？',
       content: '删除后不可恢复',
       onOk() {
-        that.props.editDict({
-          dictId:currentRow.get('dictId'),
+        that.props.editRole({
+          roleId:currentRow.get('roleId'),
           action:'delete'
         })
       },
       onCancel() {},
     });
   },
-  handleCloseAddDictModal(type){
+  handleCloseAddRoleModal(type){
     switch (type) {
       case 'create':
         this.setState({
-          showAddDictModal:false
+          showAddRoleModal:false
         })
         break;
       case 'edit':
         this.setState({
-          showEditDictModal:false
+          showEditRoleModal:false
         })
       default:
 
     }
   },
-  handleShowEditDictModal(key){
-    console.log(key)
+  handleShowEditRoleModal(key){
     const {setFieldsValue} = this.props.form
     this._currentRow = this.props.workspace.get('data').get('result').get(key)
     this.setState({
-      showEditDictModal:true
+      showEditRoleModal:true
     })
     setFieldsValue({
-      dictStyle:this._currentRow.get('dictStyle'),
-      styleDesc:this._currentRow.get('styleDesc'),
-      dictName:this._currentRow.get('dictName'),
-      dictCode:this._currentRow.get('dictCode'),
+      roleName:this._currentRow.get('roleName'),
     })
   },
-  handleAddDict(){
+  handleAddRole(){
     const {getFieldValue,getFieldError} = this.props.form
-    let errors = [getFieldError('gradeName'),getFieldError('gradeNickName'),getFieldError('phaseName')]
+    let errors = [getFieldError('roleName'),getFieldError('range_code')]
     if(!errors.reduce((pre,cur)=>pre||cur,false)){
-      this.props.addDict({
-        dictStyle:getFieldValue('dictStyle'),
-        styleDesc:getFieldValue('styleDesc'),
-        dictName:getFieldValue('dictName'),
-        dictCode:getFieldValue('dictCode'),
+      this.props.addRole({
+        roleName:getFieldValue('roleName'),
+        roleDesc:getFieldValue('roleDesc'),
+        rangeCode:getFieldValue('range_code'),
       })
     }
   },
-  handleEditDict(){
+  handleEditRole(){
     const {getFieldValue,getFieldError} = this.props.form
-    let errors = [getFieldError('dictStyle'),getFieldError('styleDesc'),getFieldError('dictName'),getFieldError('dictCode')]
+    let errors = [getFieldError('roleName')]
     if(!errors.reduce((pre,cur)=>pre||cur,false)){
-      this.props.editDict({
-        dictStyle:getFieldValue('dictStyle'),
-        styleDesc:getFieldValue('styleDesc'),
-        dictName:getFieldValue('dictName'),
-        dictCode:getFieldValue('dictCode'),
+      this.props.editRole({
+        roleName:getFieldValue('roleName'),
         action:'edit',
-        dictId:this._currentRow.get('dictId')
+        roleId:this._currentRow.get('roleId')
       })
     }
   },
-  renderAddDictModal(type){
+  handleEditRoleDesc(){
+    const {getFieldValue} = this.props.form
+    this.props.editRoleDesc({
+      text:getFieldValue('roleDesc'),
+      table:'role',
+      column:'role_desc',
+      pk:'role_id',
+      pkv:this._currentRow.get('roleId')
+    })
+  },
+  renderRoleDescEditModal(){
+    const {getFieldDecorator} = this.props.form
+    return (
+      <Modal title='编辑角色描述' visible={true}
+      onCancel={()=>{this.setState({showRoleDescEditModal:false})}}
+      onOk={this.handleEditRoleDesc}
+      >
+        <Form>
+          <FormItem
+          label='角色描述'
+          labelCol={{ span: 5 }}
+          wrapperCol={{ span: 12 }}
+          key='roleDesc'>
+          {getFieldDecorator('roleDesc', {
+            rules: [{ required: true, message: '输入角色描述' },{max:200,message:'输入不超过200个字'}],
+          })(
+            <Input type='textarea' rows={4} placeholder="输入不超过10个字"/>
+          )}
+          </FormItem>
+        </Form>
+      </Modal>
+    )
+  },
+  renderAddRoleModal(type){
     const {getFieldDecorator,getFieldValue} = this.props.form
     return (
-      <Modal title='添加字典' visible={true} onCancel={this.handleCloseAddDictModal.bind(this,type)}
+      <Modal title='添加角色' visible={true} onCancel={this.handleCloseAddRoleModal.bind(this,type)}
       footer={[
-        <Button key='cancel' type='ghost' onClick={this.handleCloseAddDictModal.bind(this,type)}>取消</Button>,
+        <Button key='cancel' type='ghost' onClick={this.handleCloseAddRoleModal.bind(this,type)}>取消</Button>,
         <Button key='ok' type='primary'
-        disabled={!getFieldValue('dictStyle')&&!getFieldValue('dictName')&&!getFieldValue('dictCode')}
-        onClick={type=='edit'?this.handleEditDict:this.handleAddDict}>确认</Button>
+        disabled={!getFieldValue('roleName')&&!getFieldValue('range_code')&&(type=='create')}
+        onClick={type=='edit'?this.handleEditRole:this.handleAddRole}>确认</Button>
       ]}
       >
         <div>
           <Form>
             <FormItem
-            label='字段类型'
+            label='角色名称'
             labelCol={{ span: 5 }}
             wrapperCol={{ span: 12 }}
             key='dictStyle'>
-            {getFieldDecorator('dictStyle', {
-              rules: [{ required: true, message: '输入字段类型' },{max:10,message:'输入不超过10个字'}],
+            {getFieldDecorator('roleName', {
+              rules: [{ required: true, message: '输入角色名称' },{max:20,message:'输入不超过20个字'}],
             })(
-              <Input placeholder="输入不超过10个字"/>
+              <Input placeholder="输入不超过20个字"/>
             )}
             </FormItem>
-            <FormItem
-            label='类型描述'
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 12 }}
-            key='styleDesc'>
-            {getFieldDecorator('styleDesc', {
-              rules: [{max:50,message:'输入不超过50个字'}],
-            })(
-              <Input placeholder="输入不超过50个字"/>
-            )}
-            </FormItem>
-            <FormItem
-            label='字段名'
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 12 }}
-            key='dictName'>
-            {getFieldDecorator('dictName', {
-              rules: [{ required: true, message: '输入字段名' },{max:30,message:'输入不超过30个字'}],
-            })(
-              <Input placeholder="输入不超过30个字"/>
-            )}
-            </FormItem>
-            <FormItem
-            label='字段值'
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 12 }}
-            key='dictCode'>
-            {getFieldDecorator('dictCode', {
-              rules: [{ required: true, message: '输入字段值' },{max:2,message:'输入不超过两位'}],
-            })(
-              <Input placeholder="输入不超过两位"/>
-            )}
-            </FormItem>
+            {
+              type=='create'?<FormItem
+              label='角色描述'
+              labelCol={{ span: 5 }}
+              wrapperCol={{ span: 12 }}
+              key='styleDesc'>
+              {getFieldDecorator('roleDesc', {
+                rules: [{max:200,message:'输入不超过200个字'}],
+              })(
+                <Input placeholder="输入不超过200个字"/>
+              )}
+              </FormItem>:null
+            }{
+              type=='create'?<FormItem
+              label='所属区域'
+              labelCol={{ span: 5 }}
+              wrapperCol={{ span: 12 }}
+              key='range_code'>
+              {getFieldDecorator('range_code', {
+                initialValue:0,
+                rules: [{ required: true, message: '所属区域' }],
+              })(
+                <InputNumber style={{width:'244px'}} placeholder="输入数字"/>
+              )}
+              </FormItem>:null
+            }
           </Form>
         </div>
       </Modal>
@@ -244,7 +269,7 @@ const RoleSettingPage = React.createClass({
     return (
       <div className={styles.container}>
         <div className={styles.header}>
-          {this._currentMenu.get('authList').some(v => v.get('authUrl')=='/grade/add')?<Button type="primary" style={{backgroundColor:'#FD9B09',borderColor:'#FD9B09'}} onClick={()=>{this.setState({showAddDictModal:true})}}>新建</Button>:<div> </div>}<Search placeholder="请输入年级名称" value={this.state.searchStr} onChange={(e)=>{this.setState({searchStr:e.target.value})}} onSearch={this.handleSearchTableData} />
+          {this._currentMenu.get('authList').some(v => v.get('authUrl')=='/role/add')?<Button type="primary" style={{backgroundColor:'#FD9B09',borderColor:'#FD9B09'}} onClick={()=>{this.setState({showAddRoleModal:true})}}>新建</Button>:<div> </div>}<Search placeholder="请输入年级名称" value={this.state.searchStr} onChange={(e)=>{this.setState({searchStr:e.target.value})}} onSearch={this.handleSearchTableData} />
         </div>
         <div className={styles.body}>
           <div className={styles.wrapper}>
@@ -254,18 +279,19 @@ const RoleSettingPage = React.createClass({
               pageSize:this.props.workspace.get('data').get('pageShow'),
               current:this.props.workspace.get('data').get('nowPage'),
               onChange:(page)=>{
-                this.props.getWorkspaceData('dict',page,this.props.workspace.get('data').get('pageShow'),this.state.searchStr)
+                this.props.getWorkspaceData('role',page,this.props.workspace.get('data').get('pageShow'),this.state.searchStr)
               },
               showQuickJumper:true,
               onShowSizeChange:(current,size)=>{
-                this.props.getWorkspaceData('dict',this.props.workspace.get('data').get('nowPage'),size,this.state.searchStr)
+                this.props.getWorkspaceData('role',this.props.workspace.get('data').get('nowPage'),size,this.state.searchStr)
               }
             }:null} />
             <div className={styles.tableMsg}>当前条目{workspace.get('data').get('start')}-{parseInt(workspace.get('data').get('start'))+parseInt(workspace.get('data').get('pageShow'))}/总条目{workspace.get('data').get('totalCount')}</div>
           </div>
         </div>
-        {this.state.showAddDictModal?this.renderAddDictModal('create'):null}
-        {this.state.showEditDictModal?this.renderAddDictModal('edit'):null}
+        {this.state.showAddRoleModal?this.renderAddRoleModal('create'):null}
+        {this.state.showEditRoleModal?this.renderAddRoleModal('edit'):null}
+        {this.state.showRoleDescEditModal?this.renderRoleDescEditModal():null}
       </div>
     )
   }
@@ -280,9 +306,10 @@ function mapStateToProps(state){
 function mapDispatchToProps(dispatch){
   return {
     getWorkspaceData:bindActionCreators(getWorkspaceData,dispatch),
-    addDict:bindActionCreators(addDict,dispatch),
-    editDict:bindActionCreators(editDict,dispatch),
+    editRoleDesc:bindActionCreators(editRoleDesc,dispatch),
+    addRole:bindActionCreators(addRole,dispatch),
+    editRole:bindActionCreators(editRole,dispatch)
   }
 }
 
-export default connect(mapStateToProps,mapDispatchToProps)(Form.create()(DictPage))
+export default connect(mapStateToProps,mapDispatchToProps)(Form.create()(RoleSettingPage))

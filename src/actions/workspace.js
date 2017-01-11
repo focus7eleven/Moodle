@@ -172,3 +172,7 @@ export const editSubject = require('./subject').editSubject
 
 export const addDict = require('./dict').addDict
 export const editDict = require('./dict').editDict
+
+export const editRoleDesc = require('./role').editRoleDesc
+export const addRole = require('./role').addRole
+export const editRole = require('./role').editRole
