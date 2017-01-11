@@ -1,12 +1,12 @@
 import React from 'react'
 import {Icon,Input,Table,Button,Modal,Form,Spin,Select} from 'antd'
 import PermissionDic from '../../../utils/permissionDic'
-import {getWorkspaceData,addDict,editDict} from '../../../actions/workspace'
+import {getWorkspaceData} from '../../../actions/workspace'
 import {fromJS,Map,List} from 'immutable'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 import { findMenuInTree,findPath} from '../../../reducer/menu'
-import styles from './DictPage.scss'
+import styles from './RoleSettingPage.scss'
 import _ from 'lodash'
 import config from '../../../config'
 
@@ -16,7 +16,7 @@ const Option = Select.Option
 const confirm = Modal.confirm
 
 
-const DictPage = React.createClass({
+const RoleSettingPage = React.createClass({
   _currentMenu:Map({
     authList:List()
   }),
@@ -34,7 +34,7 @@ const DictPage = React.createClass({
   },
   componentWillMount(){
     if(!this.props.menu.get('data').isEmpty()){
-      this._currentMenu = findMenuInTree(this.props.menu.get('data'),'dict')
+      this._currentMenu = findMenuInTree(this.props.menu.get('data'),'role')
     }
   },
   // componentWillReceiveProps(nextProps){
@@ -50,30 +50,26 @@ const DictPage = React.createClass({
     let tableBody = List()
     let authList = this._currentMenu.get('authList')
     tableHeader = fromJS([{
-      title: '序号',
+      title: '角色名称',
       dataIndex: 'dictId',
       key: 'dictId',
       className:styles.tableColumn,
     },{
-      title: '字段类型',
+      title: '角色描述',
       dataIndex: 'dictStyle',
       key: 'dictStyle',
       className:styles.tableColumn,
+      render:(text,record)=>{
+        <a onClick={this.handleShowRoleDescEditModal.bind(this,text)}><Icon type='edit'/>{text}</a>
+      }
     },{
-      title: '类型描述',
+      title: '权限配置',
       dataIndex: 'styleDesc',
       key: 'styleDesc',
       className:styles.tableColumn,
-    },{
-      title:'字段名',
-      dataIndex:'dictName',
-      key:'dictName',
-      className:styles.tableColumn,
-    },{
-      title:'字段值',
-      dataIndex:'dictCode',
-      key:'dictCode',
-      className:styles.tableColumn,
+      render:(text,record)=>{
+        <Icon type='search' onClick={this.handleShowPermissionModal.bind(this,)}/>
+      }
     }])
     tableHeader = tableHeader.concat(authList.filter(v => (v.get('authUrl').split('/')[2] != 'view')&&(v.get('authUrl').split('/')[2] != 'add')).map( v => {
       return {
@@ -101,6 +97,12 @@ const DictPage = React.createClass({
       tableHeader:tableHeader.toJS(),
       tableBody:tableBody.toJS(),
     }
+  },
+  handleShowRoleDescEditModal(){
+
+  },
+  handleShowPermissionModal(){
+
   },
   handleShowDeleteModal(key){
     const that = this
