@@ -1,27 +1,11 @@
-:local(.loading){
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+@import "~mixins.scss";
+
 :local(.container){
   width: 100%;
   height: 100%;
-  padding: 10px;
-  min-width: 930px;
 
   :local(.header){
-    height: 35px;
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-    :local(.searchInput){
-      width: 300px;
-    }
+    @include headerWithoutFilter;
   }
 
   :local(.body){
@@ -30,15 +14,13 @@
     :local(.wrapper){
       position:relative;
       :local(.tableDarkRow){
-        text-align: center;
-        background-color: #F5F5F5;
+        @include tableDarkRow;
       }
       :local(.tableLightRow){
-        text-align: center;
-        background-color: #FFFFFF;
+        @include tableLightRow;
       }
       :local(.tableColumn){
-        text-align: center;
+        @include tableColumn;
       }
       :local(.listColumn){
         padding:16px 5px;
@@ -55,12 +37,7 @@
         }
       }
       :local(.tableMsg){
-        position: absolute;
-        left: 10px;
-        bottom: 30px;
-      }
-      :local(.pagination){
-        background-color: red;
+        @include tableMsg;
       }
     }
   }

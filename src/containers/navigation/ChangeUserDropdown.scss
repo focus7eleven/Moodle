@@ -1,3 +1,5 @@
+@import "~theme.scss";
+
 :local(.changeUser){
   position:absolute;
   height: 280px;
@@ -12,7 +14,7 @@
   align-items: center;
   :local(.avatar){
     border-radius: 50px;
-    border: 2px solid #37B781;
+    border: 2px solid $primary-color;
     height: 100px;
     width: 100px;
     display: flex;
@@ -27,7 +29,7 @@
     }
   }
   :local(.name){
-    color:#37B781;
+    color: $primary-color;
     margin-bottom: 10px
   }
   :local(.division){
