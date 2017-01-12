@@ -72,6 +72,9 @@ const MainContainer = React.createClass({
                       </div>
                     </div>
                   </div>
+                  <div className={styles.schoolInfoMini}>
+                    <span className={styles.school}>{schoolInfo.schoolName}</span>
+                  </div>
                 </div>
                 {/* 内容显示区域 */}
                 <div className={styles.body}>
