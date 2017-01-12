@@ -14,6 +14,14 @@ const config = _.extend({
 		key:{
 			get:`${baseURL}/key`
 		},
+		select:{
+			json:{
+				get:(selectid,selectname,table,selectstyle,selectcompareid)=>`${baseURL}/select.json?selectid=${selectid}&selectname=${selectname}&table=${table}&selectstyle=${selectstyle}&selectcompareid=${selectcompareid}`
+			},
+			change:{
+				update:`${baseURL}/select/change`
+			}
+		},
 		user:{
 			login:{
 				post:`${baseURL}/LoginWithToken`
@@ -62,6 +70,10 @@ const config = _.extend({
 			desc:{update:`${baseURL}/memo/update`},
 			post:`${baseURL}/role/add`,
 			update:`${baseURL}/role/edit`
+		},
+		textbook:{
+			post:`${baseURL}/textbook/add`,
+			update:`${baseURL}/textbook/edit`
 		}
 	}
 })
