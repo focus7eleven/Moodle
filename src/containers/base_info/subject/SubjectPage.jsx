@@ -1,5 +1,5 @@
 import React from 'react'
-import {Icon,Input,Table,Button,Modal,Form,Spin} from 'antd'
+import {Icon,Input,Table,Button,Modal,Form} from 'antd'
 import PermissionDic from '../../../utils/permissionDic'
 import {getWorkspaceData,addSubject,editSubject} from '../../../actions/workspace'
 import {fromJS,Map,List} from 'immutable'

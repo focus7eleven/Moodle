@@ -14,6 +14,7 @@ import GradePage from './containers/base_info/grade/GradePage'
 import SubjectPage from './containers/base_info/subject/SubjectPage'
 import {LoginControlHOC} from './enhancers/AccessControlContainer'
 import DictPage from './containers/base_info/dict/DictPage'
+import ResourceManagementPage from './containers/base_info/resource_management/ResourceManagementPage'
 
 const routes = (
 	<Router history={browserHistory}>
@@ -34,6 +35,7 @@ const routes = (
 					<Route path='grade' component={GradePage}></Route>
 					<Route path='subject' component={SubjectPage}></Route>
 					<Route path='dict' component={DictPage}></Route>
+					<Route path='resource-management' component={ResourceManagementPage}></Route>
 
 					<Route path='schoolDepart' component={Navigation}></Route>
 					<Route path='textbook'>
