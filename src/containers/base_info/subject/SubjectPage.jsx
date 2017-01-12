@@ -1,18 +1,17 @@
 import React from 'react'
-import {Icon,Input,Table,Button,Modal,Form,Spin} from 'antd'
+import {Icon,Input,Table,Button,Modal,Form} from 'antd'
 import PermissionDic from '../../../utils/permissionDic'
 import {getWorkspaceData,addSubject,editSubject} from '../../../actions/workspace'
 import {fromJS,Map,List} from 'immutable'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
-import { findMenuInTree,findPath} from '../../../reducer/menu'
+import {findMenuInTree} from '../../../reducer/menu'
 import styles from './SubjectPage.scss'
 import _ from 'lodash'
 
 const FormItem = Form.Item
 const Search = Input.Search
 const confirm = Modal.confirm
-
 
 const SubjectPage = React.createClass({
   _currentMenu:Map({
@@ -73,7 +72,7 @@ const SubjectPage = React.createClass({
         render:(text,record) => {
           return (
             <div>
-              <Button data-action="edit" type="primary" style={{backgroundColor:'#30D18E',borderColor:'#30D18E'}} onClick={this.handleShowEditSubjectModal.bind(this,record.key)}>{PermissionDic[v.get('authUrl').split('/')[2]]}</Button>
+              <Button data-action="edit" type="primary" style={{backgroundColor:'#30D18E',borderColor:'#30D18E'}} onClick={this.handleShowEditSubjectModal.bind(this,record.key)}>编辑</Button>
               <Button type="primary" style={{backgroundColor:'#FD9B09',borderColor:'#FD9B09',marginLeft:'10px'}} onClick={this.handleShowDeleteModal.bind(this,record.key)}>删除</Button>
             </div>
           )
