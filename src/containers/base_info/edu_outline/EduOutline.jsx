@@ -1,5 +1,5 @@
 import React from 'react'
-import {Icon,Input,Table,Button,Modal,Form,Spin,Select,InputNumber} from 'antd'
+import {Icon,Input,Table,Button,Modal,Form,Spin,Select,InputNumber,notification} from 'antd'
 import PermissionDic from '../../../utils/permissionDic'
 import {getWorkspaceData,addTextbook,editTextbook,deleteTextbook,searchTextbook} from '../../../actions/workspace'
 import {fromJS,Map,List} from 'immutable'
@@ -47,6 +47,10 @@ const EduOutlinePage = React.createClass({
     return {
       searchStr:'',
       loading:true,
+
+      phaseOption:this.props.workspace.get('otherMsg').get('phaseOption')||'',
+      gradeOption:this.props.workspace.get('otherMsg').get('gradeOption')||'',
+      subjectOption:this.props.workspace.get('otherMsg').get('subjectOption')||'',
     }
   },
 
@@ -119,7 +123,7 @@ const EduOutlinePage = React.createClass({
       key: 'catalogue',
       className:styles.tableColumn,
       render:(text,record)=>{
-        return (<div><a >导入</a><a >详情</a></div>)
+        return (<div><a >导入</a><a onClick={this.handleShowTextbookDetail.bind(this,record.key)}>详情</a></div>)
       }
     }])
     tableHeader = tableHeader.concat(authList.filter(v => (v.get('authUrl').split('/')[2] != 'view')&&(v.get('authUrl').split('/')[2] != 'add')).map( v => {
@@ -149,6 +153,23 @@ const EduOutlinePage = React.createClass({
       tableHeader:tableHeader.toJS(),
       tableBody:tableBody.toJS(),
     }
+  },
+
+  handleShowTextbookDetail(key){
+    console.log("-->:",key)
+    this._currentRow = this.props.workspace.get('data').get('result').get(key)
+    fetch(config.api.textbook.menulist.get(this._currentRow.get('textbook_id')),{
+      method:'get',
+      headers:{
+        'from':'nodejs',
+        'token':sessionStorage.getItem('accessToken')
+      },
+    }).then(res => res.json()).then(res => {
+      this.setState({
+        showTextbookDetailModal:true,
+        textbookDetail:res
+      })
+    })
   },
 
   handleShowDeleteModal(key){
@@ -234,10 +255,30 @@ const EduOutlinePage = React.createClass({
     }
   },
   handleSearchTableData(){
-    const { searchStr,phaseId,gradeId,subjectId}
-    const currnetPage = this.prope.workspace.get('data').get('result').get('nowPage')
-    this.props.searchTextbook(searchStr,currentPage,phaseId,gradeId,subjectId)
-  }
+    const { searchStr,phaseOption,gradeOption,subjectOption} = this.state
+    const currentPage = this.props.workspace.get('data').get('nowPage')
+    this.props.searchTextbook({searchStr,currentPage,phaseOption,gradeOption,subjectOption})
+  },
+  handleDeleteDetailRecord(record){
+    let formData = new FormData()
+    formData.append('textbook_menu_id',record['textbook_menu_id'])
+    fetch(config.api.textbook.menulist.delete,{
+      method:'post',
+      headers:{
+        'from':'nodejs',
+        'token':sessionStorage.getItem('accessToken')
+      },
+      body:formData
+    }).then(res => res.json()).then(res => {
+      if(res.title =='Success'){
+        notification.success({message:'删除成功'})
+        this.setState({
+          deleteSuccess:true,
+          textbookDetail:_.filter(this.state.textbookDetail,(v)=> (v['textbook_menu_id'] != record['textbook_menu_id']))
+        })
+      }
+    })
+  },
   renderSelectBar(optionList,type){
     return (
       <Select
@@ -352,6 +393,39 @@ const EduOutlinePage = React.createClass({
     )
   },
 
+  renderTextbookDetailModal(){
+    const tableHeader = [{
+      title: '学期',
+      dataIndex: 'term',
+      key: 'term',
+      width:60,
+      className:styles.tableColumn,
+    },{
+      title: '单元',
+      dataIndex: 'unit',
+      key: 'unit',
+      className:styles.tableColumn,
+    },{
+      title: '课程',
+      dataIndex: 'course',
+      key: 'course',
+      width:214,
+      className:styles.tableColumn,
+    },{
+      title: '删除',
+      dataIndex: 'delete',
+      key: 'delete',
+      className:styles.tableColumn,
+      render:(text,record) => <Icon type='delete' onClick={this.handleDeleteDetailRecord.bind(this,record)}/>
+    }]
+    return (
+      <Modal title='教科书目录' visible={true} onCancel={()=>{this.setState({showTextbookDetailModal:false})}}
+      footer={[<div key='1'></div>]}
+      >
+        <Table size='small' columns={tableHeader} dataSource={this.state.textbookDetail} />
+      </Modal>
+    )
+  },
   render(){
     const tableData = this.getTableData()
 
@@ -363,8 +437,10 @@ const EduOutlinePage = React.createClass({
           <Select
           style={{ width: 200 }}
           placeholder='选择学段'
-          onChange={(e)=>{this.setState({phaseOption:e.target.value})}}
+          value={this.props.workspace.get('otherMsg').get('phaseOption')}
+          onChange={(value)=>{this.setState({phaseOption:value},()=>{this.handleSearchTableData()})}}
           >
+          <Option key={-1} value={''} title='所有学段'>所有学段</Option>
           {
             this.state.loading?<Option key={0} value='0' title='0'><Spin size="small"/></Option>:this._phaseList.map((v,k) => (
               <Option key={k} value={v.id} title={v.text}>{v.text}</Option>
@@ -374,8 +450,10 @@ const EduOutlinePage = React.createClass({
           <Select
           style={{ width: 200 }}
           placeholder='选择年级'
-          onChange={(e)=>{this.setState({gradeOption:e.target.value})}}
+          value={this.props.workspace.get('otherMsg').get('gradeOption')}
+          onChange={(value)=>{this.setState({gradeOption:value},()=>{this.handleSearchTableData()})}}
           >
+          <Option key={-1} value={''} title='所有年级'>所有年级</Option>
           {
             this.state.loading?<Option key={0} value='0' title='0'><Spin size="small"/></Option>:this._gradeList.map((v,k) => (
               <Option key={k} value={v.id} title={v.text}>{v.text}</Option>
@@ -385,8 +463,10 @@ const EduOutlinePage = React.createClass({
           <Select
           style={{ width: 200 }}
           placeholder='选择学科'
-          onChange={(e)=>{this.setState({subjectOption:e.target.value})}}
+          value={this.props.workspace.get('otherMsg').get('subjectOption')}
+          onChange={(value)=>{this.setState({subjectOption:value},()=>{this.handleSearchTableData()})}}
           >
+          <Option key={-1} value={''} title='所有学科'>所有学科</Option>
           {
             this.state.loading?<Option key={0} value='0' title='0'><Spin size="small"/></Option>:this._subjectList.map((v,k) => (
               <Option key={k} value={v.id} title={v.text}>{v.text}</Option>
@@ -415,7 +495,7 @@ const EduOutlinePage = React.createClass({
         </div>
         {this.state.showAddTextbookModal?this.renderAddTextbookModal('create'):null}
         {this.state.showEditTextbookModal?this.renderAddTextbookModal('edit'):null}
-        {this.state.showRoleDescEditModal?this.renderRoleDescEditModal():null}
+        {this.state.showTextbookDetailModal?this.renderTextbookDetailModal():null}
       </div>
     )
   }

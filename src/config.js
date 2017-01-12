@@ -73,7 +73,14 @@ const config = _.extend({
 		},
 		textbook:{
 			post:`${baseURL}/textbook/add`,
-			update:`${baseURL}/textbook/edit`
+			update:`${baseURL}/textbook/edit`,
+			search:{
+				get:(searchStr,currentPage,phaseId,gradeId,subjectId)=>`${baseURL}/textbook/page?search=${searchStr}&currentPage=${currentPage}&phaseId=${phaseId}&gradeId=${gradeId}&subjectId=${subjectId}`
+			},
+			menulist:{
+				get:(textbookId)=>`${baseURL}/textbook/menulist.json?textbook_id=${textbookId}`,
+				delete:`${baseURL}/textbook/menudel`,
+			}
 		}
 	}
 })

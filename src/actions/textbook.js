@@ -1,6 +1,7 @@
 import {GET_WORKSPACEDATA} from './workspace'
 import config from '../config.js'
 import {notification} from 'antd'
+import {actionNames} from '../utils/action-utils'
 
 export function addTextbook(data){
   return dispatch => {
@@ -143,5 +144,22 @@ export function deleteTextbook(data){
         })
       }
     })
+  }
+}
+
+export const SEARCH_TEXTBOOK = actionNames('SEARCH_TEXTBOOK')
+export function searchTextbook(data){
+  const {searchStr,currentPage,phaseOption,gradeOption,subjectOption} = data
+  return {
+    types:SEARCH_TEXTBOOK,
+    callAPI:()=>{
+      return fetch(config.api.textbook.search.get(searchStr,currentPage,phaseOption,gradeOption,subjectOption),{
+        method:'GET',
+        headers:{
+          'from':'nodejs',
+          'token':sessionStorage.getItem('accessToken'),
+        }
+      }).then(res => res.json()).then(res => ({mainData:res,otherMsg:{phaseOption,gradeOption,subjectOption}}))
+    }
   }
 }
