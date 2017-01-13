@@ -1,5 +1,5 @@
 import React from 'react'
-import {Icon,Input,Table,Button,Modal,Form,Spin,Select,InputNumber} from 'antd'
+import {Icon,Input,Table,Button,Modal,Form,Spin,Select,InputNumber,Tree} from 'antd'
 import PermissionDic from '../../../utils/permissionDic'
 import {getWorkspaceData,editRoleDesc,addRole,editRole} from '../../../actions/workspace'
 import {fromJS,Map,List} from 'immutable'
@@ -9,11 +9,13 @@ import { findMenuInTree,findPath} from '../../../reducer/menu'
 import styles from './RoleSettingPage.scss'
 import _ from 'lodash'
 import config from '../../../config'
+import {getTreeFromList} from '../../../utils/tree-utils'
 
 const FormItem = Form.Item
 const Search = Input.Search
 const Option = Select.Option
 const confirm = Modal.confirm
+const TreeNode = Tree.TreeNode
 
 
 const RoleSettingPage = React.createClass({
@@ -26,6 +28,8 @@ const RoleSettingPage = React.createClass({
   getInitialState(){
     return {
       searchStr:'',
+
+      permissionTree:List(),
     }
   },
 
@@ -109,7 +113,19 @@ const RoleSettingPage = React.createClass({
     })
   },
   handleShowPermissionModal(){
-
+    fetch(config.api.resource.tree.get,{
+      method:'get',
+      headers:{
+        'from':'nodejs',
+        'token':sessionStorage.getItem('accessToken')
+      },
+    }).then(res => res.json()).then(res => {
+      getTreeFromList(fromJS(res)).toJS()
+      // this.setState({
+      //   permissionTree:getTreeFromList(fromJS(res)),
+      //   showPermissionModal:true,
+      // })
+    })
   },
   handleShowDeleteModal(key){
     const that = this
@@ -264,6 +280,30 @@ const RoleSettingPage = React.createClass({
       </Modal>
     )
   },
+  renderShowPermissionModal(){
+    const renderTree = (tree) => tree.map(node => {
+      if(!node.get('children').isEmpty()){
+        return (
+          <TreeNode key={node.get('id')} title={node.get('name')} >
+          {
+            renderTree(node.get('children'))
+          }
+          </TreeNode>
+      )
+      }else{
+        return <TreeNode key={node.get('id')} title={node.get('name')} />
+      }
+    })
+    return (
+      <Modal title='权限' visible={true}>
+        <Tree >
+        {
+          renderTree(this.state.permissionTree.get(0))
+        }
+        </Tree>
+      </Modal>
+    )
+  },
 
   render(){
     const tableData = this.getTableData()
@@ -295,6 +335,7 @@ const RoleSettingPage = React.createClass({
         {this.state.showAddRoleModal?this.renderAddRoleModal('create'):null}
         {this.state.showEditRoleModal?this.renderAddRoleModal('edit'):null}
         {this.state.showRoleDescEditModal?this.renderRoleDescEditModal():null}
+        {this.state.showPermissionModal?this.renderShowPermissionModal():null}
       </div>
     )
   }

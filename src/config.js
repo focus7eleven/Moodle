@@ -14,6 +14,11 @@ const config = _.extend({
 		key:{
 			get:`${baseURL}/key`
 		},
+		resource:{
+			tree:{
+				get:`${baseURL}/resource/tree`
+			}
+		},
 		select:{
 			json:{
 				get:(selectid,selectname,table,selectstyle,selectcompareid)=>`${baseURL}/select.json?selectid=${selectid}&selectname=${selectname}&table=${table}&selectstyle=${selectstyle}&selectcompareid=${selectcompareid}`
