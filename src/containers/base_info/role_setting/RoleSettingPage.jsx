@@ -183,6 +183,9 @@ const RoleSettingPage = React.createClass({
       pkv:this._currentRow.get('roleId')
     })
   },
+  handleSearchTableData(){
+    this.props.getWorkspaceData('role',this.props.workspace.get('data').get('nowPage'),this.props.workspace.get('data').get('pageShow'),value)
+  },
   renderRoleDescEditModal(){
     const {getFieldDecorator} = this.props.form
     return (

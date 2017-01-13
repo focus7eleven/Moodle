@@ -172,6 +172,9 @@ const DictPage = React.createClass({
       })
     }
   },
+  handleSearchTableData(){
+    this.props.getWorkspaceData('dict',this.props.workspace.get('data').get('nowPage'),this.props.workspace.get('data').get('pageShow'),value)
+  },
   renderAddDictModal(type){
     const {getFieldDecorator,getFieldValue} = this.props.form
     return (

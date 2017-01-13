@@ -156,7 +156,6 @@ const EduOutlinePage = React.createClass({
   },
 
   handleShowTextbookDetail(key){
-    console.log("-->:",key)
     this._currentRow = this.props.workspace.get('data').get('result').get(key)
     fetch(config.api.textbook.menulist.get(this._currentRow.get('textbook_id')),{
       method:'get',
@@ -416,6 +415,7 @@ const EduOutlinePage = React.createClass({
       dataIndex: 'delete',
       key: 'delete',
       className:styles.tableColumn,
+      width: 60,
       render:(text,record) => <Icon type='delete' onClick={this.handleDeleteDetailRecord.bind(this,record)}/>
     }]
     return (
@@ -486,9 +486,6 @@ const EduOutlinePage = React.createClass({
                 this.props.getWorkspaceData('textbook',page,this.props.workspace.get('data').get('pageShow'),this.state.searchStr)
               },
               showQuickJumper:true,
-              onShowSizeChange:(current,size)=>{
-                this.props.getWorkspaceData('textbook',this.props.workspace.get('data').get('nowPage'),size,this.state.searchStr)
-              }
             }:null} />
             <div className={styles.tableMsg}>当前条目{workspace.get('data').get('start')}-{parseInt(workspace.get('data').get('start'))+parseInt(workspace.get('data').get('pageShow'))}/总条目{workspace.get('data').get('totalCount')}</div>
           </div>
