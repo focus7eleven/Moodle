@@ -81,6 +81,14 @@ const config = _.extend({
 				get:(textbookId)=>`${baseURL}/textbook/menulist.json?textbook_id=${textbookId}`,
 				delete:`${baseURL}/textbook/menudel`,
 			}
+		},
+		resource: {
+			getAllResources: `${baseURL}/resource/list`,
+			// form data {jsonStr:"",resourceId:""}
+			updateAuth: `${baseURL}/resource/updateauth`,
+			// form data {*resourceName,resourceUrl,resourceDesc,parentId,logo,resourceOrder,authList}
+			addResource: `${baseURL}/resource/add`,
+			editResource: `${baseURL}/resource/add`,
 		}
 	}
 })

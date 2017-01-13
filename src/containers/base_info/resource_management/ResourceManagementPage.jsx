@@ -17,17 +17,137 @@ const ResourceManagementPage = React.createClass({
     authList:List()
   }),
 
-  contextTypes: {
-    router: React.PropTypes.object
+  getInitialState(){
+    return {
+      searchStr: "",
+    }
   },
 
-  getInitialState(){
-    return {}
+  componentWillMount(){
+    if(!this.props.menu.get('data').isEmpty()){
+      this._currentMenu = findMenuInTree(this.props.menu.get('data'),'resource')
+    }
+  },
+
+  getTableData(){
+    let tableHeader = List()
+    let tableBody = List()
+    let authList = this._currentMenu.get('authList')
+    tableHeader = fromJS([{
+      title: '资源名称',
+      dataIndex: 'resourceName',
+      key: 'resourceName',
+      className:styles.tableColumn,
+    },{
+      title: '资源url',
+      dataIndex: 'resourceUrl',
+      key: 'resourceUrl',
+      className:styles.tableColumn,
+    },{
+      title: '资源描述',
+      dataIndex: 'resourceDesc',
+      key: 'resourceDesc',
+      className:styles.tableColumn,
+    },{
+      title: '权重',
+      dataIndex: 'resourceOrder',
+      key: 'resourceOrder',
+      className:styles.tableColumn,
+    },{
+      title: '权限',
+      dataIndex: 'auth',
+      key: 'auth',
+      className:styles.tableColumn,
+    },{
+      title: '父资源',
+      dataIndex: 'parentId',
+      key: 'parentId',
+      className:styles.tableColumn,
+    }])
+
+    tableHeader = tableHeader.concat(authList.filter(v => (v.get('authUrl').split('/')[2] != 'import')&&(v.get('authUrl').split('/')[2] != 'view')&&(v.get('authUrl').split('/')[2] != 'add')).map( v => {
+      return {
+        title: PermissionDic[v.get('authUrl').split('/')[2]],
+        dataIndex: v.get('authUrl').split('/')[2],
+        key: v.get('authUrl').split('/')[2],
+        className:styles.editColumn,
+        render:(text,record) => {
+          return (
+            <div>
+              <Button className={styles.editButton} type="primary" onClick={this.handleEditResource.bind(this,record.key)}>编辑</Button>
+              <Button className={styles.deleteButton} type="primary" onClick={this.handleDeleteResource.bind(this,record.key)}>删除</Button>
+            </div>
+          )
+        }
+      }
+    }))
+
+    tableBody = !this.props.workspace.get('data').isEmpty()?this.props.workspace.get('data').get('result').map( (v,key) => {
+      return {
+        key:key,
+        ...(v.toJS())
+      }
+    }):List()
+    return {
+      tableHeader:tableHeader.toJS(),
+      tableBody:tableBody.toJS(),
+    }
+  },
+
+  handleAddResource(){
+
+  },
+
+  handleEditResource(){
+
+  },
+
+  handleDeleteResource(){
+
   },
 
   render(){
+    const tableData = this.getTableData()
+    const {workspace} = this.props
+
     return (
       <div className={styles.container}>
+        <div className={styles.header}>
+          <div className={styles.headerOperation}>
+            {
+              this._currentMenu.get('authList').find((v)=>v.get('authName')=='增加') ?
+              <Button data-action="add" type="primary" className={styles.operationButton} onClick={this.handleAddResource}>
+                新建
+              </Button>:null
+            }
+          </div>
+          <Search placeholder="请输入资源名称" value={this.state.searchStr} onChange={this.handleSearchStrChanged} onSearch={this.handleSearchTableData} />
+        </div>
+        <div className={styles.body}>
+          <div className={styles.wrapper}>
+            <Table
+              rowClassName={(record,index)=>index%2?styles.tableDarkRow:styles.tableLightRow}
+              bordered
+              columns={tableData.tableHeader}
+              dataSource={tableData.tableBody}
+              pagination={
+                !this.props.workspace.get('data').isEmpty() ?
+                  {
+                    total:this.props.workspace.get('data').get('totalCount'),
+                    pageSize:this.props.workspace.get('data').get('pageShow'),
+                    current:this.props.workspace.get('data').get('nowPage'),
+                    showQuickJumper:true,
+                    onChange:(page)=>{
+                      this.props.getWorkspaceData('officer',page,this.props.workspace.get('data').get('pageShow'),this.state.searchStr)
+                    }
+                  }
+                  :
+                  null
+                }
+              />
+            <div className={styles.tableMsg}>当前条目{workspace.get('data').get('start')}-{parseInt(workspace.get('data').get('start'))+parseInt(workspace.get('data').get('pageShow'))}/总条目{workspace.get('data').get('totalCount')}</div>
+          </div>
+        </div>
       </div>
     )
   }
