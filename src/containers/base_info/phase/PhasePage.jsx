@@ -302,13 +302,13 @@ const PhasePage = React.createClass({
                       }
                       if(isNaN(value) || value.length != 2){
                         errors.push(
-                          new Error('学段号必须是两位数字')
+                          new Error('学段号必须是2位数字')
                         )
                       }
                       callback(errors);
                     }
                   }],
-                })(<Input placeholder='学段号必须是两位数字'/>)
+                })(<Input placeholder='学段号必须是2位数字'/>)
               }
               </FormItem>
             }

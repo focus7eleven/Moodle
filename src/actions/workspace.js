@@ -172,3 +172,14 @@ export const editSubject = require('./subject').editSubject
 
 export const addDict = require('./dict').addDict
 export const editDict = require('./dict').editDict
+
+export const editRoleDesc = require('./role').editRoleDesc
+export const addRole = require('./role').addRole
+export const editRole = require('./role').editRole
+
+
+export const addTextbook = require('./textbook').addTextbook
+export const editTextbook = require('./textbook').editTextbook
+export const deleteTextbook = require('./textbook').deleteTextbook
+export const searchTextbook = require('./textbook').searchTextbook
+export const SEARCH_TEXTBOOK = require('./textbook').SEARCH_TEXTBOOK

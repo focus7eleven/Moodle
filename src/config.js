@@ -14,6 +14,14 @@ const config = _.extend({
 		key:{
 			get:`${baseURL}/key`
 		},
+		select:{
+			json:{
+				get:(selectid,selectname,table,selectstyle,selectcompareid)=>`${baseURL}/select.json?selectid=${selectid}&selectname=${selectname}&table=${table}&selectstyle=${selectstyle}&selectcompareid=${selectcompareid}`
+			},
+			change:{
+				update:`${baseURL}/select/change`
+			}
+		},
 		user:{
 			login:{
 				post:`${baseURL}/LoginWithToken`
@@ -57,6 +65,22 @@ const config = _.extend({
 		dict:{
 			post:`${baseURL}/dict/add`,
 			update:`${baseURL}/dict/edit`,
+		},
+		role:{
+			desc:{update:`${baseURL}/memo/update`},
+			post:`${baseURL}/role/add`,
+			update:`${baseURL}/role/edit`
+		},
+		textbook:{
+			post:`${baseURL}/textbook/add`,
+			update:`${baseURL}/textbook/edit`,
+			search:{
+				get:(searchStr,currentPage,phaseId,gradeId,subjectId)=>`${baseURL}/textbook/page?search=${searchStr}&currentPage=${currentPage}&phaseId=${phaseId}&gradeId=${gradeId}&subjectId=${subjectId}`
+			},
+			menulist:{
+				get:(textbookId)=>`${baseURL}/textbook/menulist.json?textbook_id=${textbookId}`,
+				delete:`${baseURL}/textbook/menudel`,
+			}
 		}
 	}
 })

@@ -1,6 +1,7 @@
 import {
   CHANGE_CURRENT_PATH,
   GET_WORKSPACEDATA,
+  SEARCH_TEXTBOOK,
 } from '../actions/workspace'
 import {findPath} from '../reducer/menu'
 
@@ -9,6 +10,7 @@ import {fromJS} from 'immutable'
 const initialState = fromJS({
   data:[],
   loading:true,
+  otherMsg:fromJS({})
 })
 
 export default (state = initialState,action)=>{
@@ -17,6 +19,10 @@ export default (state = initialState,action)=>{
       return state.set('loading',true)
     case GET_WORKSPACEDATA[1]:
       return state.set('data',fromJS(action.data)).set('loading',false)
+    case SEARCH_TEXTBOOK[0]:
+      return state.set('loading',true)
+    case SEARCH_TEXTBOOK[1]:
+      return state.set('data',fromJS(action.data.mainData)).set('loading',false).set('otherMsg',fromJS(action.data.otherMsg))
     default:
       return state
   }
