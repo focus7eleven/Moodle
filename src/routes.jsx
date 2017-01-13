@@ -43,7 +43,7 @@ const routes = (
 
 					{/* 通用设置 */}
 					<Route path='dict' component={DictPage}></Route>
-					<Route path='resource-management' component={ResourceManagementPage}></Route>
+					<Route path='resource' component={ResourceManagementPage}></Route>
 
 					<Route path='schoolDepart' component={Navigation}></Route>
 					<Route path='textbook'>
