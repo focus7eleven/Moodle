@@ -20,6 +20,9 @@ const config = _.extend({
 			},
 			list:{
 				get:(roleId)=>`${baseURL}/role/resource/list?roleId=${roleId}`
+			},
+			set:{
+				update:`${baseURL}/role/resource/set`
 			}
 		},
 		select:{

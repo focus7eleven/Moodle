@@ -17,6 +17,33 @@ const Option = Select.Option
 const confirm = Modal.confirm
 const TreeNode = Tree.TreeNode
 
+function findAllChildren(flatternTree,target,subtreeList){
+  let newSubtreeList = target.reduce((pre,cur)=>{
+    return subtreeList.concat(flatternTree.filter(v => v.get('pId')==cur))
+  },subtreeList)
+  let newTarget = target.reduce((pre,cur)=>{
+    return pre.concat(flatternTree.filter(v => v.get('pId')==cur))
+  },List())
+  if(newTarget.size==0){
+    return newSubtreeList
+  }else{
+    return findAllChildren(flatternTree,newTarget,newSubtreeList)
+  }
+}
+
+function addAllChildren(flatternTree,target,result=List()){
+  let subchildren = target.reduce((pre,cur)=>{
+    return pre.concat(flatternTree.filter(v => v.get('pId')==cur.get('id')))
+  },result)
+  let newTarget = target.reduce((pre,cur) => {
+    return pre.concat(flatternTree.filter(v => v.get('pId')==cur.get('id')))
+  },List())
+  if(newTarget.size==0){
+    return result
+  }else{
+    return findAllChildren(flatternTree,newTarget,subchildren)
+  }
+}
 
 const RoleSettingPage = React.createClass({
   _currentMenu:Map({
@@ -308,27 +335,43 @@ const RoleSettingPage = React.createClass({
     })
   },
   handleSavePermission(){
-    this.setState({
-      // showPermissionModal:false
+    let formData = new FormData()
+    formData.append('roleId',this._currentRow.get('roleId'))
+    this.state.checkedList.forEach(v => {
+      formData.append('resource',v.get('resource_id'))
+      formData.append('resource',v.get('code'))
     })
+    fetch(config.api.resource.set.update,{
+      method:'post',
+      headers:{
+        'from':'nodejs',
+        'token':sessionStorage.getItem('accessToken')
+      },
+      body:formData
+    }).then(res => res.json()).then(res => {
+      console.log("-->:",res)
+      this.setState({
+        showPermissionModal:false
+      })
+    })
+
   },
   handleCheckPermission(checkedKeys,e){
-    const checkedResource = this._permissionList.find(v => v.get('id')==e.node.props.eventKey)
+
+    const allChildren = findAllChildren(this._permissionList,List([e.node.props.eventKey]),List([this._permissionList.find(v =>v.get('id')==e.node.props.eventKey)]))
     if(e.checked){
       this.setState({
-        checkedList:this.checkedList.push({
-          'resource_id':checkedResource.get('id'),
-          'code':checkedResource.get('code'),
-        })
+        checkedList:this.state.checkedList.concat(allChildren.map(v => {return fromJS({'resource_id':v.get('id'),code:v.get('code')})}))
       })
     }else{
       this.setState({
-        checkedList:this.state.checkedList.filter(v => v.get('resource_id')!=checkedResource.get('id'))
+        checkedList:allChildren.reduce((pre,cur)=>{
+          return pre.filter(v => v.get('resource_id')!=cur.get('id'))
+        },this.state.checkedList)
       })
     }
   },
   renderShowPermissionModal(){
-    console.log("-->:",this.state.checkedList.toJS())
     const renderTree = (tree) => tree.map(node => {
       if(node.get('children')){
         return (<TreeNode title={node.get('name')} key={node.get('id')} isLeaf={false} checked>
