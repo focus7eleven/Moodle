@@ -53,3 +53,15 @@
     @include deleteButton;
   }
 }
+
+:local(.deleteAuth){
+  cursor: pointer;
+  position: relative;
+  top: 4px;
+  font-size: 20px;
+  color: #999;
+  transition: all 0.3s;
+  &:hover{
+    color: #777;
+  }
+}

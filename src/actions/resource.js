@@ -1,3 +1,4 @@
+import {actionNames} from '../utils/action-utils'
 import {GET_WORKSPACEDATA} from './workspace'
 import config from '../config.js'
 import {notification} from 'antd'
@@ -41,9 +42,10 @@ export function addResource(data){
   }
 }
 
-export function editSubject(data){
+export function editResource(data){
   return dispatch => {
     let formData = new FormData()
+    formData.append('resourceId',data.resourceId)
     formData.append('resourceName',data.resourceName)
     formData.append('resourceUrl',data.resourceUrl)
     formData.append('resourceDesc',data.resourceDesc)
@@ -76,5 +78,18 @@ export function editSubject(data){
         notification.error({message:'失败',description:'编辑失败'})
       }
     })
+  }
+}
+
+export const GET_ALL_RESOURCES = actionNames('GET_ALL_RESOURCES')
+
+export function getAllResources(){
+  return {
+    types:GET_ALL_RESOURCES,
+    callAPI:()=>{
+      return fetch(config.api.resource.getAllResources(),{
+        method:'GET',
+    }).then(res => res.json())
+    }
   }
 }
