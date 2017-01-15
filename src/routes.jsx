@@ -14,6 +14,8 @@ import GradePage from './containers/base_info/grade/GradePage'
 import SubjectPage from './containers/base_info/subject/SubjectPage'
 import {LoginControlHOC} from './enhancers/AccessControlContainer'
 import DictPage from './containers/base_info/dict/DictPage'
+import ResourceManagementPage from './containers/base_info/resource_management/ResourceManagementPage'
+import OfficerPage from './containers/base_info/officer/OfficerPage'
 import RoleSettingPage from './containers/base_info/role_setting/RoleSettingPage'
 
 const routes = (
@@ -31,12 +33,23 @@ const routes = (
 				<IndexRedirect to='base-info/phase' component={PhasePage} />
 				<Route path='base-info' component={BaseInfoContainer}>
 					<IndexRedirect to='phase'/>
+
+					{/* 基础数据 */}
 					<Route path='phase' component={PhasePage}></Route>
 					<Route path='grade' component={GradePage}></Route>
 					<Route path='subject' component={SubjectPage}></Route>
+
+					{/* 人员管理 */}
+					<Route path='officer' component={OfficerPage}></Route>
+
+					{/* 通用设置 */}
 					<Route path='dict' component={DictPage}></Route>
+					<Route path='resource' component={ResourceManagementPage}></Route>
 					<Route path='role' component={RoleSettingPage}></Route>
+
 					<Route path='schoolDepart' component={Navigation}></Route>
+
+					{/* 教育大纲 */}
 					<Route path='textbook'>
 						<IndexRoute component={EduOutlinePage}/>
 					</Route>

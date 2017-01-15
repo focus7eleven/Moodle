@@ -2,6 +2,7 @@ import {
   CHANGE_CURRENT_PATH,
   GET_WORKSPACEDATA,
   SEARCH_TEXTBOOK,
+  GET_ALL_RESOURCES,
 } from '../actions/workspace'
 import {findPath} from '../reducer/menu'
 
@@ -23,6 +24,8 @@ export default (state = initialState,action)=>{
       return state.set('loading',true)
     case SEARCH_TEXTBOOK[1]:
       return state.set('data',fromJS(action.data.mainData)).set('loading',false).set('otherMsg',fromJS(action.data.otherMsg))
+    case GET_ALL_RESOURCES[1]:
+      // return state.set('data',fromJS(action.data.mainData)).set('loading',false).set('otherMsg',fromJS(action.data.otherMsg))
     default:
       return state
   }

@@ -183,3 +183,7 @@ export const editTextbook = require('./textbook').editTextbook
 export const deleteTextbook = require('./textbook').deleteTextbook
 export const searchTextbook = require('./textbook').searchTextbook
 export const SEARCH_TEXTBOOK = require('./textbook').SEARCH_TEXTBOOK
+
+export const addResource = require('./resource').addResource
+export const editResource = require('./resource').editResource
+export const GET_ALL_RESOURCES = require('./resource').GET_ALL_RESOURCES

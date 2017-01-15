@@ -151,3 +151,24 @@
     }
   }
 }
+
+:global(.ant-select .ant-select-selection){
+  border: 1px solid #d9d9d9;
+}
+
+:global(.ant-btn-dashed){
+  &:hover{
+    color: $primary-color;
+    border-color: $primary-color;
+  }
+  &:focus{
+    color: $primary-color;
+    border-color: $primary-color;
+  }
+}
+
+:global(.ant-input-preSuffix-wrapper .ant-input){
+  &:hover{
+    border-color: $primary-color;
+  }
+}

@@ -1,3 +1,5 @@
+@import "./theme.scss";
+
 @mixin loading {
   width: 100%;
   height: 400px;
@@ -42,4 +44,15 @@
   position: absolute;
   left: 10px;
   bottom: 25px;
+}
+
+@mixin editButton {
+  background-color: $primary-color;
+  border-color: $primary-color;
+  margin-right: 10px;
+}
+
+@mixin deleteButton {
+  background-color: $highlight-color;
+  border-color: $highlight-color;
 }

@@ -1,11 +1,11 @@
 import React from 'react'
-import {Icon,Input,Table,Button,Modal,Form,Spin} from 'antd'
+import {Icon,Input,Table,Button,Modal,Form} from 'antd'
 import PermissionDic from '../../../utils/permissionDic'
 import {getWorkspaceData,addSubject,editSubject} from '../../../actions/workspace'
 import {fromJS,Map,List} from 'immutable'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
-import { findMenuInTree,findPath} from '../../../reducer/menu'
+import {findMenuInTree} from '../../../reducer/menu'
 import styles from './SubjectPage.scss'
 import _ from 'lodash'
 
@@ -13,15 +13,10 @@ const FormItem = Form.Item
 const Search = Input.Search
 const confirm = Modal.confirm
 
-
 const SubjectPage = React.createClass({
   _currentMenu:Map({
     authList:List()
   }),
-
-  contextTypes: {
-    router: React.PropTypes.object
-  },
 
   getInitialState(){
     return {
@@ -73,8 +68,8 @@ const SubjectPage = React.createClass({
         render:(text,record) => {
           return (
             <div>
-              <Button data-action="edit" type="primary" style={{backgroundColor:'#30D18E',borderColor:'#30D18E'}} onClick={this.handleShowEditSubjectModal.bind(this,record.key)}>{PermissionDic[v.get('authUrl').split('/')[2]]}</Button>
-              <Button type="primary" style={{backgroundColor:'#FD9B09',borderColor:'#FD9B09',marginLeft:'10px'}} onClick={this.handleShowDeleteModal.bind(this,record.key)}>删除</Button>
+              <Button className={styles.editButton}type="primary" onClick={this.handleShowEditSubjectModal.bind(this,record.key)}>编辑</Button>
+              <Button className={styles.deleteButton} type="primary" onClick={this.handleShowDeleteModal.bind(this,record.key)}>删除</Button>
             </div>
           )
         }
@@ -247,7 +242,7 @@ const SubjectPage = React.createClass({
               新建
             </Button>:null
           }
-          <Search placeholder="请输入学科名称" value={this.state.searchStr} onChange={(e)=>{this.setState({searchStr:e.target.value})}} onSearch={this.handleSearchTableData} />
+          <Search style={{width: '260px'}} placeholder="请输入学科名称" value={this.state.searchStr} onChange={(e)=>{this.setState({searchStr:e.target.value})}} onSearch={this.handleSearchTableData} />
         </div>
         <div className={styles.body}>
           <div className={styles.wrapper}>

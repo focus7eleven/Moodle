@@ -73,7 +73,7 @@ const MainContainer = React.createClass({
                     </div>
                   </div>
                   <div className={styles.schoolInfoMini}>
-                    <span className={styles.school}>{schoolInfo.schoolName}</span>
+                    <span className={styles.school}><img src={schoolLogo}/>{schoolInfo.schoolName}</span>
                   </div>
                 </div>
                 {/* 内容显示区域 */}
