@@ -123,7 +123,7 @@ const EduOutlinePage = React.createClass({
       key: 'catalogue',
       className:styles.tableColumn,
       render:(text,record)=>{
-        return (<div><a >导入</a><a onClick={this.handleShowTextbookDetail.bind(this,record.key)}>详情</a></div>)
+        return (<div className={styles.catalogueColumn}><a onClick={()=>{this.refs.fileInput.click()}}>导入</a><a onClick={this.handleShowTextbookDetail.bind(this,record.key)}>详情</a></div>)
       }
     }])
     tableHeader = tableHeader.concat(authList.filter(v => (v.get('authUrl').split('/')[2] != 'view')&&(v.get('authUrl').split('/')[2] != 'add')).map( v => {
@@ -277,6 +277,10 @@ const EduOutlinePage = React.createClass({
         })
       }
     })
+  },
+  handleFileChange(e){
+    //上传文件
+
   },
   renderSelectBar(optionList,type){
     return (
@@ -493,6 +497,7 @@ const EduOutlinePage = React.createClass({
         {this.state.showAddTextbookModal?this.renderAddTextbookModal('create'):null}
         {this.state.showEditTextbookModal?this.renderAddTextbookModal('edit'):null}
         {this.state.showTextbookDetailModal?this.renderTextbookDetailModal():null}
+        <input type='file' ref='fileInput' style={{diplay:'none'}} onChange={this.handleFileChange}/>
       </div>
     )
   }

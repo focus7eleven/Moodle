@@ -40,5 +40,10 @@
         @include tableMsg;
       }
     }
+
   }
+}
+:local(.permissionTree){
+  height: 300px;
+  overflow: scroll;
 }

@@ -16,3 +16,24 @@ export function getTreeFromList(list){
     }
 
 }
+
+export function findInTree(tree,target){
+  return tree.find(v => v.get('id')==target)||tree.reduce((pre,cur)=>{
+    return !pre.isEmpty()?pre:findInTree(cur.get('children'),target)
+  },List())
+}
+
+export function findPathInTree(tree,path=List(),target){
+
+  tree.forEach((node,key) => {
+    if(node.get('id')==target){
+      path = path.push(key)
+    }else{
+      if(node.get('children')&&!node.get('children').isEmpty()){
+        let subPath = findPathInTree(node.get('children'),path,target)
+        path = subPath.isEmpty()?path:path.push(key).push('children').concat(subPath)
+      }
+    }
+  })
+  return path
+}

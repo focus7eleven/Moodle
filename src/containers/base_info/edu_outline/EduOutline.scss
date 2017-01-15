@@ -21,6 +21,10 @@
       }
       :local(.tableColumn){
         @include tableColumn;
+        :local(.catalogueColumn){
+          display:flex;
+          justify-content: space-around;
+        }
       }
       :local(.listColumn){
         padding:16px 5px;

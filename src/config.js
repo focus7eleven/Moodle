@@ -17,6 +17,9 @@ const config = _.extend({
 		resource:{
 			tree:{
 				get:`${baseURL}/resource/tree`
+			},
+			list:{
+				get:(roleId)=>`${baseURL}/role/resource/list?roleId=${roleId}`
 			}
 		},
 		select:{

@@ -9,7 +9,7 @@ import { findMenuInTree,findPath} from '../../../reducer/menu'
 import styles from './RoleSettingPage.scss'
 import _ from 'lodash'
 import config from '../../../config'
-import {getTreeFromList} from '../../../utils/tree-utils'
+import {getTreeFromList,findInTree,findPathInTree} from '../../../utils/tree-utils'
 
 const FormItem = Form.Item
 const Search = Input.Search
@@ -22,13 +22,14 @@ const RoleSettingPage = React.createClass({
   _currentMenu:Map({
     authList:List()
   }),
+  _permissionList:List(),
   contextTypes: {
     router: React.PropTypes.object
   },
   getInitialState(){
     return {
       searchStr:'',
-
+      checkedList:List([]),
       permissionTree:List(),
     }
   },
@@ -72,7 +73,7 @@ const RoleSettingPage = React.createClass({
       key: 'premissionEdit',
       className:styles.tableColumn,
       render:(text,record)=>{
-        return <Icon type='search' onClick={this.handleShowPermissionModal}/>
+        return <Icon type='search' onClick={this.handleShowPermissionModal.bind(this,record.key)}/>
       }
     }])
     tableHeader = tableHeader.concat(authList.filter(v => (v.get('authUrl').split('/')[2] != 'view')&&(v.get('authUrl').split('/')[2] != 'add')).map( v => {
@@ -112,20 +113,37 @@ const RoleSettingPage = React.createClass({
       roleDesc:text
     })
   },
-  handleShowPermissionModal(){
-    fetch(config.api.resource.tree.get,{
+  handleShowPermissionModal(key){
+    this._currentRow = this.props.workspace.get('data').get('result').get(key)
+    Promise.all([fetch(config.api.resource.list.get(this._currentRow.get('roleId')),{
+      method:'get',
+      headers:{
+        'from':'nodejs',
+        'token':sessionStorage.getItem('accessToken')
+      }
+    }).then(res => res.json()),fetch(config.api.resource.tree.get,{
       method:'get',
       headers:{
         'from':'nodejs',
         'token':sessionStorage.getItem('accessToken')
       },
-    }).then(res => res.json()).then(res => {
-      getTreeFromList(fromJS(res)).toJS()
-      // this.setState({
-      //   permissionTree:getTreeFromList(fromJS(res)),
-      //   showPermissionModal:true,
-      // })
+    }).then(res => res.json())
+    ]).then(result => {
+      this._permissionList = fromJS(result[1])
+      this.setState({
+        permissionTree:this._permissionList.filter(v => v.get('pId')=='0'),
+        checkedList:fromJS(result[0]),
+        showPermissionModal:true
+      })
     })
+    // .then(res => {
+    //   this._permissionList = fromJS(res)
+    //   // this.setState({
+    //   //   permissionTree:this._permissionList.filter(v => v.get('pId')=='-1'||v.get('pId')=='0'),
+    //   //   showPermissionModal:true,
+    //   //   checkedKeys:this._permissionList.map(v => v.get('id')),
+    //   // })
+    // })
   },
   handleShowDeleteModal(key){
     const that = this
@@ -199,7 +217,7 @@ const RoleSettingPage = React.createClass({
       pkv:this._currentRow.get('roleId')
     })
   },
-  handleSearchTableData(){
+  handleSearchTableData(value){
     this.props.getWorkspaceData('role',this.props.workspace.get('data').get('nowPage'),this.props.workspace.get('data').get('pageShow'),value)
   },
   renderRoleDescEditModal(){
@@ -280,27 +298,64 @@ const RoleSettingPage = React.createClass({
       </Modal>
     )
   },
-  renderShowPermissionModal(){
-    const renderTree = (tree) => tree.map(node => {
-      if(!node.get('children').isEmpty()){
-        return (
-          <TreeNode key={node.get('id')} title={node.get('name')} >
-          {
-            renderTree(node.get('children'))
-          }
-          </TreeNode>
-      )
-      }else{
-        return <TreeNode key={node.get('id')} title={node.get('name')} />
-      }
+  onloadData(treenode){
+    return new Promise((resolve,reject)=>{
+      let path = findPathInTree(this.state.permissionTree,List([]),treenode.props.eventKey)
+      this.setState({
+        permissionTree:this.state.permissionTree.setIn(path.push('children'),this._permissionList.filter(v => v.get('pId')==treenode.props.eventKey)),
+      })
+      resolve();
     })
-    return (
-      <Modal title='权限' visible={true}>
-        <Tree >
+  },
+  handleSavePermission(){
+    this.setState({
+      // showPermissionModal:false
+    })
+  },
+  handleCheckPermission(checkedKeys,e){
+    const checkedResource = this._permissionList.find(v => v.get('id')==e.node.props.eventKey)
+    if(e.checked){
+      this.setState({
+        checkedList:this.checkedList.push({
+          'resource_id':checkedResource.get('id'),
+          'code':checkedResource.get('code'),
+        })
+      })
+    }else{
+      this.setState({
+        checkedList:this.state.checkedList.filter(v => v.get('resource_id')!=checkedResource.get('id'))
+      })
+    }
+  },
+  renderShowPermissionModal(){
+    console.log("-->:",this.state.checkedList.toJS())
+    const renderTree = (tree) => tree.map(node => {
+      if(node.get('children')){
+        return (<TreeNode title={node.get('name')} key={node.get('id')} isLeaf={false} checked>
         {
-          renderTree(this.state.permissionTree.get(0))
+          renderTree(node.get('children'))
         }
-        </Tree>
+        </TreeNode>)
+      }else{
+        return <TreeNode title={node.get('name')} key={node.get('id')} isLeaf={false} checked></TreeNode>
+      }
+
+    }).toJS()
+    return (
+      <Modal title='权限' visible={true} onOK={this.handleSavePermission} onCancel={()=>{this.setState({showPermissionModal:false})}}
+      footer={[
+        <Button key='cancel' type='ghost' onClick={()=>{this.setState({showPermissionModal:false})}}>取消</Button>,
+        <Button key='ok' type='primary' onClick={this.handleSavePermission}>确认</Button>
+      ]}
+      >
+        <div className={styles.permissionTree}>
+          <Tree loadData={this.onloadData} checkable checkedKeys={this.state.checkedList.map(v => v.get('resource_id')).toJS()}
+          onCheck={this.handleCheckPermission}>
+          {
+            renderTree(this.state.permissionTree)
+          }
+          </Tree>
+        </div>
       </Modal>
     )
   },
