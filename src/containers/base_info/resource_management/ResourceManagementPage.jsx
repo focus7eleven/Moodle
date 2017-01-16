@@ -4,7 +4,7 @@ import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 import {Col,Icon,Select,Input,Table,Button,Modal,Form} from 'antd'
 import PermissionDic from '../../../utils/permissionDic'
-import {getWorkspaceData,addResource,getAllResources,updateAuth} from '../../../actions/workspace'
+import {getWorkspaceData,editResource,addResource,getAllResources,updateAuth} from '../../../actions/workspace'
 import {fromJS,Map,List} from 'immutable'
 import {findMenuInTree} from '../../../reducer/menu'
 
@@ -154,6 +154,8 @@ const ResourceManagementPage = React.createClass({
 
   _singleResourceId: '',
 
+  _currentRow: {},
+
   getInitialState(){
     return {
       searchStr: "",
@@ -222,7 +224,7 @@ const ResourceManagementPage = React.createClass({
         render:(text,record) => {
           return (
             <div>
-              <Button className={styles.editButton} type="primary" onClick={this.handleEditResource.bind(this,record.key)}>编辑</Button>
+              <Button className={styles.editButton} type="primary" onClick={this.handleModalDispaly.bind(this,true,record.key)}>编辑</Button>
               <Button className={styles.deleteButton} type="primary" onClick={this.handleDeleteResource.bind(this,record.key)}>删除</Button>
             </div>
           )
@@ -249,13 +251,6 @@ const ResourceManagementPage = React.createClass({
   },
 
   handleAddResource(){
-    // jsonStr:{"resourceName":"testwwhnight",
-            // "resourceUrl":"url",
-            // "resourceDesc":"desc",
-            // "logo":"logo",
-            // "parentId":"208030983520391168",
-            // "resourceOrder":"1",
-            // "authList":[{"authName":"ordername","authUrl":"orderUrl","code":1}]}
     const {getFieldsValue,getFieldValue,getFieldError} = this.props.form
     if(getFieldValue('resourceName') && !(getFieldError('resourceName') || getFieldError('resourceOrder') || getFieldError('resourceDesc') || getFieldError('resourceUrl') || getFieldError('logo'))){
       const obj = getFieldsValue();
@@ -272,11 +267,39 @@ const ResourceManagementPage = React.createClass({
   },
 
   handleEditResource(){
-
+    console.log("edit!!");
+    const {validateFields,getFieldsValue,getFieldValue,getFieldError} = this.props.form
+    validateFields();
+    if(getFieldValue('resourceName') && !(getFieldError('resourceName') || getFieldError('resourceOrder') || getFieldError('resourceUrl') || getFieldError('logo'))){
+      const obj = getFieldsValue();
+      console.log(obj);
+      this.props.editResource({
+        resourceId: this._currentRow.get('resourceId'),
+        resourceName: obj.resourceName,
+        resourceUrl: obj.resourceUrl,
+        resourceOrder: obj.resourceOrder,
+        action: 'edit',
+      })
+      this.setState({
+        modalVisibility:false
+      })
+    }
   },
 
-  handleDeleteResource(){
-
+  handleDeleteResource(key){
+    const that = this
+    const currentRow = this.props.workspace.get('data').get('result').get(key)
+    confirm({
+      title: '确定删除这条记录吗？',
+      content: '删除后不可恢复',
+      onOk() {
+        that.props.editResource({
+          resourceId:currentRow.get('resourceId'),
+          action:'delete'
+        })
+      },
+      onCancel() {},
+    });
   },
 
   handleModalDispaly(visibility,type){
@@ -286,6 +309,17 @@ const ResourceManagementPage = React.createClass({
       this.setState({modalVisibility: visibility,modalType: type});
     }else if(type===""){
       this.setState({modalVisibility: visibility,modalType: type});
+    }else{
+      const {setFieldsValue} = this.props.form
+      this._currentRow = this.props.workspace.get('data').get('result').get(type)
+      console.log(this._currentRow.toJS());
+      setFieldsValue({
+        'resourceName':this._currentRow.get('resourceName'),
+        'resourceUrl':this._currentRow.get('resourceUrl'),
+        'resourceOrder':this._currentRow.get('resourceOrder'),
+        'logo':this._currentRow.get('logo'),
+      })
+      this.setState({modalVisibility: visibility,modalType: 'edit'});
     }
   },
 
@@ -313,10 +347,6 @@ const ResourceManagementPage = React.createClass({
   //搜索框输入的change事件
   handleSearchTableData(value){
     this.props.getWorkspaceData('resource',this.props.workspace.get('data').get('nowPage'),this.props.workspace.get('data').get('pageShow'),value)
-  },
-
-  renderAuthModal(){
-
   },
 
   renderModal(){
@@ -356,6 +386,7 @@ const ResourceManagementPage = React.createClass({
         </FormItem>
       );
     });
+    console.log("modalType",modalType);
     return (
       <Modal title="添加资源" visible={modalVisibility}
           onOk={modalType==="add"?this.handleAddResource:this.handleEditResource} onCancel={this.handleModalDispaly.bind(this,false,"")}
@@ -406,17 +437,20 @@ const ResourceManagementPage = React.createClass({
               })(<Input placeholder='输入不超过60个字'/>)
             }
             </FormItem>
-            <FormItem
-              label="资源描述"
-              {...formItemLayout}
-              key='resourceDesc'
-            >
             {
-              getFieldDecorator('resourceDesc', {
-                rules: [{max:200, message: '输入不超过200个字' }],
-              })(<Input type="textarea" placeholder='输入不超过200个字' rows={3}/>)
+              modalType=="add"?
+              <FormItem
+                label="资源描述"
+                {...formItemLayout}
+                key='resourceDesc'
+              >
+              {
+                getFieldDecorator('resourceDesc', {
+                  rules: [{max:200, message: '输入不超过200个字' }],
+                })(<Input type="textarea" placeholder='输入不超过200个字' rows={3}/>)
+              }
+              </FormItem>:null
             }
-            </FormItem>
             <FormItem
               label="资源logo"
               {...formItemLayout}
@@ -438,37 +472,43 @@ const ResourceManagementPage = React.createClass({
               })(<Input placeholder='输入不超过30个字'/>)
             }
             </FormItem>
-            {resourceAuthItems}
-            <FormItem
-              label={newAuth.length===0?"权限":''}
-              {...(newAuth.length===0?formItemLayout:formItemWithoutLabelLayout)}
-            >
-              <Button style={{width: "100%"}} type="dashed" onClick={this.handleAddResourceAuth}>
-                <Icon type="plus" />
-              </Button>
-            </FormItem>
-            <FormItem
-              label="父资源"
-              {...formItemLayout}
-              key='parentId'
-            >
+            {modalType=="add"?resourceAuthItems:null}
             {
-              getFieldDecorator('parentId')(
-                <Select
-                  showSearch
-                  placeholder="选择一个父资源"
-                  optionFilterProp="children"
-                  filterOption={(input, option) => option.props.value.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-                >
-                  {
-                    this.props.workspace.get('allResourcesList').map((item)=>{
-                      return <Option value={item.resourceId} key={item.resourceId}>{item.resourceName}</Option>
-                    })
-                  }
-                </Select>
-              )
+              modalType=="add"?
+              <FormItem
+                label={newAuth.length===0?"权限":''}
+                {...(newAuth.length===0?formItemLayout:formItemWithoutLabelLayout)}
+              >
+                <Button style={{width: "100%"}} type="dashed" onClick={this.handleAddResourceAuth}>
+                  <Icon type="plus" />
+                </Button>
+              </FormItem>:null
             }
-            </FormItem>
+            {
+              modalType=="add"?
+              <FormItem
+                label="父资源"
+                {...formItemLayout}
+                key='parentId'
+              >
+              {
+                getFieldDecorator('parentId')(
+                  <Select
+                    showSearch
+                    placeholder="选择一个父资源"
+                    optionFilterProp="children"
+                    filterOption={(input, option) => option.props.value.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                  >
+                    {
+                      this.props.workspace.get('allResourcesList').map((item)=>{
+                        return <Option value={item.resourceId} key={item.resourceId}>{item.resourceName}</Option>
+                      })
+                    }
+                  </Select>
+                )
+              }
+              </FormItem>:null
+            }
             <FormItem
               label="权重"
               {...formItemLayout}
@@ -499,19 +539,17 @@ const ResourceManagementPage = React.createClass({
   render(){
     const tableData = this.getTableData()
     const {workspace} = this.props
-    const {authModal} = this.state
+    const {authModal,modalVisibility} = this.state
 
     return (
       <div className={styles.container}>
         <div className={styles.header}>
-          <div className={styles.headerOperation}>
-            {
-              this._currentMenu.get('authList').find((v)=>v.get('authName')=='增加') ?
-              <Button type="primary" className={styles.operationButton} onClick={this.handleModalDispaly.bind(this,true,"add")}>
-                新建
-              </Button>:null
-            }
-          </div>
+          {
+            this._currentMenu.get('authList').find((v)=>v.get('authName')=='增加') ?
+            <Button type="primary" className={styles.operationButton} onClick={this.handleModalDispaly.bind(this,true,"add")}>
+              新建
+            </Button>:null
+          }
           <Search style={{width: '260px'}} placeholder="请输入资源名称" value={this.state.searchStr} onChange={this.handleSearchStrChanged} onSearch={this.handleSearchTableData} />
         </div>
         <div className={styles.body}>
@@ -559,6 +597,7 @@ function mapDispatchToProps(dispatch){
     addResource: bindActionCreators(addResource,dispatch),
     getAllResources: bindActionCreators(getAllResources,dispatch),
     updateAuth: bindActionCreators(updateAuth,dispatch),
+    editResource: bindActionCreators(editResource,dispatch),
   }
 }
 

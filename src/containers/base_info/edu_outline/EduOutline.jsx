@@ -135,7 +135,7 @@ const EduOutlinePage = React.createClass({
         render:(text,record) => {
           return (
             <div>
-              <Button type="primary" style={{backgroundColor:'#30D18E',borderColor:'#30D18E'}} onClick={this.handleShowEditTextbookModal.bind(this,record.key)}>{PermissionDic[v.get('authUrl').split('/')[2]]}</Button>
+              <Button type="primary" style={{backgroundColor:'#30D18E',borderColor:'#30D18E'}} onClick={this.handleShowEditTextbookModal.bind(this,record.key)}>编辑</Button>
               <Button type="primary" style={{backgroundColor:'#FD9B09',borderColor:'#FD9B09',marginLeft:'10px'}} onClick={this.handleShowDeleteModal.bind(this,record.key)}>删除</Button>
             </div>
           )
@@ -509,7 +509,7 @@ const EduOutlinePage = React.createClass({
         {this.state.showAddTextbookModal?this.renderAddTextbookModal('create'):null}
         {this.state.showEditTextbookModal?this.renderAddTextbookModal('edit'):null}
         {this.state.showTextbookDetailModal?this.renderTextbookDetailModal():null}
-        <input type='file' ref='fileInput' style={{diplay:'none'}} onChange={this.handleFileChange}/>
+        <input type='file' ref='fileInput' style={{display:'none'}} onChange={this.handleFileChange}/>
       </div>
     )
   }

@@ -112,7 +112,7 @@ const RoleSettingPage = React.createClass({
         render:(text,record) => {
           return (
             <div>
-              <Button type="primary" style={{backgroundColor:'#30D18E',borderColor:'#30D18E'}} onClick={this.handleShowEditRoleModal.bind(this,record.key)}>{PermissionDic[v.get('authUrl').split('/')[2]]}</Button>
+              <Button type="primary" style={{backgroundColor:'#30D18E',borderColor:'#30D18E'}} onClick={this.handleShowEditRoleModal.bind(this,record.key)}>编辑</Button>
               <Button type="primary" style={{backgroundColor:'#FD9B09',borderColor:'#FD9B09',marginLeft:'10px'}} onClick={this.handleShowDeleteModal.bind(this,record.key)}>删除</Button>
             </div>
           )
@@ -205,11 +205,12 @@ const RoleSettingPage = React.createClass({
   handleShowEditRoleModal(key){
     const {setFieldsValue} = this.props.form
     this._currentRow = this.props.workspace.get('data').get('result').get(key)
-    this.setState({
-      showEditRoleModal:true
-    })
+    console.log(this._currentRow.toJS());
     setFieldsValue({
       roleName:this._currentRow.get('roleName'),
+    })
+    this.setState({
+      showEditRoleModal:true
     })
   },
   handleAddRole(){
