@@ -85,6 +85,7 @@ const config = _.extend({
 		textbook:{
 			post:`${baseURL}/textbook/add`,
 			update:`${baseURL}/textbook/edit`,
+			import: `${baseURL}/textbook/import`,
 			search:{
 				get:(searchStr,currentPage,phaseId,gradeId,subjectId)=>`${baseURL}/textbook/page?search=${searchStr}&currentPage=${currentPage}&phaseId=${phaseId}&gradeId=${gradeId}&subjectId=${subjectId}`
 			},

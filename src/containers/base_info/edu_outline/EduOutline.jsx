@@ -123,7 +123,7 @@ const EduOutlinePage = React.createClass({
       key: 'catalogue',
       className:styles.tableColumn,
       render:(text,record)=>{
-        return (<div className={styles.catalogueColumn}><a onClick={()=>{this.refs.fileInput.click()}}>导入</a><a onClick={this.handleShowTextbookDetail.bind(this,record.key)}>详情</a></div>)
+        return (<div className={styles.catalogueColumn}><a onClick={()=>{this._currentRow = this.props.workspace.get('data').get('result').get(record.key);this.refs.fileInput.click()}}>导入</a><a onClick={this.handleShowTextbookDetail.bind(this,record.key)}>详情</a></div>)
       }
     }])
     tableHeader = tableHeader.concat(authList.filter(v => (v.get('authUrl').split('/')[2] != 'view')&&(v.get('authUrl').split('/')[2] != 'add')).map( v => {
@@ -280,7 +280,19 @@ const EduOutlinePage = React.createClass({
   },
   handleFileChange(e){
     //上传文件
-
+    let formData = new FormData()
+    formData.append('textbookId',)
+    formData.append('file',e.target.files[0])
+    fetch(config.api.textbook.import,{
+      method:'post',
+      headers:{
+        'from':'nodejs',
+        'token':accessToken
+      },
+      body:formData,
+    }).then(res => res.json()).then(res => {
+      notification.success({message:'上传成功'})
+    })
   },
   renderSelectBar(optionList,type){
     return (
@@ -477,7 +489,7 @@ const EduOutlinePage = React.createClass({
             ))
           }
           </Select>
-          <Search placeholder="请输入年级名称" value={this.state.searchStr} onChange={(e)=>{this.setState({searchStr:e.target.value})}} onSearch={this.handleSearchTableData} />
+          <Search style={{width: '260px'}} placeholder="请输入年级名称" value={this.state.searchStr} onChange={(e)=>{this.setState({searchStr:e.target.value})}} onSearch={this.handleSearchTableData} />
         </div>
         <div className={styles.body}>
           <div className={styles.wrapper}>
