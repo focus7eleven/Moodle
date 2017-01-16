@@ -205,7 +205,6 @@ const RoleSettingPage = React.createClass({
   handleShowEditRoleModal(key){
     const {setFieldsValue} = this.props.form
     this._currentRow = this.props.workspace.get('data').get('result').get(key)
-    console.log(this._currentRow.toJS());
     setFieldsValue({
       roleName:this._currentRow.get('roleName'),
     })

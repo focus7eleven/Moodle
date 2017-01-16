@@ -388,7 +388,7 @@ const ResourceManagementPage = React.createClass({
     });
     console.log("modalType",modalType);
     return (
-      <Modal title="添加资源" visible={modalVisibility}
+      <Modal title={modalType==="add"?"添加资源":"编辑资源"} visible={modalVisibility}
           onOk={modalType==="add"?this.handleAddResource:this.handleEditResource} onCancel={this.handleModalDispaly.bind(this,false,"")}
         >
         <div>
