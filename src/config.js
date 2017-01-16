@@ -100,7 +100,7 @@ const config = _.extend({
 			updateAuth: `${baseURL}/resource/updateauth`,
 			// form data {*resourceName,resourceUrl,resourceDesc,parentId,logo,resourceOrder,authList}
 			addResource: `${baseURL}/resource/add`,
-			editResource: `${baseURL}/resource/add`,
+			editResource: `${baseURL}/resource/edit`,
 		},
 		group: {
 			addMadeGroup: `${baseURL}/group/add`,

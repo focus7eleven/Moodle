@@ -4,7 +4,7 @@ import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 import {Col,Icon,Select,Input,Table,Button,Modal,Form} from 'antd'
 import PermissionDic from '../../../utils/permissionDic'
-import {getWorkspaceData,addResource,getAllResources} from '../../../actions/workspace'
+import {getWorkspaceData,addResource,getAllResources,updateAuth} from '../../../actions/workspace'
 import {fromJS,Map,List} from 'immutable'
 import {findMenuInTree} from '../../../reducer/menu'
 
@@ -13,40 +13,60 @@ const Search = Input.Search
 const confirm = Modal.confirm
 const Option = Select.Option;
 
-const AuthModal = Form.create()(React.createClass({
+const AuthModal = Form.create({
+  // mapPropsToFields(props) {
+  //   console.log("~~~:",props.auth);
+  //   return {
+  //     newAuthList: {value:props.auth},
+  //   };
+  // },
+})(React.createClass({
   _authId: 0,
-
-  _authIndex: [],
 
   _authList: [],
 
   getInitialState(){
     return {
       modalVisibility: false,
+      authIndex: [],
     }
   },
 
   componentWillReceiveProps(nextProps){
-    if(nextProps.visibility){
+    if(!this.state.modalVisibility){
       const {form} = this.props;
       this._authId = nextProps.auth.length;
-      this._authIndex = [];
+      let authIndex = [];
       this._authList = nextProps.auth;
       for(let i=1;i<=this._authId;i++){
-        this._authIndex.push(i);
+        authIndex.push(i);
       }
-      // form.getFieldDecorator('newAuth', { initialValue: this._authIndex});
-      // form.getFieldDecorator('newAuthList', { initialValue: this._authList});
-      // form.setFieldsValue({newAuth: authIndex, newAuthList: nextProps.auth});
-      // console.log(this._authId);
-      // console.log(this._authIndex);
-      // console.log(this._authList);
-      this.setState({modalVisibility:nextProps.visibility})
+      this.setState({modalVisibility:nextProps.visibility,authIndex})
     }
   },
 
   handleUpdateAuthList(){
-
+    const {getFieldsValue,getFieldValue,getFieldError,validateFields} = this.props.form
+    validateFields();
+    const formData = getFieldValue('newAuthList');
+    let errors = [];
+    for(let i=0;i<formData.length;i++){
+      errors.push(getFieldError(`newAuthList[${i}].authName`))
+      errors.push(getFieldError(`newAuthList[${i}].authUrl`))
+    }
+    errors = errors.reduce((cur,acc)=>{
+      return cur||acc;
+    })
+    console.log(errors);
+    if(!errors){
+      this.props.updateAuth({
+        jsonStr: JSON.stringify(formData),
+        resourceId: this.props.resourceId
+      })
+      this.setState({
+        modalVisibility: false
+      })
+    }
   },
 
   handleModalDispaly(visibility){
@@ -55,34 +75,26 @@ const AuthModal = Form.create()(React.createClass({
   },
 
   handleAddResourceAuth(){
-    this._authId++;
-    const {form} = this.props;
-    const newAuth = form.getFieldValue('newAuth');
-    const nextAuthList = newAuth.concat(this._authId);
-    form.setFieldsValue({newAuth: nextAuthList});
+    this._authId = this._authId + 1;
+    let authIndex = this.state.authIndex;
+    authIndex.push(this._authId);
+    this.setState({authIndex})
   },
 
   handleRemoveResourceAuth(a){
-    this._authId--;
-    this._authList=this._authList.filter((item,index)=> index !== a-1);
-    console.log("after:",this._authList);
-    const {form} = this.props;
-    const newAuth = form.getFieldValue('newAuth');
-    form.setFieldsValue({newAuth: newAuth.filter(auth => auth !== a)});
+    const idx = this.state.authIndex.indexOf(a);
+    this._authList = this._authList.filter((item,index)=> index !== idx);
+    let authIndex = this.state.authIndex;
+    authIndex = authIndex.filter(auth => auth !== a);
+    this.setState({authIndex:authIndex});
   },
 
   render(){
-    const {modalVisibility} = this.state;
-    const {authList} = this.props;
+    const {modalVisibility,authIndex} = this.state;
     const formItemLayout = {labelCol:{span:6},wrapperCol: {span:13}};
     const formItemWithoutLabelLayout = {wrapperCol: {span:13,offset:6}};
     const {getFieldDecorator,getFieldValue} = this.props.form;
-    // setFieldsValue({newAuth: this._authIndex, newAuthList: this._authList});
-    getFieldDecorator('newAuth', { initialValue: this._authIndex});
-    // getFieldDecorator('newAuthList', { initialValue: this._authList});
-    // console.log("form:",getFieldValue('newAuthList'));
-    const newAuth = getFieldValue('newAuth');
-    const resourceAuthItems = !newAuth?null:newAuth.map((auth, index) => {
+    const resourceAuthItems = authIndex.map((auth, index) => {
       return (
         <FormItem
           {...(index===0?formItemLayout:formItemWithoutLabelLayout)}
@@ -92,14 +104,14 @@ const AuthModal = Form.create()(React.createClass({
         >
           <Col span="10" style={{marginRight:"10px"}}>
             <FormItem>
-              {getFieldDecorator(`newAuthList[${index}].authName`,{initialValue: this._authList[index]?this._authList[index].authName:""})(
+              {getFieldDecorator(`newAuthList[${index}].authName`,{rules: [{ required: true, message: '请填写权限名称' }],initialValue: this._authList[index]?this._authList[index].authName:""})(
                 <Input placeholder="名称"/>
               )}
             </FormItem>
           </Col>
           <Col span="10" style={{marginRight:"10px"}}>
             <FormItem>
-              {getFieldDecorator(`newAuthList[${index}].authUrl`,{initialValue: this._authList[index]?this._authList[index].authUrl:""})(
+              {getFieldDecorator(`newAuthList[${index}].authUrl`,{rules: [{ required: true, message: '请填写权限url' }],initialValue: this._authList[index]?this._authList[index].authUrl:""})(
                 <Input placeholder="url"/>
               )}
             </FormItem>
@@ -119,8 +131,8 @@ const AuthModal = Form.create()(React.createClass({
         <Form>
           {resourceAuthItems}
           <FormItem
-            label={this._authId===0?"权限":''}
-            {...(this._authId===0?formItemLayout:formItemWithoutLabelLayout)}
+            label={authIndex.length===0?"权限":''}
+            {...(authIndex.length===0?formItemLayout:formItemWithoutLabelLayout)}
           >
             <Button style={{width: "100%"}} type="dashed" onClick={this.handleAddResourceAuth}>
               <Icon type="plus" />
@@ -138,7 +150,9 @@ const ResourceManagementPage = React.createClass({
 
   _currentMenu: Map({authList:List()}),
 
-  _singleAuth: {},
+  _singleAuth: [],
+
+  _singleResourceId: '',
 
   getInitialState(){
     return {
@@ -229,8 +243,8 @@ const ResourceManagementPage = React.createClass({
   },
 
   handleUpdateAuth(record){
-    console.log(record);
-    this._singleAuth = record;
+    this._singleAuth = record.authList;
+    this._singleResourceId = record.resourceId;
     this.setState({authModal:true});
   },
 
@@ -279,12 +293,14 @@ const ResourceManagementPage = React.createClass({
     this._authId++;
     const {form} = this.props;
     const newAuth = form.getFieldValue('newAuth');
-    const nextAuthList = newAuth.concat(this._authId);
-    form.setFieldsValue({newAuth: nextAuthList});
+    const nextAuth = newAuth.concat(this._authId);
+    // const newAuth = form.getFieldValue('newAuthList');
+    // const nextAuth = newAuth.concat(this._authId);
+    form.setFieldsValue({newAuth: nextAuth});
   },
 
   handleRemoveResourceAuth(a){
-    this._authId--;
+    // this._authId--;
     const {form} = this.props;
     const newAuth = form.getFieldValue('newAuth');
     form.setFieldsValue({newAuth: newAuth.filter(auth => auth !== a)});
@@ -424,8 +440,8 @@ const ResourceManagementPage = React.createClass({
             </FormItem>
             {resourceAuthItems}
             <FormItem
-              label={this._authId===0?"权限":''}
-              {...(this._authId===0?formItemLayout:formItemWithoutLabelLayout)}
+              label={newAuth.length===0?"权限":''}
+              {...(newAuth.length===0?formItemLayout:formItemWithoutLabelLayout)}
             >
               <Button style={{width: "100%"}} type="dashed" onClick={this.handleAddResourceAuth}>
                 <Icon type="plus" />
@@ -440,7 +456,6 @@ const ResourceManagementPage = React.createClass({
               getFieldDecorator('parentId')(
                 <Select
                   showSearch
-                  // style={{ width: 200 }}
                   placeholder="选择一个父资源"
                   optionFilterProp="children"
                   filterOption={(input, option) => option.props.value.toLowerCase().indexOf(input.toLowerCase()) >= 0}
@@ -450,9 +465,6 @@ const ResourceManagementPage = React.createClass({
                       return <Option value={item.resourceId} key={item.resourceId}>{item.resourceName}</Option>
                     })
                   }
-                  {/* <Option value="jack">Jack</Option>
-                  <Option value="lucy">Lucy</Option>
-                  <Option value="tom">Tom</Option> */}
                 </Select>
               )
             }
@@ -528,12 +540,7 @@ const ResourceManagementPage = React.createClass({
           </div>
         </div>
         {this.renderModal()}
-        {
-          !authModal?
-          null
-          :
-          <AuthModal auth={this._singleAuth.authList} visibility={authModal} onVisibilityChange={()=>this.setState({authModal:false})}></AuthModal>
-        }
+        <AuthModal auth={this._singleAuth} resourceId={this._singleResourceId} visibility={authModal} updateAuth={this.props.updateAuth} onVisibilityChange={()=>this.setState({authModal:false})}></AuthModal>
       </div>
     )
   }
@@ -550,7 +557,8 @@ function mapDispatchToProps(dispatch){
   return {
     getWorkspaceData: bindActionCreators(getWorkspaceData,dispatch),
     addResource: bindActionCreators(addResource,dispatch),
-    getAllResources: bindActionCreators(getAllResources,dispatch)
+    getAllResources: bindActionCreators(getAllResources,dispatch),
+    updateAuth: bindActionCreators(updateAuth,dispatch),
   }
 }
 

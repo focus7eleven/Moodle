@@ -8,8 +8,8 @@
   :local(.header){
     @include headerWithoutFilter;
     :local(.operationButton){
-      background-color: $primary-color;
-      border-color: $primary-color;
+      background-color: $highlight-color;
+      border-color: $highlight-color;
     }
   }
 
