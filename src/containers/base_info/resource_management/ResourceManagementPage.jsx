@@ -4,7 +4,7 @@ import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 import {Col,Icon,Select,Input,Table,Button,Modal,Form} from 'antd'
 import PermissionDic from '../../../utils/permissionDic'
-import {getWorkspaceData} from '../../../actions/workspace'
+import {getWorkspaceData,addResource,getAllResources} from '../../../actions/workspace'
 import {fromJS,Map,List} from 'immutable'
 import {findMenuInTree} from '../../../reducer/menu'
 
@@ -13,16 +13,139 @@ const Search = Input.Search
 const confirm = Modal.confirm
 const Option = Select.Option;
 
+const AuthModal = Form.create()(React.createClass({
+  _authId: 0,
+
+  _authIndex: [],
+
+  _authList: [],
+
+  getInitialState(){
+    return {
+      modalVisibility: false,
+    }
+  },
+
+  componentWillReceiveProps(nextProps){
+    if(nextProps.visibility){
+      const {form} = this.props;
+      this._authId = nextProps.auth.length;
+      this._authIndex = [];
+      this._authList = nextProps.auth;
+      for(let i=1;i<=this._authId;i++){
+        this._authIndex.push(i);
+      }
+      // form.getFieldDecorator('newAuth', { initialValue: this._authIndex});
+      // form.getFieldDecorator('newAuthList', { initialValue: this._authList});
+      // form.setFieldsValue({newAuth: authIndex, newAuthList: nextProps.auth});
+      // console.log(this._authId);
+      // console.log(this._authIndex);
+      // console.log(this._authList);
+      this.setState({modalVisibility:nextProps.visibility})
+    }
+  },
+
+  handleUpdateAuthList(){
+
+  },
+
+  handleModalDispaly(visibility){
+    this.setState({modalVisibility: visibility});
+    this.props.onVisibilityChange();
+  },
+
+  handleAddResourceAuth(){
+    this._authId++;
+    const {form} = this.props;
+    const newAuth = form.getFieldValue('newAuth');
+    const nextAuthList = newAuth.concat(this._authId);
+    form.setFieldsValue({newAuth: nextAuthList});
+  },
+
+  handleRemoveResourceAuth(a){
+    this._authId--;
+    this._authList=this._authList.filter((item,index)=> index !== a-1);
+    console.log("after:",this._authList);
+    const {form} = this.props;
+    const newAuth = form.getFieldValue('newAuth');
+    form.setFieldsValue({newAuth: newAuth.filter(auth => auth !== a)});
+  },
+
+  render(){
+    const {modalVisibility} = this.state;
+    const {authList} = this.props;
+    const formItemLayout = {labelCol:{span:6},wrapperCol: {span:13}};
+    const formItemWithoutLabelLayout = {wrapperCol: {span:13,offset:6}};
+    const {getFieldDecorator,getFieldValue} = this.props.form;
+    // setFieldsValue({newAuth: this._authIndex, newAuthList: this._authList});
+    getFieldDecorator('newAuth', { initialValue: this._authIndex});
+    // getFieldDecorator('newAuthList', { initialValue: this._authList});
+    // console.log("form:",getFieldValue('newAuthList'));
+    const newAuth = getFieldValue('newAuth');
+    const resourceAuthItems = !newAuth?null:newAuth.map((auth, index) => {
+      return (
+        <FormItem
+          {...(index===0?formItemLayout:formItemWithoutLabelLayout)}
+          label={index===0?'权限':''}
+          required={false}
+          key={auth}
+        >
+          <Col span="10" style={{marginRight:"10px"}}>
+            <FormItem>
+              {getFieldDecorator(`newAuthList[${index}].authName`,{initialValue: this._authList[index]?this._authList[index].authName:""})(
+                <Input placeholder="名称"/>
+              )}
+            </FormItem>
+          </Col>
+          <Col span="10" style={{marginRight:"10px"}}>
+            <FormItem>
+              {getFieldDecorator(`newAuthList[${index}].authUrl`,{initialValue: this._authList[index]?this._authList[index].authUrl:""})(
+                <Input placeholder="url"/>
+              )}
+            </FormItem>
+          </Col>
+          <Icon
+            className={styles.deleteAuth}
+            type="minus-circle-o"
+            onClick={this.handleRemoveResourceAuth.bind(this,auth)}
+          />
+        </FormItem>
+      );
+    });
+    return (
+      <Modal title="资源权限" visible={modalVisibility}
+        onOk={this.handleUpdateAuthList} onCancel={this.handleModalDispaly.bind(this,false)}
+      >
+        <Form>
+          {resourceAuthItems}
+          <FormItem
+            label={this._authId===0?"权限":''}
+            {...(this._authId===0?formItemLayout:formItemWithoutLabelLayout)}
+          >
+            <Button style={{width: "100%"}} type="dashed" onClick={this.handleAddResourceAuth}>
+              <Icon type="plus" />
+            </Button>
+          </FormItem>
+        </Form>
+      </Modal>
+    )
+  },
+}))
+
+
 const ResourceManagementPage = React.createClass({
   _authId: 0,
 
-  _currentMenu:Map({authList:List()}),
+  _currentMenu: Map({authList:List()}),
+
+  _singleAuth: {},
 
   getInitialState(){
     return {
       searchStr: "",
       modalVisibility: false,
       modalType: "",
+      authModal: false,
     }
   },
 
@@ -30,6 +153,7 @@ const ResourceManagementPage = React.createClass({
     if(!this.props.menu.get('data').isEmpty()){
       this._currentMenu = findMenuInTree(this.props.menu.get('data'),'resource')
     }
+    this.props.getAllResources();
   },
 
   getTableData(){
@@ -61,10 +185,17 @@ const ResourceManagementPage = React.createClass({
       dataIndex: 'auth',
       key: 'auth',
       className:styles.tableColumn,
+      render:(text,record) => {
+        return (
+          <div>
+            <Button className={styles.authList} shape="circle" icon="bars" onClick={this.handleUpdateAuth.bind(this,record)}/>
+          </div>
+        )
+      }
     },{
       title: '父资源',
-      dataIndex: 'parentId',
-      key: 'parentId',
+      dataIndex: 'parentName',
+      key: 'parentName',
       className:styles.tableColumn,
     }])
 
@@ -97,6 +228,12 @@ const ResourceManagementPage = React.createClass({
     }
   },
 
+  handleUpdateAuth(record){
+    console.log(record);
+    this._singleAuth = record;
+    this.setState({authModal:true});
+  },
+
   handleAddResource(){
     // jsonStr:{"resourceName":"testwwhnight",
             // "resourceUrl":"url",
@@ -106,17 +243,18 @@ const ResourceManagementPage = React.createClass({
             // "resourceOrder":"1",
             // "authList":[{"authName":"ordername","authUrl":"orderUrl","code":1}]}
     const {getFieldsValue,getFieldValue,getFieldError} = this.props.form
-    console.log(getFieldsValue());
-    // if(getFieldValue('subjectName') && !(getFieldError('subjectName') || getFieldError('subjectShortName') || getFieldError('remark'))){
-    //   this.props.addSubject({
-    //     subjectName:getFieldValue('subjectName'),
-    //     subjectShortName:getFieldValue('subjectShortName'),
-    //     remark:getFieldValue('remark')
-    //   })
-    //   this.setState({
-    //     showAddSubjectModal:false
-    //   })
-    // }
+    if(getFieldValue('resourceName') && !(getFieldError('resourceName') || getFieldError('resourceOrder') || getFieldError('resourceDesc') || getFieldError('resourceUrl') || getFieldError('logo'))){
+      const obj = getFieldsValue();
+      delete obj['newAuth'];
+      const str = JSON.stringify(obj);
+      console.log(str);
+      this.props.addResource({
+        jsonStr: str
+      })
+      this.setState({
+        modalVisibility:false
+      })
+    }
   },
 
   handleEditResource(){
@@ -128,8 +266,13 @@ const ResourceManagementPage = React.createClass({
   },
 
   handleModalDispaly(visibility,type){
-    console.log(visibility,type);
-    this.setState({modalVisibility: visibility,modalType: type});
+    if(type==='add'){
+      this.props.form.resetFields();
+      this._authId=0;
+      this.setState({modalVisibility: visibility,modalType: type});
+    }else if(type===""){
+      this.setState({modalVisibility: visibility,modalType: type});
+    }
   },
 
   handleAddResourceAuth(){
@@ -145,6 +288,19 @@ const ResourceManagementPage = React.createClass({
     const {form} = this.props;
     const newAuth = form.getFieldValue('newAuth');
     form.setFieldsValue({newAuth: newAuth.filter(auth => auth !== a)});
+  },
+
+  handleSearchStrChanged(e){
+    this.setState({searchStr:e.target.value})
+  },
+
+  //搜索框输入的change事件
+  handleSearchTableData(value){
+    this.props.getWorkspaceData('resource',this.props.workspace.get('data').get('nowPage'),this.props.workspace.get('data').get('pageShow'),value)
+  },
+
+  renderAuthModal(){
+
   },
 
   renderModal(){
@@ -219,7 +375,7 @@ const ResourceManagementPage = React.createClass({
               key='resourceUrl'
             >
             {
-              getFieldDecorator('resourceUr', {
+              getFieldDecorator('resourceUrl', {
                 rules: [{
                   validator(rule, value, callback, source, options) {
                     var errors = [];
@@ -240,7 +396,7 @@ const ResourceManagementPage = React.createClass({
               key='resourceDesc'
             >
             {
-              getFieldDecorator('resourceUrl', {
+              getFieldDecorator('resourceDesc', {
                 rules: [{max:200, message: '输入不超过200个字' }],
               })(<Input type="textarea" placeholder='输入不超过200个字' rows={3}/>)
             }
@@ -289,9 +445,14 @@ const ResourceManagementPage = React.createClass({
                   optionFilterProp="children"
                   filterOption={(input, option) => option.props.value.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 >
-                  <Option value="jack">Jack</Option>
+                  {
+                    this.props.workspace.get('allResourcesList').map((item)=>{
+                      return <Option value={item.resourceId} key={item.resourceId}>{item.resourceName}</Option>
+                    })
+                  }
+                  {/* <Option value="jack">Jack</Option>
                   <Option value="lucy">Lucy</Option>
-                  <Option value="tom">Tom</Option>
+                  <Option value="tom">Tom</Option> */}
                 </Select>
               )
             }
@@ -326,6 +487,7 @@ const ResourceManagementPage = React.createClass({
   render(){
     const tableData = this.getTableData()
     const {workspace} = this.props
+    const {authModal} = this.state
 
     return (
       <div className={styles.container}>
@@ -355,7 +517,7 @@ const ResourceManagementPage = React.createClass({
                     current:this.props.workspace.get('data').get('nowPage'),
                     showQuickJumper:true,
                     onChange:(page)=>{
-                      this.props.getWorkspaceData('officer',page,this.props.workspace.get('data').get('pageShow'),this.state.searchStr)
+                      this.props.getWorkspaceData('resource',page,this.props.workspace.get('data').get('pageShow'),this.state.searchStr)
                     }
                   }
                   :
@@ -366,6 +528,12 @@ const ResourceManagementPage = React.createClass({
           </div>
         </div>
         {this.renderModal()}
+        {
+          !authModal?
+          null
+          :
+          <AuthModal auth={this._singleAuth.authList} visibility={authModal} onVisibilityChange={()=>this.setState({authModal:false})}></AuthModal>
+        }
       </div>
     )
   }
@@ -380,7 +548,9 @@ function mapStateToProps(state){
 
 function mapDispatchToProps(dispatch){
   return {
-    getWorkspaceData:bindActionCreators(getWorkspaceData,dispatch),
+    getWorkspaceData: bindActionCreators(getWorkspaceData,dispatch),
+    addResource: bindActionCreators(addResource,dispatch),
+    getAllResources: bindActionCreators(getAllResources,dispatch)
   }
 }
 

@@ -10,10 +10,17 @@ notification.config({
 export const GET_WORKSPACEDATA = actionNames('GET_WORKSPACEDATA')
 
 export function getWorkspaceData(type,currentPage,pageShow,search){
+  let realType = type;
+  if(type==="normalgroup"){
+    realType='group/normal'
+  }
+  if(type==="madegroup"){
+    realType='group/made'
+  }
   return {
     types:GET_WORKSPACEDATA,
     callAPI:()=>{
-      return fetch(config.api.workspace.baseInfo.baseData.get(type,currentPage,pageShow,search),{
+      return fetch(config.api.workspace.baseInfo.baseData.get(realType,currentPage,pageShow,search),{
         method:'GET',
         headers:{
           'from':'nodejs',
@@ -186,4 +193,7 @@ export const SEARCH_TEXTBOOK = require('./textbook').SEARCH_TEXTBOOK
 
 export const addResource = require('./resource').addResource
 export const editResource = require('./resource').editResource
+export const getAllResources = require('./resource').getAllResources
 export const GET_ALL_RESOURCES = require('./resource').GET_ALL_RESOURCES
+
+export const addMadeGroup = require('./group').addMadeGroup

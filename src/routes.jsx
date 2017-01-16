@@ -17,6 +17,8 @@ import DictPage from './containers/base_info/dict/DictPage'
 import ResourceManagementPage from './containers/base_info/resource_management/ResourceManagementPage'
 import OfficerPage from './containers/base_info/officer/OfficerPage'
 import RoleSettingPage from './containers/base_info/role_setting/RoleSettingPage'
+import NormalGroupPage from './containers/base_info/normal_group/NormalGroupPage'
+import MadeGroupPage from './containers/base_info/made_group/MadeGroupPage'
 
 const routes = (
 	<Router history={browserHistory}>
@@ -53,6 +55,11 @@ const routes = (
 					<Route path='textbook'>
 						<IndexRoute component={EduOutlinePage}/>
 					</Route>
+
+					{/* 群组管理 */}
+					<Route path='normalgroup' component={NormalGroupPage}></Route>
+					<Route path='madegroup' component={MadeGroupPage}></Route>
+
 				</Route>
 				{/*<Route path='notice_mgr' component={NoticeManagerContainer} />*/}
 			</Route>

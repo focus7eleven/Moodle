@@ -11,7 +11,8 @@ import {fromJS} from 'immutable'
 const initialState = fromJS({
   data:[],
   loading:true,
-  otherMsg:fromJS({})
+  otherMsg:fromJS({}),
+  allResourcesList:[]
 })
 
 export default (state = initialState,action)=>{
@@ -25,7 +26,7 @@ export default (state = initialState,action)=>{
     case SEARCH_TEXTBOOK[1]:
       return state.set('data',fromJS(action.data.mainData)).set('loading',false).set('otherMsg',fromJS(action.data.otherMsg))
     case GET_ALL_RESOURCES[1]:
-      // return state.set('data',fromJS(action.data.mainData)).set('loading',false).set('otherMsg',fromJS(action.data.otherMsg))
+      return state.set('allResourcesList',action.data)
     default:
       return state
   }

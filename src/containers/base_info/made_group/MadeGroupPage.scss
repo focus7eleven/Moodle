@@ -7,18 +7,9 @@
 
   :local(.header){
     @include headerWithoutFilter;
-
-    :local(.headerOperation){
-      height: 100%;
-      display: flex;
-      flex-direction: row;
-      justify-content: flex-start;
-
-      :local(.operationButton){
-        background-color: $highlight-color;
-        border-color: $highlight-color;
-        margin-right: 15px;
-      }
+    :local(.operationButton){
+      background-color: $primary-color;
+      border-color: $primary-color;
     }
   }
 
@@ -51,28 +42,5 @@
 
   :local(.deleteButton){
     @include deleteButton;
-  }
-}
-
-:local(.deleteAuth){
-  cursor: pointer;
-  position: relative;
-  top: 4px;
-  font-size: 20px;
-  color: #999;
-  transition: all 0.3s;
-  &:hover{
-    color: #777;
-  }
-}
-
-:local(.authListButton){
-  &:hover{
-    color: $primary-color;
-    border-color: $primary-color;
-  }
-  &:focus{
-    color: $primary-color;
-    border-color: $primary-color;
   }
 }

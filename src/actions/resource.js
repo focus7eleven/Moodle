@@ -6,14 +6,7 @@ import {notification} from 'antd'
 export function addResource(data){
   return dispatch => {
     let formData = new FormData()
-		// form data {*resourceName,resourceUrl,resourceDesc,parentId,logo,resourceOrder,authList}
-    formData.append('resourceName',data.resourceName)
-    formData.append('resourceUrl',data.resourceUrl)
-    formData.append('resourceDesc',data.resourceDesc)
-    formData.append('parentId',data.parentId)
-    formData.append('logo',data.logo)
-    formData.append('resourceOrder',data.resourceOrder)
-    formData.append('authList',data.authList)
+    formData.append('jsonStr',data.jsonStr)
     return fetch(config.api.resource.addResource,{
       method:'post',
       headers:{
@@ -87,9 +80,45 @@ export function getAllResources(){
   return {
     types:GET_ALL_RESOURCES,
     callAPI:()=>{
-      return fetch(config.api.resource.getAllResources(),{
+      return fetch(config.api.resource.getAllResources,{
         method:'GET',
+        headers:{
+          'from':'nodejs',
+          'token':sessionStorage.getItem('accessToken'),
+        }
     }).then(res => res.json())
     }
+  }
+}
+
+export function updateAuth(data){
+  return dispatch => {
+    let formData = new FormData()
+    formData.append('jsonStr',data.jsonStr)
+    return fetch(config.api.resource.updateAuth,{
+      method:'post',
+      headers:{
+        'from':'nodejs',
+        'token':sessionStorage.getItem('accessToken'),
+      },
+      body:formData
+    }).then(res => res.json()).then(res => {
+      if(res.title == 'Success'){
+        dispatch({
+          types:GET_WORKSPACEDATA,
+          callAPI:()=>{
+            return fetch(config.api.workspace.baseInfo.baseData.get('resource','','',''),{
+              method:'GET',
+              headers:{
+                'from':'nodejs',
+                'token':sessionStorage.getItem('accessToken'),
+              }
+            }).then(res => res.json()).then(res => {notification.success({message:'修改成功'});return res})
+          }
+        })
+      }else{
+        notification.error({message:'失败',description:'修改失败'})
+      }
+    })
   }
 }

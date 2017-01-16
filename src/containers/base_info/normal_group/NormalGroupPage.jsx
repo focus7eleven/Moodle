@@ -1,5 +1,5 @@
 import React from 'react'
-import styles from './OfficerPage.scss'
+import styles from './NormalGroupPage.scss'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 import {Icon,Input,Table,Button,Modal,Form} from 'antd'
@@ -12,7 +12,7 @@ const FormItem = Form.Item
 const Search = Input.Search
 const confirm = Modal.confirm
 
-const OfficerPage = React.createClass({
+const NormalGroupPage = React.createClass({
   _currentMenu:Map({
     authList:List()
   }),
@@ -29,7 +29,7 @@ const OfficerPage = React.createClass({
 
   componentWillMount(){
     if(!this.props.menu.get('data').isEmpty()){
-      this._currentMenu = findMenuInTree(this.props.menu.get('data'),'officer')
+      this._currentMenu = findMenuInTree(this.props.menu.get('data'),'normalgroup')
     }
   },
 
@@ -39,37 +39,37 @@ const OfficerPage = React.createClass({
     let authList = this._currentMenu.get('authList')
     console.log(authList.toJS());
     tableHeader = fromJS([{
-      title: '姓名',
-      dataIndex: 'name',
-      key: 'name',
+      title: '名称',
+      dataIndex: 'groupName',
+      key: 'groupName',
       className:styles.tableColumn,
     },{
-      title: '职位',
-      dataIndex: 'title',
-      key: 'title',
+      title: '类型',
+      dataIndex: 'groupTypeName',
+      key: 'groupTypeName',
       className:styles.tableColumn,
     },{
-      title: '身份证号',
-      dataIndex: 'id',
-      key: 'id',
+      title: '学校',
+      dataIndex: 'schoolName',
+      key: 'schoolName',
       className:styles.tableColumn,
     },{
-      title: '性别',
-      dataIndex: 'sex',
-      key: 'sex',
+      title: '班级',
+      dataIndex: 'className',
+      key: 'className',
       className:styles.tableColumn,
     },{
-      title: '电话',
-      dataIndex: 'phone',
-      key: 'phone',
+      title: '备注',
+      dataIndex: 'gorupDesc',
+      key: 'gorupDesc',
       className:styles.tableColumn,
     },{
-      title: '邮箱',
-      dataIndex: 'email',
-      key: 'email',
+      title: '人员',
+      dataIndex: 'memberCount',
+      key: 'memberCount',
       className:styles.tableColumn,
     }])
-    tableHeader = tableHeader.concat(authList.filter(v => (v.get('authUrl').split('/')[2] != 'import')&&(v.get('authUrl').split('/')[2] != 'view')&&(v.get('authUrl').split('/')[2] != 'add')).map( v => {
+    tableHeader = tableHeader.concat(authList.filter(v => (v.get('authUrl').split('/')[2] != 'view')&&(v.get('authUrl').split('/')[2] != 'add')).map( v => {
       return {
         title: PermissionDic[v.get('authUrl').split('/')[2]],
         dataIndex: v.get('authUrl').split('/')[2],
@@ -78,8 +78,8 @@ const OfficerPage = React.createClass({
         render:(text,record) => {
           return (
             <div>
-              <Button className={styles.editButton} type="primary" onClick={this.handleEditOfficer.bind(this,record.key)}>编辑</Button>
-              <Button className={styles.deleteButton} type="primary" onClick={this.handleDeleteOfficer.bind(this,record.key)}>删除</Button>
+              <Button className={styles.editButton} type="primary" onClick={this.handleEditGroup.bind(this,record.key)}>编辑</Button>
+              <Button className={styles.deleteButton} type="primary" onClick={this.handleDeleteGroup.bind(this,record.key)}>删除</Button>
             </div>
           )
         }
@@ -97,7 +97,7 @@ const OfficerPage = React.createClass({
     }
   },
 
-  handleAddOfficer(){
+  handleAddGroup(){
 
   },
 
@@ -105,20 +105,16 @@ const OfficerPage = React.createClass({
     this.setState({searchStr: e.target.value});
   },
 
-  handleSearchTableData(){
-
+  handleSearchTableData(value){
+    this.props.getWorkspaceData('normalgroup',this.props.workspace.get('data').get('nowPage'),this.props.workspace.get('data').get('pageShow'),value)
   },
 
-  handleEditOfficer(key){
+  handleEditGroup(key){
     console.log(key);
   },
 
-  handleDeleteOfficer(key){
+  handleDeleteGroup(key){
     console.log(key);
-  },
-
-  handleImportOfficer(){
-
   },
 
   render(){
@@ -131,18 +127,12 @@ const OfficerPage = React.createClass({
           <div className={styles.headerOperation}>
             {
               this._currentMenu.get('authList').find((v)=>v.get('authName')=='增加') ?
-              <Button data-action="add" type="primary" className={styles.operationButton} onClick={this.handleAddOfficer}>
+              <Button data-action="add" type="primary" className={styles.operationButton} onClick={this.handleAddGroup}>
                 新建
-              </Button>:null
+              </Button>:<div></div>
             }
-            {
-              this._currentMenu.get('authList').find((v)=>v.get('authName')=='导入') ?
-              <Button data-action="add" type="primary" className={styles.operationButton} onClick={this.handleImportOfficer}>
-                导入
-              </Button>:null
-            }
-          </div>
-          <Search style={{width:'260px'}} placeholder="请输入科员姓名" value={this.state.searchStr} onChange={this.handleSearchStrChanged} onSearch={this.handleSearchTableData} />
+        </div>
+          <Search style={{width:'260px'}} placeholder="请输入群组名称" value={this.state.searchStr} onChange={this.handleSearchStrChanged} onSearch={this.handleSearchTableData} />
         </div>
         <div className={styles.body}>
           <div className={styles.wrapper}>
@@ -159,7 +149,7 @@ const OfficerPage = React.createClass({
                     current:this.props.workspace.get('data').get('nowPage'),
                     showQuickJumper:true,
                     onChange:(page)=>{
-                      this.props.getWorkspaceData('officer',page,this.props.workspace.get('data').get('pageShow'),this.state.searchStr)
+                      this.props.getWorkspaceData('normalgroup',page,this.props.workspace.get('data').get('pageShow'),this.state.searchStr)
                     }
                   }
                   :
@@ -186,4 +176,4 @@ function mapDispatchToProps(dispatch){
   }
 }
 
-export default connect(mapStateToProps,mapDispatchToProps)(Form.create()(OfficerPage))
+export default connect(mapStateToProps,mapDispatchToProps)(Form.create()(NormalGroupPage))
