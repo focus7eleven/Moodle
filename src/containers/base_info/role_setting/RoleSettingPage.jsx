@@ -31,20 +31,6 @@ function findAllChildren(flatternTree,target,subtreeList){
   }
 }
 
-function addAllChildren(flatternTree,target,result=List()){
-  let subchildren = target.reduce((pre,cur)=>{
-    return pre.concat(flatternTree.filter(v => v.get('pId')==cur.get('id')))
-  },result)
-  let newTarget = target.reduce((pre,cur) => {
-    return pre.concat(flatternTree.filter(v => v.get('pId')==cur.get('id')))
-  },List())
-  if(newTarget.size==0){
-    return result
-  }else{
-    return findAllChildren(flatternTree,newTarget,subchildren)
-  }
-}
-
 const RoleSettingPage = React.createClass({
   _currentMenu:Map({
     authList:List()
@@ -135,10 +121,12 @@ const RoleSettingPage = React.createClass({
     this._currentRow = this.props.workspace.get('data').get('result').get(key)
     this.setState({
       showRoleDescEditModal:true,
+    },()=>{
+      setFieldsValue({
+        roleDesc:text
+      })
     })
-    setFieldsValue({
-      roleDesc:text
-    })
+
   },
   handleShowPermissionModal(key){
     this._currentRow = this.props.workspace.get('data').get('result').get(key)
@@ -197,11 +185,13 @@ const RoleSettingPage = React.createClass({
   handleShowEditRoleModal(key){
     const {setFieldsValue} = this.props.form
     this._currentRow = this.props.workspace.get('data').get('result').get(key)
-    setFieldsValue({
-      roleName:this._currentRow.get('roleName'),
-    })
+
     this.setState({
       showEditRoleModal:true
+    },()=>{
+      setFieldsValue({
+        roleName:this._currentRow.get('roleName'),
+      })
     })
   },
   handleAddRole(){

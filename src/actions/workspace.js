@@ -198,3 +198,9 @@ export const updateAuth = require('./resource').updateAuth
 export const GET_ALL_RESOURCES = require('./resource').GET_ALL_RESOURCES
 
 export const addMadeGroup = require('./group').addMadeGroup
+
+export const addDepartment = require('./department').addDepartment
+export const editDepartment = require('./department').editDepartment
+
+export const addArea = require('./area').addArea
+export const editArea = require('./area').editArea

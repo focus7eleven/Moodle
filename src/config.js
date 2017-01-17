@@ -105,7 +105,21 @@ const config = _.extend({
 		group: {
 			addMadeGroup: `${baseURL}/group/add`,
 			editMadeGroup: `${baseURL}/group/edit`,
-		}
+		},
+		department: {
+			post:`${baseURL}/cityDepartment/add`,
+			update:`${baseURL}/cityDepartment/edit`,
+		},
+		area: {
+			post:`${baseURL}/area/add`,
+			update:`${baseURL}/area/edit`,
+			children:{
+				get:`${baseURL}/area/getChildrenAreaList`
+			},
+			list:{
+				get:`${baseURL}/area/list`
+			}
+		},
 	}
 })
 
