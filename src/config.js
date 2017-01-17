@@ -14,7 +14,7 @@ const config = _.extend({
 		key:{
 			get:`${baseURL}/key`
 		},
-		resource:{
+		permission:{
 			tree:{
 				get:`${baseURL}/resource/tree`
 			},

@@ -27,7 +27,7 @@ function findAllChildren(flatternTree,target,subtreeList){
   if(newTarget.size==0){
     return newSubtreeList
   }else{
-    return findAllChildren(flatternTree,newTarget,newSubtreeList)
+    return findAllChildren(flatternTree,newTarget.map(v => v.get('id')),newSubtreeList)
   }
 }
 
@@ -142,13 +142,13 @@ const RoleSettingPage = React.createClass({
   },
   handleShowPermissionModal(key){
     this._currentRow = this.props.workspace.get('data').get('result').get(key)
-    Promise.all([fetch(config.api.resource.list.get(this._currentRow.get('roleId')),{
+    Promise.all([fetch(config.api.permission.list.get(this._currentRow.get('roleId')),{
       method:'get',
       headers:{
         'from':'nodejs',
         'token':sessionStorage.getItem('accessToken')
       }
-    }).then(res => res.json()),fetch(config.api.resource.tree.get,{
+    }).then(res => res.json()),fetch(config.api.permission.tree.get,{
       method:'get',
       headers:{
         'from':'nodejs',
@@ -163,14 +163,6 @@ const RoleSettingPage = React.createClass({
         showPermissionModal:true
       })
     })
-    // .then(res => {
-    //   this._permissionList = fromJS(res)
-    //   // this.setState({
-    //   //   permissionTree:this._permissionList.filter(v => v.get('pId')=='-1'||v.get('pId')=='0'),
-    //   //   showPermissionModal:true,
-    //   //   checkedKeys:this._permissionList.map(v => v.get('id')),
-    //   // })
-    // })
   },
   handleShowDeleteModal(key){
     const that = this
@@ -341,7 +333,7 @@ const RoleSettingPage = React.createClass({
       formData.append('resourceIds',v.get('resource_id'))
       formData.append('code',v.get('code'))
     })
-    fetch(config.api.resource.set.update,{
+    fetch(config.api.permission.set.update,{
       method:'post',
       headers:{
         'from':'nodejs',
@@ -349,7 +341,6 @@ const RoleSettingPage = React.createClass({
       },
       body:formData
     }).then(res => res.json()).then(res => {
-      console.log("-->:",res)
       this.setState({
         showPermissionModal:false
       })
@@ -359,6 +350,7 @@ const RoleSettingPage = React.createClass({
   handleCheckPermission(checkedKeys,e){
 
     const allChildren = findAllChildren(this._permissionList,List([e.node.props.eventKey]),List([this._permissionList.find(v =>v.get('id')==e.node.props.eventKey)]))
+    console.log("popo:",allChildren.toJS(),e.checked)
     if(e.checked){
       this.setState({
         checkedList:this.state.checkedList.concat(allChildren.map(v => {return fromJS({'resource_id':v.get('id'),code:v.get('code')})}))

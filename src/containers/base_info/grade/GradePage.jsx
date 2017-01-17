@@ -138,12 +138,14 @@ const GradePage = React.createClass({
     this._currentRow = this.props.workspace.get('data').get('result').get(key)
     this.setState({
       showEditGradeModal:true
+    },()=>{
+      setFieldsValue({
+        gradeName:this._currentRow.get('gradeName'),
+        gradeNickName:this._currentRow.get('gradeNickName'),
+        phaseName:this._currentRow.get('phaseCode'),
+      })
     })
-    setFieldsValue({
-      gradeName:this._currentRow.get('gradeName'),
-      gradeNickName:this._currentRow.get('gradeNickName'),
-      phaseName:this._currentRow.get('phaseCode'),
-    })
+
   },
   handleAddGrade(){
     const {getFieldValue,getFieldError} = this.props.form
