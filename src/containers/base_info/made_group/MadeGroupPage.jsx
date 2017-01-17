@@ -55,11 +55,6 @@ const MadeGroupPage = React.createClass({
       key: 'schoolName',
       className:styles.tableColumn,
     },{
-      title: '班级',
-      dataIndex: 'className',
-      key: 'className',
-      className:styles.tableColumn,
-    },{
       title: '描述',
       dataIndex: 'groupDesc',
       key: 'groupDesc',

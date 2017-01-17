@@ -3,6 +3,7 @@ import {
   GET_WORKSPACEDATA,
   SEARCH_TEXTBOOK,
   GET_ALL_RESOURCES,
+  GET_ALL_AREAS,
 } from '../actions/workspace'
 import {findPath} from '../reducer/menu'
 
@@ -12,7 +13,8 @@ const initialState = fromJS({
   data:[],
   loading:true,
   otherMsg:fromJS({}),
-  allResourcesList:[]
+  allResourcesList:[],
+  allAreasList: [],
 })
 
 export default (state = initialState,action)=>{
@@ -27,6 +29,8 @@ export default (state = initialState,action)=>{
       return state.set('data',fromJS(action.data.mainData)).set('loading',false).set('otherMsg',fromJS(action.data.otherMsg))
     case GET_ALL_RESOURCES[1]:
       return state.set('allResourcesList',action.data)
+    case GET_ALL_AREAS[1]:
+      return state.set('allAreasList',action.data)
     default:
       return state
   }

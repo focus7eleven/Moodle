@@ -13,11 +13,13 @@
       display: flex;
       flex-direction: row;
       justify-content: flex-start;
+      align-items: center;
 
       :local(.operationButton){
         background-color: $highlight-color;
         border-color: $highlight-color;
         margin-right: 15px;
+        height: 28px;
       }
     }
   }

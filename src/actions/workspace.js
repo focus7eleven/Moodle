@@ -198,3 +198,6 @@ export const updateAuth = require('./resource').updateAuth
 export const GET_ALL_RESOURCES = require('./resource').GET_ALL_RESOURCES
 
 export const addMadeGroup = require('./group').addMadeGroup
+
+export const GET_ALL_AREAS = require('./officer').GET_ALL_AREAS
+export const getAllAreas = require('./officer').getAllAreas

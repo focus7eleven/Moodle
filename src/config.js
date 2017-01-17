@@ -105,6 +105,10 @@ const config = _.extend({
 		group: {
 			addMadeGroup: `${baseURL}/group/add`,
 			editMadeGroup: `${baseURL}/group/edit`,
+		},
+		officer: {
+			addOfficer: `${baseURL}/officer/add`,
+			getAllAreas: `${baseURL}/area/getChildrenAreaList`,
 		}
 	}
 })
