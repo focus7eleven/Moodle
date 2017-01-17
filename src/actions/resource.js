@@ -39,13 +39,16 @@ export function editResource(data){
   return dispatch => {
     let formData = new FormData()
     formData.append('resourceId',data.resourceId)
-    formData.append('resourceName',data.resourceName)
-    formData.append('resourceUrl',data.resourceUrl)
-    formData.append('resourceDesc',data.resourceDesc)
-    formData.append('parentId',data.parentId)
-    formData.append('logo',data.logo)
-    formData.append('resourceOrder',data.resourceOrder)
-    formData.append('authList',data.authList)
+    formData.append('action',data.action)
+    if(data.action==="edit"){
+      formData.append('resourceName',data.resourceName)
+      formData.append('resourceUrl',data.resourceUrl)
+      formData.append('resourceOrder',data.resourceOrder)
+    }
+    // formData.append('resourceDesc',data.resourceDesc)
+    // formData.append('parentId',data.parentId)
+    // formData.append('logo',data.logo)
+    // formData.append('authList',data.authList)
     return fetch(config.api.resource.editResource,{
       method:'post',
       headers:{
@@ -95,6 +98,7 @@ export function updateAuth(data){
   return dispatch => {
     let formData = new FormData()
     formData.append('jsonStr',data.jsonStr)
+    formData.append('resourceId',data.resourceId)
     return fetch(config.api.resource.updateAuth,{
       method:'post',
       headers:{

@@ -194,6 +194,7 @@ export const SEARCH_TEXTBOOK = require('./textbook').SEARCH_TEXTBOOK
 export const addResource = require('./resource').addResource
 export const editResource = require('./resource').editResource
 export const getAllResources = require('./resource').getAllResources
+export const updateAuth = require('./resource').updateAuth
 export const GET_ALL_RESOURCES = require('./resource').GET_ALL_RESOURCES
 
 export const addMadeGroup = require('./group').addMadeGroup

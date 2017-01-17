@@ -79,7 +79,7 @@ const MadeGroupPage = React.createClass({
         render:(text,record) => {
           return (
             <div>
-              <Button className={styles.editButton} type="primary" onClick={this.handleEditGroup.bind(this,record.key)}>编辑</Button>
+              <Button className={styles.editButton} type="primary" onClick={this.handleModalDispaly.bind(this,true,record.key)}>编辑</Button>
               <Button className={styles.deleteButton} type="primary" onClick={this.handleDeleteGroup.bind(this,record.key)}>删除</Button>
             </div>
           )
@@ -133,6 +133,15 @@ const MadeGroupPage = React.createClass({
       this.setState({modalVisibility: visibility,modalType: type});
     }else if(type===''){
       this.setState({modalVisibility: visibility,modalType: type});
+    }else{
+      const {setFieldsValue} = this.props.form
+      this._currentRow = this.props.workspace.get('data').get('result').get(type)
+      console.log(this._currentRow.toJS());
+      setFieldsValue({
+        'groupName':this._currentRow.get('groupName'),
+        'groupDesc':this._currentRow.get('groupDesc'),
+      })
+      this.setState({modalVisibility: visibility,modalType: 'edit'});
     }
   },
 
@@ -140,7 +149,7 @@ const MadeGroupPage = React.createClass({
     const {modalVisibility,modalType} = this.state
     const {getFieldDecorator} = this.props.form
     return (
-      <Modal title="添加群组" visible={modalVisibility}
+      <Modal title={modalType==="add"?"添加群组":"编辑群组"} visible={modalVisibility}
           onOk={modalType==="add"?this.handleAddGroup:this.handleEditGroup} onCancel={this.handleModalDispaly.bind(this,false,'')}
         >
         <div>
