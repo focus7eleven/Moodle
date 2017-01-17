@@ -42,6 +42,14 @@
     }
 
   }
+
+  :local(.editButton){
+    @include editButton;
+  }
+
+  :local(.deleteButton){
+    @include deleteButton;
+  }
 }
 :local(.permissionTree){
   height: 300px;

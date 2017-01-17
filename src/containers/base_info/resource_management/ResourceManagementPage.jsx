@@ -21,6 +21,7 @@ const AuthModal = Form.create({
   //   };
   // },
 })(React.createClass({
+  // 新增权限时，分配给组件的id，只增不减。
   _authId: 0,
 
   _authList: [],
@@ -28,6 +29,7 @@ const AuthModal = Form.create({
   getInitialState(){
     return {
       modalVisibility: false,
+      // 记录当前所有权限的组件id
       authIndex: [],
     }
   },

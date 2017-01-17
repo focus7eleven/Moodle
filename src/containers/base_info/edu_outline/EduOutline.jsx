@@ -135,8 +135,8 @@ const EduOutlinePage = React.createClass({
         render:(text,record) => {
           return (
             <div>
-              <Button type="primary" style={{backgroundColor:'#30D18E',borderColor:'#30D18E'}} onClick={this.handleShowEditTextbookModal.bind(this,record.key)}>编辑</Button>
-              <Button type="primary" style={{backgroundColor:'#FD9B09',borderColor:'#FD9B09',marginLeft:'10px'}} onClick={this.handleShowDeleteModal.bind(this,record.key)}>删除</Button>
+              <Button type="primary" className={styles.editButton} onClick={this.handleShowEditTextbookModal.bind(this,record.key)}>编辑</Button>
+              <Button type="primary" className={styles.deleteButton} onClick={this.handleShowDeleteModal.bind(this,record.key)}>删除</Button>
             </div>
           )
         }

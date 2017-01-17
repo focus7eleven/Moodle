@@ -41,6 +41,13 @@
       }
     }
   }
+  :local(.editButton){
+    @include editButton;
+  }
+
+  :local(.deleteButton){
+    @include deleteButton;
+  }
 }
 :local(.phaseSubject){
   width: 100%;

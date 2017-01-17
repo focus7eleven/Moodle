@@ -53,6 +53,7 @@
 }
 
 @mixin deleteButton {
-  background-color: $highlight-color;
-  border-color: $highlight-color;
+  background-color: white;
+  border-color: $border-grey;
+  color: #f04134;
 }
