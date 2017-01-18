@@ -4,7 +4,7 @@ import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 import {Upload,Select,DatePicker,Icon,Input,Table,Button,Modal,Form} from 'antd'
 import PermissionDic from '../../../utils/permissionDic'
-import {addOfficer,getAllAreas,getWorkspaceData} from '../../../actions/workspace'
+import {downloadExcel,importExcel,editStaff,addStaff,getAllAreas,getWorkspaceData} from '../../../actions/workspace'
 import {fromJS,Map,List} from 'immutable'
 import {findMenuInTree} from '../../../reducer/menu'
 import moment from 'moment'
@@ -25,7 +25,9 @@ const OfficerPage = React.createClass({
       searchStr: "",
       modalType: "",
       modalVisibility: false,
+      importModalVisibility: false,
       imageUrl: "",
+      excelFile: null,
     }
   },
 
@@ -49,11 +51,6 @@ const OfficerPage = React.createClass({
       title: '角色',
       dataIndex: 'role',
       key: 'role',
-      className:styles.tableColumn,
-    },{
-      title: '职位',
-      dataIndex: 'title',
-      key: 'title',
       className:styles.tableColumn,
     },{
       title: '身份证号',
@@ -116,10 +113,17 @@ const OfficerPage = React.createClass({
     const {getFieldsValue,getFieldValue,getFieldError,validateFields} = this.props.form
     validateFields((err, values) => {
       if (!err) {
-        values.birth = moment(values.birth).format("YYYY/MM/DD");
-        values.userImg = this.state.imageUrl
-        console.log(values);
-        const result = this.props.addOfficer(values)
+        let formData = new FormData()
+        formData.append('areaId',values.areaId)
+        formData.append('name',values.name)
+        formData.append('id',values.id)
+        formData.append('sex',values.sex)
+        formData.append('phone',values.phone)
+        formData.append('birth',moment(values.birth).format("YYYY/MM/DD"))
+        formData.append('homeAddr',values.homeAddr)
+        formData.append('email',values.email)
+        formData.append('userImg',this.state.imageUrl)
+        const result = this.props.addStaff(formData,"officer")
         result.then((res)=>{
           if(res!=="error"){
             this.setState({
@@ -139,16 +143,56 @@ const OfficerPage = React.createClass({
     this.props.getWorkspaceData('officer',this.props.workspace.get('data').get('nowPage'),this.props.workspace.get('data').get('pageShow'),value)
   },
 
-  handleEditOfficer(key){
-    console.log(key);
+  handleEditOfficer(){
+    const {getFieldsValue,getFieldValue,getFieldError,validateFields} = this.props.form
+    validateFields((err, values) => {
+      if (!err) {
+        let formData = new FormData()
+        formData.append('userId',this._currentRow.get('userId'))
+        formData.append('action',"edit")
+        formData.append('areaId',values.areaId)
+        formData.append('name',values.name)
+        formData.append('id',values.id)
+        formData.append('sex',values.sex)
+        formData.append('phone',values.phone)
+        formData.append('birth',moment(values.birth).format("YYYY/MM/DD"))
+        formData.append('homeAddr',values.homeAddr)
+        formData.append('email',values.email)
+        formData.append('userImg',this.state.imageUrl)
+        const result = this.props.editStaff(formData,"officer")
+        result.then((res)=>{
+          if(res!=="error"){
+            this.setState({
+              modalVisibility: false,
+            })
+          }
+        })
+      }
+    });
   },
 
   handleDeleteOfficer(key){
-    console.log(key);
+    const userId = this.props.workspace.get('data').get('result').get(key).get('userId')
+    const that = this
+    let formData = new FormData()
+    formData.append('userId',userId)
+    formData.append('action',"delete")
+    confirm({
+      title: '你先删除这条记录吗？',
+      content: '删除后不可恢复',
+      onOk() {
+        that.props.editStaff(formData,"officer")
+      },
+      onCancel() {},
+    });
   },
 
   handleImportOfficer(){
+    this.state.excelFile?this.props.importExcel(this.state.excelFile,"officer"):null;
+  },
 
+  handleImportModalDisplay(visibility){
+    this.setState({importModalVisibility: visibility});
   },
 
   handleModalDispaly(visibility,type){
@@ -160,18 +204,17 @@ const OfficerPage = React.createClass({
     }else{
       const {setFieldsValue} = this.props.form
       this._currentRow = this.props.workspace.get('data').get('result').get(type)
-      console.log(this._currentRow.toJS());
       setFieldsValue({
         'areaId':this._currentRow.get('areaId'),
         'name':this._currentRow.get('name'),
-        'title':this._currentRow.get('title'),
         'id':this._currentRow.get('id'),
         'sex':this._currentRow.get('sex'),
         'phone':this._currentRow.get('phone'),
         'birth':moment(this._currentRow.get('birth')),
         'email':this._currentRow.get('email'),
+        'homeAddr':this._currentRow.get('homeAddr'),
       })
-      this.setState({modalVisibility: visibility,modalType: 'edit'});
+      this.setState({modalVisibility: visibility,modalType: 'edit', imageUrl: this._currentRow.get('userImg')});
     }
   },
 
@@ -180,6 +223,30 @@ const OfficerPage = React.createClass({
     const file = e.target.files[0];
     reader.addEventListener('load', () => this.setState({imageUrl:reader.result}));
     reader.readAsDataURL(file);
+  },
+
+  handleImportFileChange(e){
+    const file = e.target.files[0];
+    this.setState({excelFile: file});
+  },
+
+  handleDownloadExcel(){
+    this.props.downloadExcel("officer");
+  },
+
+  renderImportModal(){
+    const {importModalVisibility} = this.state;
+    return (
+      <Modal title="批量导入" visible={importModalVisibility} onOk={this.handleImportOfficer} onCancel={this.handleImportModalDisplay.bind(this,false)}>
+        <div>
+          <h3>导入步骤:</h3>
+          <p>1. 点击<a onClick={this.handleDownloadExcel}>下载模板</a></p>
+          <p>2. 按模板要求完善导入人员的信息</p>
+          <p>3. 选择该文件进行导入</p>
+          <input type="file" onChange={this.handleImportFileChange} />
+        </div>
+      </Modal>
+    )
   },
 
   renderModal(){
@@ -207,7 +274,6 @@ const OfficerPage = React.createClass({
                   <Select
                     placeholder="请选择所属教育局"
                     optionFilterProp="children"
-                    // defaultValue={this.props.workspace.get('allAreasList').length===0?"":this.props.workspace.get('allAreasList')[0].areaId}
                   >
                     {
                       allAreasList.map((item)=>{
@@ -238,27 +304,6 @@ const OfficerPage = React.createClass({
                   }
                 }],
               })(<Input placeholder='输入不超过36个字'/>)
-            }
-            </FormItem>
-            <FormItem
-              label="职位"
-              {...formItemLayout}
-              key='title'
-            >
-            {
-              getFieldDecorator('title', {initialValue: "",
-                rules: [{
-                  validator(rule, value, callback, source, options) {
-                    var errors = [];
-                    if(value && value.length > 200){
-                      errors.push(
-                        new Error('职位应不超过200个字')
-                      )
-                    }
-                    callback(errors);
-                  }
-                }],
-              })(<Input type="textarea" rows={3} placeholder='输入不超过200个字'/>)
             }
             </FormItem>
             <FormItem
@@ -370,7 +415,7 @@ const OfficerPage = React.createClass({
             >
               <div className={styles.avatarUploader}>
                 <div className={styles.imgContainer}>
-                  { imageUrl ? <img src={imageUrl} alt="" className={styles.avatar} /> : "" }
+                  { imageUrl&&imageUrl.indexOf("base64")>=0 ? <img src={imageUrl} alt="" className={styles.avatar} /> : "" }
                 </div>
                 <div className={styles.inputContainer}>
                   <Icon type="plus" />
@@ -400,7 +445,7 @@ const OfficerPage = React.createClass({
             }
             {
               this._currentMenu.get('authList').find((v)=>v.get('authName')=='导入') ?
-              <Button type="primary" className={styles.operationButton} onClick={this.handleImportOfficer}>
+              <Button type="primary" className={styles.operationButton} onClick={this.handleImportModalDisplay.bind(this,true)}>
                 导入
               </Button>:null
             }
@@ -433,6 +478,7 @@ const OfficerPage = React.createClass({
           </div>
         </div>
         {this.renderModal()}
+        {this.renderImportModal()}
       </div>
     )
   }
@@ -448,7 +494,10 @@ function mapDispatchToProps(dispatch){
   return {
     getWorkspaceData: bindActionCreators(getWorkspaceData,dispatch),
     getAllAreas: bindActionCreators(getAllAreas,dispatch),
-    addOfficer: bindActionCreators(addOfficer,dispatch),
+    addStaff: bindActionCreators(addStaff,dispatch),
+    editStaff: bindActionCreators(editStaff,dispatch),
+    downloadExcel: bindActionCreators(downloadExcel,dispatch),
+    importExcel: bindActionCreators(importExcel,dispatch),
   }
 }
 

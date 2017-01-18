@@ -172,3 +172,9 @@
     border-color: $primary-color;
   }
 }
+
+:global(.ant-calendar-picker .ant-calendar-picker-input){
+  &:hover{
+    border-color: $primary-color;
+  }
+}

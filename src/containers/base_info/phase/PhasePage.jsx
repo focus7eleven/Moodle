@@ -59,6 +59,15 @@ const PhasePage = React.createClass({
     }).then(res => {return res.json()}).then(res => {
       this._subjectList = res
     })
+    fetch(config.api.phase.phaseList.get,{
+      method:'get',
+      headers:{
+        'from':'nodejs',
+        'token':sessionStorage.getItem('accessToken')
+      }
+    }).then(res => res.json()).then(res => {
+      this._phaseList = res
+    })
   },
   //生成表格数据
   getTableData(){
@@ -145,24 +154,15 @@ const PhasePage = React.createClass({
   handleShowEditPhaseModal(key){
     const {setFieldsValue} = this.props.form
     const currentRow = this.props.workspace.get('data').get('result').get(key)
-    this._phaseList.length==0?fetch(config.api.phase.phaseList.get,{
-      method:'get',
-      headers:{
-        'from':'nodejs',
-        'token':sessionStorage.getItem('accessToken')
-      }
-    }).then(res => res.json()).then(res => {
-      this._phaseList = res
-      this.setState({
-        showEditPhaseModal:true,
-      })
-    }):this.setState({
+
+    this.setState({
       showEditPhaseModal:true,
-    })
-    setFieldsValue({
-      'phaseId':currentRow.get('phase_code'),
-      'phaseName':currentRow.get('phase_name'),
-      'remark':currentRow.get('remark'),
+    },()=>{
+      setFieldsValue({
+        'phaseId':currentRow.get('phase_code'),
+        'phaseName':currentRow.get('phase_name'),
+        'remark':currentRow.get('remark'),
+      })
     })
   },
   //控制显示添加学段对话框

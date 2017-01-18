@@ -14,7 +14,7 @@ const config = _.extend({
 		key:{
 			get:`${baseURL}/key`
 		},
-		resource:{
+		permission:{
 			tree:{
 				get:`${baseURL}/resource/tree`
 			},
@@ -106,10 +106,28 @@ const config = _.extend({
 			addMadeGroup: `${baseURL}/group/add`,
 			editMadeGroup: `${baseURL}/group/edit`,
 		},
-		officer: {
-			addOfficer: `${baseURL}/officer/add`,
+		staff: {
+			addStaff: (type) => `${baseURL}/${type}/add`,
+			editStaff: (type) => `${baseURL}/${type}/edit`,
+			// 增加科员时，获取所有教育局列表
 			getAllAreas: `${baseURL}/area/getChildrenAreaList`,
-		}
+			downloadExcel: (type) => `${baseURL}/${type}/downloadModal`,
+			importExcel: (type) => `${baseURL}/${type}/importExcel`,
+		},
+		department: {
+			post:`${baseURL}/cityDepartment/add`,
+			update:`${baseURL}/cityDepartment/edit`,
+		},
+		area: {
+			post:`${baseURL}/area/add`,
+			update:`${baseURL}/area/edit`,
+			children:{
+				get:`${baseURL}/area/getChildrenAreaList`
+			},
+			list:{
+				get:`${baseURL}/area/list`
+			}
+		},
 	}
 })
 

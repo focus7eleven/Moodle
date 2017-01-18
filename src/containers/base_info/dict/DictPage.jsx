@@ -138,13 +138,15 @@ const DictPage = React.createClass({
     this._currentRow = this.props.workspace.get('data').get('result').get(key)
     this.setState({
       showEditDictModal:true
+    },()=>{
+      setFieldsValue({
+        dictStyle:this._currentRow.get('dictStyle'),
+        styleDesc:this._currentRow.get('styleDesc'),
+        dictName:this._currentRow.get('dictName'),
+        dictCode:this._currentRow.get('dictCode'),
+      })
     })
-    setFieldsValue({
-      dictStyle:this._currentRow.get('dictStyle'),
-      styleDesc:this._currentRow.get('styleDesc'),
-      dictName:this._currentRow.get('dictName'),
-      dictCode:this._currentRow.get('dictCode'),
-    })
+
   },
   handleAddDict(){
     const {getFieldValue,getFieldError} = this.props.form

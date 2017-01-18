@@ -30,12 +30,4 @@
       }
     }
   }
-
-  :local(.editButton){
-    @include editButton;
-  }
-
-  :local(.deleteButton){
-    @include deleteButton;
-  }
 }

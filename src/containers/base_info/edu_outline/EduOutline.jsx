@@ -281,13 +281,13 @@ const EduOutlinePage = React.createClass({
   handleFileChange(e){
     //上传文件
     let formData = new FormData()
-    formData.append('textbookId',)
+    formData.append('textbookId',this._currentRow.get('id'))
     formData.append('file',e.target.files[0])
     fetch(config.api.textbook.import,{
       method:'post',
       headers:{
         'from':'nodejs',
-        'token':accessToken
+        'token':sessionStorage.getItem('accessToken')
       },
       body:formData,
     }).then(res => res.json()).then(res => {
@@ -450,46 +450,48 @@ const EduOutlinePage = React.createClass({
       <div className={styles.container}>
         <div className={styles.header}>
           {this._currentMenu.get('authList').some(v => v.get('authUrl')=='/textbook/add')?<Button type="primary" style={{backgroundColor:'#FD9B09',borderColor:'#FD9B09'}} onClick={()=>{this.setState({showAddTextbookModal:true})}}>新建</Button>:<div> </div>}
-          <Select
-          style={{ width: 200 }}
-          placeholder='选择学段'
-          value={this.props.workspace.get('otherMsg').get('phaseOption')}
-          onChange={(value)=>{this.setState({phaseOption:value},()=>{this.handleSearchTableData()})}}
-          >
-          <Option key={-1} value={''} title='所有学段'>所有学段</Option>
-          {
-            this.state.loading?<Option key={0} value='0' title='0'><Spin size="small"/></Option>:this._phaseList.map((v,k) => (
-              <Option key={k} value={v.id} title={v.text}>{v.text}</Option>
-            ))
-          }
-          </Select>
-          <Select
-          style={{ width: 200 }}
-          placeholder='选择年级'
-          value={this.props.workspace.get('otherMsg').get('gradeOption')}
-          onChange={(value)=>{this.setState({gradeOption:value},()=>{this.handleSearchTableData()})}}
-          >
-          <Option key={-1} value={''} title='所有年级'>所有年级</Option>
-          {
-            this.state.loading?<Option key={0} value='0' title='0'><Spin size="small"/></Option>:this._gradeList.map((v,k) => (
-              <Option key={k} value={v.id} title={v.text}>{v.text}</Option>
-            ))
-          }
-          </Select>
-          <Select
-          style={{ width: 200 }}
-          placeholder='选择学科'
-          value={this.props.workspace.get('otherMsg').get('subjectOption')}
-          onChange={(value)=>{this.setState({subjectOption:value},()=>{this.handleSearchTableData()})}}
-          >
-          <Option key={-1} value={''} title='所有学科'>所有学科</Option>
-          {
-            this.state.loading?<Option key={0} value='0' title='0'><Spin size="small"/></Option>:this._subjectList.map((v,k) => (
-              <Option key={k} value={v.id} title={v.text}>{v.text}</Option>
-            ))
-          }
-          </Select>
-          <Search style={{width: '200px'}} placeholder="请输入查询条件" value={this.state.searchStr} onChange={(e)=>{this.setState({searchStr:e.target.value})}} onSearch={this.handleSearchTableData} />
+          <div className={styles.headerOperation}>
+            <Select
+              className={styles.operation}
+              placeholder='选择学段'
+              value={this.props.workspace.get('otherMsg').get('phaseOption')}
+              onChange={(value)=>{this.setState({phaseOption:value},()=>{this.handleSearchTableData()})}}
+            >
+            <Option key={-1} value={''} title='所有学段'>所有学段</Option>
+            {
+              this.state.loading?<Option key={0} value='0' title='0'><Spin size="small"/></Option>:this._phaseList.map((v,k) => (
+                <Option key={k} value={v.id} title={v.text}>{v.text}</Option>
+              ))
+            }
+            </Select>
+            <Select
+              className={styles.operation}
+              placeholder='选择年级'
+              value={this.props.workspace.get('otherMsg').get('gradeOption')}
+              onChange={(value)=>{this.setState({gradeOption:value},()=>{this.handleSearchTableData()})}}
+            >
+            <Option key={-1} value={''} title='所有年级'>所有年级</Option>
+            {
+              this.state.loading?<Option key={0} value='0' title='0'><Spin size="small"/></Option>:this._gradeList.map((v,k) => (
+                <Option key={k} value={v.id} title={v.text}>{v.text}</Option>
+              ))
+            }
+            </Select>
+            <Select
+              className={styles.operation}
+              placeholder='选择学科'
+              value={this.props.workspace.get('otherMsg').get('subjectOption')}
+              onChange={(value)=>{this.setState({subjectOption:value},()=>{this.handleSearchTableData()})}}
+            >
+            <Option key={-1} value={''} title='所有学科'>所有学科</Option>
+            {
+              this.state.loading?<Option key={0} value='0' title='0'><Spin size="small"/></Option>:this._subjectList.map((v,k) => (
+                <Option key={k} value={v.id} title={v.text}>{v.text}</Option>
+              ))
+            }
+            </Select>
+            <Search style={{width: '240px'}} placeholder="请输入查询条件" value={this.state.searchStr} onChange={(e)=>{this.setState({searchStr:e.target.value})}} onSearch={this.handleSearchTableData} />
+          </div>
         </div>
         <div className={styles.body}>
           <div className={styles.wrapper}>

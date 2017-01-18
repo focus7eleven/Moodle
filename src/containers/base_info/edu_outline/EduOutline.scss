@@ -6,6 +6,14 @@
 
   :local(.header){
     @include headerWithoutFilter;
+    :local(.headerOperation){
+      display: flex;
+      flex-direction: row;
+      :local(.operation){
+        width: 200px;
+        margin-right: 10px;
+      }
+    }
   }
 
   :local(.body){

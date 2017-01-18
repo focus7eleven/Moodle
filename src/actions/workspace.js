@@ -199,7 +199,15 @@ export const GET_ALL_RESOURCES = require('./resource').GET_ALL_RESOURCES
 
 export const addMadeGroup = require('./group').addMadeGroup
 
-export const GET_ALL_AREAS = require('./officer').GET_ALL_AREAS
-export const getAllAreas = require('./officer').getAllAreas
-export const addOfficer = require('./officer').addOfficer
-export const editOfficer = require('./officer').editOfficer
+export const GET_ALL_AREAS = require('./staff').GET_ALL_AREAS
+export const getAllAreas = require('./staff').getAllAreas
+export const addStaff = require('./staff').addStaff
+export const editStaff = require('./staff').editStaff
+export const downloadExcel = require('./staff').downloadExcel
+export const importExcel = require('./staff').importExcel
+
+export const addDepartment = require('./department').addDepartment
+export const editDepartment = require('./department').editDepartment
+
+export const addArea = require('./area').addArea
+export const editArea = require('./area').editArea

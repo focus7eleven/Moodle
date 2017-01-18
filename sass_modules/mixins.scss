@@ -55,5 +55,10 @@
 @mixin deleteButton {
   background-color: white;
   border-color: $border-grey;
-  color: #f04134;
+  color: $warning-color;
+  &:hover{
+    color: white;
+    background-color: $warning-color;
+    border-color: $warning-color;
+  }
 }
