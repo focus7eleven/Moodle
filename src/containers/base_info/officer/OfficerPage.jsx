@@ -2,9 +2,9 @@ import React from 'react'
 import styles from './OfficerPage.scss'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
-import {Select,DatePicker,Icon,Input,Table,Button,Modal,Form} from 'antd'
+import {Upload,Select,DatePicker,Icon,Input,Table,Button,Modal,Form} from 'antd'
 import PermissionDic from '../../../utils/permissionDic'
-import {getAllAreas,getWorkspaceData} from '../../../actions/workspace'
+import {addOfficer,getAllAreas,getWorkspaceData} from '../../../actions/workspace'
 import {fromJS,Map,List} from 'immutable'
 import {findMenuInTree} from '../../../reducer/menu'
 import moment from 'moment'
@@ -25,6 +25,7 @@ const OfficerPage = React.createClass({
       searchStr: "",
       modalType: "",
       modalVisibility: false,
+      imageUrl: "",
     }
   },
 
@@ -92,7 +93,7 @@ const OfficerPage = React.createClass({
         render:(text,record) => {
           return (
             <div>
-              <Button className={styles.editButton} type="primary" onClick={this.handleEditOfficer.bind(this,record.key)}>编辑</Button>
+              <Button className={styles.editButton} type="primary" onClick={this.handleModalDispaly.bind(this,true,record.key)}>编辑</Button>
               <Button className={styles.deleteButton} type="primary" onClick={this.handleDeleteOfficer.bind(this,record.key)}>删除</Button>
             </div>
           )
@@ -112,7 +113,22 @@ const OfficerPage = React.createClass({
   },
 
   handleAddOfficer(){
-
+    const {getFieldsValue,getFieldValue,getFieldError,validateFields} = this.props.form
+    validateFields((err, values) => {
+      if (!err) {
+        values.birth = moment(values.birth).format("YYYY/MM/DD");
+        values.userImg = this.state.imageUrl
+        console.log(values);
+        const result = this.props.addOfficer(values)
+        result.then((res)=>{
+          if(res!=="error"){
+            this.setState({
+              modalVisibility: false,
+            })
+          }
+        })
+      }
+    });
   },
 
   handleSearchStrChanged(e){
@@ -146,18 +162,29 @@ const OfficerPage = React.createClass({
       this._currentRow = this.props.workspace.get('data').get('result').get(type)
       console.log(this._currentRow.toJS());
       setFieldsValue({
-        'resourceName':this._currentRow.get('resourceName'),
-        'resourceUrl':this._currentRow.get('resourceUrl'),
-        'resourceOrder':this._currentRow.get('resourceOrder'),
-        'logo':this._currentRow.get('logo'),
+        'areaId':this._currentRow.get('areaId'),
+        'name':this._currentRow.get('name'),
+        'title':this._currentRow.get('title'),
+        'id':this._currentRow.get('id'),
+        'sex':this._currentRow.get('sex'),
+        'phone':this._currentRow.get('phone'),
+        'birth':moment(this._currentRow.get('birth')),
+        'email':this._currentRow.get('email'),
       })
       this.setState({modalVisibility: visibility,modalType: 'edit'});
     }
   },
 
+  handleAvatarChange(e){
+    const reader = new FileReader();
+    const file = e.target.files[0];
+    reader.addEventListener('load', () => this.setState({imageUrl:reader.result}));
+    reader.readAsDataURL(file);
+  },
+
   renderModal(){
     const { getFieldDecorator } = this.props.form;
-    const { modalType, modalVisibility } = this.state;
+    const { modalType, modalVisibility, imageUrl } = this.state;
     const formItemLayout = {labelCol:{span:5},wrapperCol:{span:12}};
     const allAreasList = this.props.workspace.get('allAreasList');
     return (
@@ -170,10 +197,10 @@ const OfficerPage = React.createClass({
               <FormItem
                 label='所属教育局'
                 {...formItemLayout}
-                key='areaName'
+                key='areaId'
               >
               {
-                getFieldDecorator('areaName', {
+                getFieldDecorator('areaId', {
                   rules: [{required: true}],
                   initialValue: allAreasList[0]?allAreasList[0].areaId:"",
                 })(
@@ -199,10 +226,10 @@ const OfficerPage = React.createClass({
             >
             {
               getFieldDecorator('name', {
-                rules: [{required: true},{
+                rules: [{required: true,message: "姓名不能为空"},{
                   validator(rule, value, callback, source, options) {
                     var errors = [];
-                    if(value.length > 36){
+                    if(value && value.length > 36){
                       errors.push(
                         new Error('姓名应不超过36个字')
                       )
@@ -219,11 +246,11 @@ const OfficerPage = React.createClass({
               key='title'
             >
             {
-              getFieldDecorator('title', {
+              getFieldDecorator('title', {initialValue: "",
                 rules: [{
                   validator(rule, value, callback, source, options) {
                     var errors = [];
-                    if(value.length > 200){
+                    if(value && value.length > 200){
                       errors.push(
                         new Error('职位应不超过200个字')
                       )
@@ -241,10 +268,10 @@ const OfficerPage = React.createClass({
             >
             {
               getFieldDecorator('id', {
-                rules: [{required: true},{
+                rules: [{required: true, message: "身份证不能为空"},{
                   validator(rule, value, callback, source, options) {
                     var errors = [];
-                    if(value.length > 18){
+                    if(value && value.length > 18){
                       errors.push(
                         new Error('身份证应不超过18位')
                       )
@@ -279,10 +306,10 @@ const OfficerPage = React.createClass({
             >
             {
               getFieldDecorator('phone', {
-                rules: [{required: true},{
+                rules: [{required: true,message:"电话不能为空"},{
                   validator(rule, value, callback, source, options) {
                     var errors = [];
-                    if(value.length > 15){
+                    if(value && value.length > 15){
                       errors.push(
                         new Error('电话应不超过15位')
                       )
@@ -310,7 +337,7 @@ const OfficerPage = React.createClass({
               key='homeAddr'
             >
             {
-              getFieldDecorator('homeAddr', {
+              getFieldDecorator('homeAddr', {initialValue: "",
                 rules: [{max:180, message: '输入不超过180个字' }],
               })(<Input type="textarea" placeholder='输入不超过180个字' rows={3}/>)
             }
@@ -321,11 +348,11 @@ const OfficerPage = React.createClass({
               key='email'
             >
             {
-              getFieldDecorator('email', {
+              getFieldDecorator('email', {initialValue: "",
                 rules: [{
                   validator(rule, value, callback, source, options) {
                     var errors = [];
-                    if(value.length > 40){
+                    if(value && value.length > 40){
                       errors.push(
                         new Error('邮箱应不超过40个字')
                       )
@@ -335,6 +362,21 @@ const OfficerPage = React.createClass({
                 }],
               })(<Input placeholder='输入不超过40个字'/>)
             }
+            </FormItem>
+            <FormItem
+              label="上传头像"
+              {...formItemLayout}
+              key="upload"
+            >
+              <div className={styles.avatarUploader}>
+                <div className={styles.imgContainer}>
+                  { imageUrl ? <img src={imageUrl} alt="" className={styles.avatar} /> : "" }
+                </div>
+                <div className={styles.inputContainer}>
+                  <Icon type="plus" />
+                  <Input type="file" onChange={this.handleAvatarChange} />
+                </div>
+              </div>
             </FormItem>
           </Form>
         </div>
@@ -404,8 +446,9 @@ function mapStateToProps(state){
 }
 function mapDispatchToProps(dispatch){
   return {
-    getWorkspaceData:bindActionCreators(getWorkspaceData,dispatch),
-    getAllAreas:bindActionCreators(getAllAreas,dispatch),
+    getWorkspaceData: bindActionCreators(getWorkspaceData,dispatch),
+    getAllAreas: bindActionCreators(getAllAreas,dispatch),
+    addOfficer: bindActionCreators(addOfficer,dispatch),
   }
 }
 

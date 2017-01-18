@@ -6,9 +6,17 @@ import {notification} from 'antd'
 export function addOfficer(data){
   return dispatch => {
     let formData = new FormData()
-    formData.append('groupName',data.groupName)
-    formData.append('groupDesc',data.groupDesc)
-    return fetch(config.api.group.addMadeGroup,{
+    formData.append('areaId',data.areaId)
+    formData.append('name',data.name)
+    formData.append('title',data.title)
+    formData.append('id',data.id)
+    formData.append('sex',data.sex)
+    formData.append('phone',data.phone)
+    formData.append('birth',data.birth)
+    formData.append('homeAddr',data.homeAddr)
+    formData.append('email',data.email)
+    formData.append('userImg',data.userImg)
+    return fetch(config.api.officer.addOfficer,{
       method:'post',
       headers:{
         'from':'nodejs',
@@ -30,7 +38,8 @@ export function addOfficer(data){
           }
         })
       }else{
-        notification.error({message:'失败',description:'添加失败'})
+        notification.error({message:'添加失败',description: res.result});
+        return "error";
       }
     })
   }

@@ -201,3 +201,5 @@ export const addMadeGroup = require('./group').addMadeGroup
 
 export const GET_ALL_AREAS = require('./officer').GET_ALL_AREAS
 export const getAllAreas = require('./officer').getAllAreas
+export const addOfficer = require('./officer').addOfficer
+export const editOfficer = require('./officer').editOfficer
