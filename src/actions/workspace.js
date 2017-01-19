@@ -211,3 +211,9 @@ export const editDepartment = require('./department').editDepartment
 
 export const addArea = require('./area').addArea
 export const editArea = require('./area').editArea
+
+export const addSchoolDepart = require('./schoolDepart').addSchoolDepart
+export const editSchoolDepart = require('./schoolDepart').editSchoolDepart
+
+export const addClass = require('./class').addClass
+export const editClass = require('./class').editClass

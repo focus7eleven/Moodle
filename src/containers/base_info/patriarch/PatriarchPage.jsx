@@ -87,7 +87,7 @@ const PatriarchPage = React.createClass({
         render:(text,record) => {
           return (
             <div>
-              <Button data-visible={true} data-modaltype={record.key} data-test="test123" className={styles.editButton} type="primary" onClick={this.handleModalDispaly}>编辑</Button>
+              <Button data-visible={true} data-modaltype={record.key} className={styles.editButton} type="primary" onClick={this.handleModalDispaly}>编辑</Button>
               <Button className={styles.deleteButton} type="primary" onClick={this.handleDeleteRecord.bind(this,record.key)}>删除</Button>
             </div>
           )
@@ -122,13 +122,13 @@ const PatriarchPage = React.createClass({
         formData.append('email',values.email)
         formData.append('userImg',this.state.imageUrl?this.state.imageUrl:"")
         const result = this.props.addStaff(formData,"patriarch")
+        let visibility = true;
         result.then((res)=>{
           if(res!=="error"){
-            this.setState({
-              modalVisibility: false,
-            })
+            visibility = false;
           }
         })
+        this.setState({modalVisibility: visibility})
       }
     });
   },
@@ -165,7 +165,6 @@ const PatriarchPage = React.createClass({
             visibility = false;
           }
         })
-        console.log(visibility);
         this.setState({modalVisibility: visibility});
       }
     });
@@ -462,7 +461,7 @@ const PatriarchPage = React.createClass({
               </Button>:null
             }
           </div>
-          <Search style={{width:'260px'}} placeholder="请输入学生姓名" value={this.state.searchStr} onChange={this.handleSearchStrChanged} onSearch={this.handleSearchTableData} />
+          <Search style={{width:'260px'}} placeholder="请输入家长姓名" value={this.state.searchStr} onChange={this.handleSearchStrChanged} onSearch={this.handleSearchTableData} />
         </div>
         <div className={styles.body}>
           <div className={styles.wrapper}>

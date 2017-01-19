@@ -23,6 +23,8 @@ import RoleSettingPage from './containers/base_info/role_setting/RoleSettingPage
 import NormalGroupPage from './containers/base_info/normal_group/NormalGroupPage'
 import MadeGroupPage from './containers/base_info/made_group/MadeGroupPage'
 import DepartmentPage from './containers/base_info/department/DepartmentPage'
+import SchoolDepartPage from './containers/base_info/school/SchoolDepartPage'
+import ClassPage from './containers/base_info/class/ClassPage'
 import AreaPage from './containers/base_info/area/AreaPage'
 
 const routes = (
@@ -57,8 +59,6 @@ const routes = (
 					<Route path='resource' component={ResourceManagementPage}></Route>
 					<Route path='role' component={RoleSettingPage}></Route>
 
-					<Route path='schoolDepart' component={Navigation}></Route>
-
 					{/* 教育大纲 */}
 					<Route path='textbook'>
 						<IndexRoute component={EduOutlinePage}/>
@@ -70,6 +70,8 @@ const routes = (
 
 					<Route path='cityDepartment' component={DepartmentPage}></Route>
 					<Route path='area' component={AreaPage}></Route>
+					<Route path='schoolDepart' component={SchoolDepartPage}></Route>
+					<Route path='classes' component={ClassPage}></Route>
 				</Route>
 				{/*<Route path='notice_mgr' component={NoticeManagerContainer} />*/}
 			</Route>

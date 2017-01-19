@@ -128,6 +128,14 @@ const config = _.extend({
 				get:`${baseURL}/area/list`
 			}
 		},
+		schoolDepart: {
+			addSchoolDepart: `${baseURL}/schoolDepart/add`,
+			editSchoolDepart: `${baseURL}/schoolDepart/edit`,
+		},
+		class: {
+			addClass: `${baseURL}/class/add`,
+			editClass: `${baseURL}/class/edit`,
+		},
 	}
 })
 
