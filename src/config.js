@@ -129,7 +129,15 @@ const config = _.extend({
 			}
 		},
 		school:{
-			search:(search,currentPage,areaSelectId)=>`${baseURL}/school/pageByArea?search=${search}&currentPage=${currentPage}&areaSelectId=${areaSelectId}`
+			search:(search,currentPage,areaSelectId)=>`${baseURL}/school/pageByArea?search=${search}&currentPage=${currentPage}&areaSelectId=${areaSelectId}`,
+			check:{
+				get:(schoolName,schoolCode) => `${baseURL}/school/checkSchool?schoolName=${schoolName}&schoolCode=${schoolCode}`
+			},
+			post:`${baseURL}/school/add`,
+			update:`${baseURL}/school/edit`,
+			phase:{
+				get:(target)=>`${baseURL}/school/phases/${target}`
+			}
 		}
 	}
 })

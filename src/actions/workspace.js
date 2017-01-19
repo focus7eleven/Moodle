@@ -217,3 +217,5 @@ export const editArea = require('./area').editArea
 
 export const searchSchool = require('./school').searchSchool
 export const SEARCH_SCHOOL = require('./school').SEARCH_SCHOOL
+export const addSchool = require('./school').addSchool
+export const editSchool = require('./school').editSchool
