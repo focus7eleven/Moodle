@@ -24,6 +24,7 @@ import NormalGroupPage from './containers/base_info/normal_group/NormalGroupPage
 import MadeGroupPage from './containers/base_info/made_group/MadeGroupPage'
 import DepartmentPage from './containers/base_info/department/DepartmentPage'
 import AreaPage from './containers/base_info/area/AreaPage'
+import SchoolPage from './containers/base_info/school/SchoolPage'
 
 const routes = (
 	<Router history={browserHistory}>
@@ -70,6 +71,7 @@ const routes = (
 
 					<Route path='cityDepartment' component={DepartmentPage}></Route>
 					<Route path='area' component={AreaPage}></Route>
+					<Route path='school' component={SchoolPage}></Route>
 				</Route>
 				{/*<Route path='notice_mgr' component={NoticeManagerContainer} />*/}
 			</Route>

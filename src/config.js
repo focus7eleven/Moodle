@@ -47,7 +47,7 @@ const config = _.extend({
 		workspace:{
 			baseInfo:{
 				baseData:{
-					get:(type,currentPage,pageShow,search) => `${baseURL}/${type}/page?currentPage=${currentPage}&search=${search}&pageShow=${pageShow}`
+					get:(type,currentPage,pageShow,search,suffix='page') => `${baseURL}/${type}/${suffix}?currentPage=${currentPage}&search=${search}&pageShow=${pageShow}`
 				}
 			}
 		},
@@ -128,6 +128,9 @@ const config = _.extend({
 				get:`${baseURL}/area/list`
 			}
 		},
+		school:{
+			search:(search,currentPage,areaSelectId)=>`${baseURL}/school/pageByArea?search=${search}&currentPage=${currentPage}&areaSelectId=${areaSelectId}`
+		}
 	}
 })
 
