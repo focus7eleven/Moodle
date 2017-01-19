@@ -18,6 +18,7 @@ import ResourceManagementPage from './containers/base_info/resource_management/R
 import OfficerPage from './containers/base_info/officer/OfficerPage'
 import TeacherPage from './containers/base_info/teacher/TeacherPage'
 import StudentPage from './containers/base_info/student/StudentPage'
+import PatriarchPage from './containers/base_info/patriarch/PatriarchPage'
 import RoleSettingPage from './containers/base_info/role_setting/RoleSettingPage'
 import NormalGroupPage from './containers/base_info/normal_group/NormalGroupPage'
 import MadeGroupPage from './containers/base_info/made_group/MadeGroupPage'
@@ -49,6 +50,7 @@ const routes = (
 					<Route path='officer' component={OfficerPage}></Route>
 					<Route path='teacher' component={TeacherPage}></Route>
 					<Route path='student' component={StudentPage}></Route>
+					<Route path='patriarch' component={PatriarchPage}></Route>
 
 					{/* 通用设置 */}
 					<Route path='dict' component={DictPage}></Route>
