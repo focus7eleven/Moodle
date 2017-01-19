@@ -9,7 +9,7 @@ notification.config({
 //获取表格数据
 export const GET_WORKSPACEDATA = actionNames('GET_WORKSPACEDATA')
 
-export function getWorkspaceData(type,currentPage,pageShow,search){
+export function getWorkspaceData(type,currentPage,pageShow,search,suffix='page'){
   let realType = type;
   if(type==="normalgroup"){
     realType='group/normal'
@@ -17,10 +17,13 @@ export function getWorkspaceData(type,currentPage,pageShow,search){
   if(type==="madegroup"){
     realType='group/made'
   }
+  if(type=='school'){
+    suffix='pageByArea'
+  }
   return {
     types:GET_WORKSPACEDATA,
     callAPI:()=>{
-      return fetch(config.api.workspace.baseInfo.baseData.get(realType,currentPage,pageShow,search),{
+      return fetch(config.api.workspace.baseInfo.baseData.get(realType,currentPage,pageShow,search,suffix),{
         method:'GET',
         headers:{
           'from':'nodejs',
@@ -217,3 +220,5 @@ export const editSchoolDepart = require('./schoolDepart').editSchoolDepart
 
 export const addClass = require('./class').addClass
 export const editClass = require('./class').editClass
+export const searchSchool = require('./school').searchSchool
+export const SEARCH_SCHOOL = require('./school').SEARCH_SCHOOL

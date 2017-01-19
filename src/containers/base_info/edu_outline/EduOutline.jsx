@@ -61,6 +61,7 @@ const EduOutlinePage = React.createClass({
     if(!this.props.menu.get('data').isEmpty()){
       this._currentMenu = findMenuInTree(this.props.menu.get('data'),'textbook')
     }
+
   },
   // componentWillReceiveProps(nextProps){
   //   if(!nextProps.menu.get('data').isEmpty()){
@@ -68,14 +69,16 @@ const EduOutlinePage = React.createClass({
   //   }
   // },
   componentDidMount(){
-    Promise.all([getSelectJson({selectid:"phase_code",selectname:"phase_name",table:"study_phase"}).then(res => {this._phaseList = res}),
-    getSelectJson({selectid:"grade_id",selectname:"grade_name",table:"grade"}).then(res => {this._gradeList = res}),
-    getSelectJson({selectid:"subject_id",selectname:"subject_name",table:"subject"}).then(res => {this._subjectList = res}),
-    getSelectJson({selectstyle:'JKS'}).then(res => {this._versionList = res})]).then(()=>{
-      this.setState({
-        loading:false
+    if(this.state.loading){
+      Promise.all([getSelectJson({selectid:"phase_code",selectname:"phase_name",table:"study_phase"}).then(res => {this._phaseList = res}),
+      getSelectJson({selectid:"grade_id",selectname:"grade_name",table:"grade"}).then(res => {this._gradeList = res}),
+      getSelectJson({selectid:"subject_id",selectname:"subject_name",table:"subject"}).then(res => {this._subjectList = res}),
+      getSelectJson({selectstyle:'JKS'}).then(res => {this._versionList = res})]).then(()=>{
+        this.setState({
+          loading:false
+        })
       })
-    })
+    }
   },
 
   getTableData(){
