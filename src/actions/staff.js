@@ -59,6 +59,7 @@ export function editStaff(data,type){
         })
       }else{
         notification.error({message:'失败',description:'编辑失败'})
+        return "error";
       }
     })
   }

@@ -58,8 +58,8 @@ const TeacherPage = React.createClass({
       className:styles.tableColumn,
     },{
       title: '教授学科',
-      dataIndex: 'subject',
-      key: 'subject',
+      dataIndex: 'subjectName',
+      key: 'subjectName',
       className:styles.tableColumn,
     },{
       title: '性别',
@@ -140,13 +140,13 @@ const TeacherPage = React.createClass({
         formData.append('qq',values.qq)
         formData.append('userImg',this.state.imageUrl)
         const result = this.props.addStaff(formData,"teacher")
+        let visibility = true;
         result.then((res)=>{
           if(res!=="error"){
-            this.setState({
-              modalVisibility: false,
-            })
+            visibility = false;
           }
         })
+        this.setState({modalVisibility: visibility});
       }
     });
   },
@@ -180,13 +180,13 @@ const TeacherPage = React.createClass({
         formData.append('qq',values.qq)
         formData.append('userImg',this.state.imageUrl?this.state.imageUrl:"")
         const result = this.props.editStaff(formData,"teacher")
+        let visibility = true;
         result.then((res)=>{
           if(res!=="error"){
-            this.setState({
-              modalVisibility: false,
-            })
+            visibility = false;
           }
         })
+        this.setState({modalVisibility: visibility});
       }
     });
   },

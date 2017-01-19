@@ -20,13 +20,12 @@ const PatriarchPage = React.createClass({
     authList:List()
   }),
 
-  _imageUrl: "",
-
   getInitialState(){
     return {
       searchStr: "",
       modalType: "",
       modalVisibility: false,
+      imageUrl: "",
     }
   },
 
@@ -88,7 +87,7 @@ const PatriarchPage = React.createClass({
         render:(text,record) => {
           return (
             <div>
-              <Button className={styles.editButton} type="primary" onClick={this.handleModalDispaly.bind(this,true,record.key)}>编辑</Button>
+              <Button data-visible={true} data-modaltype={record.key} data-test="test123" className={styles.editButton} type="primary" onClick={this.handleModalDispaly}>编辑</Button>
               <Button className={styles.deleteButton} type="primary" onClick={this.handleDeleteRecord.bind(this,record.key)}>删除</Button>
             </div>
           )
@@ -121,7 +120,7 @@ const PatriarchPage = React.createClass({
         formData.append('birth',moment(values.birth).format("YYYY/MM/DD"))
         formData.append('address',values.address)
         formData.append('email',values.email)
-        formData.append('userImg',this._imageUrl?this._imageUrl:"")
+        formData.append('userImg',this.state.imageUrl?this.state.imageUrl:"")
         const result = this.props.addStaff(formData,"patriarch")
         result.then((res)=>{
           if(res!=="error"){
@@ -158,15 +157,16 @@ const PatriarchPage = React.createClass({
         formData.append('birth',moment(values.birth).format("YYYY/MM/DD"))
         formData.append('address',values.address)
         formData.append('email',values.email)
-        formData.append('userImg',this._imageUrl?this._imageUrl:"")
+        formData.append('userImg',this.state.imageUrl?this.state.imageUrl:"")
         const result = this.props.editStaff(formData,"patriarch")
+        let visibility = true;
         result.then((res)=>{
           if(res!=="error"){
-            this.setState({
-              modalVisibility: false,
-            })
+            visibility = false;
           }
         })
+        console.log(visibility);
+        this.setState({modalVisibility: visibility});
       }
     });
   },
@@ -187,11 +187,13 @@ const PatriarchPage = React.createClass({
     });
   },
 
-  handleModalDispaly(visibility,type){
+  handleModalDispaly(evt){
+    const visibility = evt.currentTarget.getAttribute("data-visible")==="true"?true:false;
+    const type = evt.currentTarget.getAttribute('data-modaltype');
     if(type==='add'){
       this.props.form.resetFields();
       this.setState({modalVisibility: visibility,modalType: type});
-    }else if(type===""){
+    }else if(!visibility){
       this.setState({modalVisibility: visibility,modalType: type});
     }else{
       const {setFieldsValue} = this.props.form
@@ -207,15 +209,14 @@ const PatriarchPage = React.createClass({
         'email':this._currentRow.get('email'),
         'address':this._currentRow.get('address'),
       })
-      this._imageUrl = this._currentRow.get('userImg');
-      this.setState({modalVisibility: visibility,modalType: 'edit'});
+      this.setState({imageUrl: this._currentRow.get('userImg'), modalVisibility: visibility,modalType: 'edit'});
     }
   },
 
   handleAvatarChange(e){
     const reader = new FileReader();
     const file = e.target.files[0];
-    reader.addEventListener('load', () => this._imageUrl=reader.result);
+    reader.addEventListener('load', () => this.setState({imageUrl: reader.result}));
     reader.readAsDataURL(file);
   },
 
@@ -225,7 +226,7 @@ const PatriarchPage = React.createClass({
     const formItemLayout = {labelCol:{span:5},wrapperCol:{span:12}};
     return (
       <Modal width={850} title={modalType==="add"?"添加家长":"编辑家长"} visible={modalVisibility}
-          onOk={modalType==="add"?this.handleAddRecord:this.handleEditRecord} onCancel={this.handleModalDispaly.bind(this,false,"")}
+          onOk={modalType==="add"?this.handleAddRecord:this.handleEditRecord} data-visible={false} data-modaltype="" onCancel={this.handleModalDispaly}
         >
         <div>
           <Form>
@@ -430,7 +431,7 @@ const PatriarchPage = React.createClass({
                 >
                   <div className={styles.avatarUploader}>
                     <div className={styles.imgContainer}>
-                      { this._imageUrl&&this._imageUrl.indexOf("base64")>=0 ? <img src={this._imageUrl} alt="" className={styles.avatar} /> : "" }
+                      { this.state.imageUrl&&this.state.imageUrl.indexOf("base64")>=0 ? <img src={this.state.imageUrl} alt="" className={styles.avatar} /> : "" }
                     </div>
                     <div className={styles.inputContainer}>
                       <Icon type="plus" />
@@ -456,7 +457,7 @@ const PatriarchPage = React.createClass({
           <div className={styles.headerOperation}>
             {
               this._currentMenu.get('authList').find((v)=>v.get('authName')=='增加') ?
-              <Button type="primary" className={styles.operationButton} onClick={this.handleModalDispaly.bind(this,true,"add")}>
+              <Button data-visible={true} data-modaltype="add" type="primary" className={styles.operationButton} onClick={this.handleModalDispaly}>
                 新建
               </Button>:null
             }

@@ -4,7 +4,7 @@ import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 import {Row,Col,Upload,Select,DatePicker,Icon,Input,Table,Button,Modal,Form} from 'antd'
 import PermissionDic from '../../../utils/permissionDic'
-import {downloadExcel,importExcel,editStaff,addStaff,getAllAreas,getWorkspaceData} from '../../../actions/workspace'
+import {downloadExcel,importExcel,editStaff,addStaff,getWorkspaceData} from '../../../actions/workspace'
 import {fromJS,Map,List} from 'immutable'
 import {findMenuInTree} from '../../../reducer/menu'
 import moment from 'moment'
@@ -35,7 +35,6 @@ const StudentPage = React.createClass({
     if(!this.props.menu.get('data').isEmpty()){
       this._currentMenu = findMenuInTree(this.props.menu.get('data'),'student')
     }
-    this.props.getAllAreas()
   },
 
   getTableData(){
@@ -125,13 +124,13 @@ const StudentPage = React.createClass({
         formData.append('qq',values.qq)
         formData.append('stuImg',this.state.imageUrl)
         const result = this.props.addStaff(formData,"student")
+        let visibility = true;
         result.then((res)=>{
           if(res!=="error"){
-            this.setState({
-              modalVisibility: false,
-            })
+            visibility = false;
           }
         })
+        this.setState({modalVisibility: visibility});
       }
     });
   },
@@ -161,13 +160,13 @@ const StudentPage = React.createClass({
         formData.append('qq',values.qq)
         formData.append('userImg',this.state.imageUrl?this.state.imageUrl:"")
         const result = this.props.editStaff(formData,"student")
+        let visibility = true;
         result.then((res)=>{
           if(res!=="error"){
-            this.setState({
-              modalVisibility: false,
-            })
+            visibility = false;
           }
         })
+        this.setState({modalVisibility: visibility});
       }
     });
   },
@@ -254,7 +253,6 @@ const StudentPage = React.createClass({
     const { getFieldDecorator } = this.props.form;
     const { modalType, modalVisibility, imageUrl } = this.state;
     const formItemLayout = {labelCol:{span:5},wrapperCol:{span:12}};
-    const allAreasList = this.props.workspace.get('allAreasList');
     return (
       <Modal width={850} title={modalType==="add"?"添加学生":"编辑学生"} visible={modalVisibility}
           onOk={modalType==="add"?this.handleAddRecord:this.handleEditRecord} onCancel={this.handleModalDispaly.bind(this,false,"")}
@@ -496,7 +494,6 @@ function mapStateToProps(state){
 function mapDispatchToProps(dispatch){
   return {
     getWorkspaceData: bindActionCreators(getWorkspaceData,dispatch),
-    getAllAreas: bindActionCreators(getAllAreas,dispatch),
     addStaff: bindActionCreators(addStaff,dispatch),
     editStaff: bindActionCreators(editStaff,dispatch),
     downloadExcel: bindActionCreators(downloadExcel,dispatch),

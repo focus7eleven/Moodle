@@ -124,13 +124,13 @@ const OfficerPage = React.createClass({
         formData.append('email',values.email)
         formData.append('userImg',this.state.imageUrl)
         const result = this.props.addStaff(formData,"officer")
+        let visibility = true;
         result.then((res)=>{
           if(res!=="error"){
-            this.setState({
-              modalVisibility: false,
-            })
+            visibility = false;
           }
         })
+        this.setState({modalVisibility: visibility});
       }
     });
   },
@@ -160,13 +160,13 @@ const OfficerPage = React.createClass({
         formData.append('email',values.email)
         formData.append('userImg',this.state.imageUrl)
         const result = this.props.editStaff(formData,"officer")
+        let visibility = true;
         result.then((res)=>{
           if(res!=="error"){
-            this.setState({
-              modalVisibility: false,
-            })
+            visibility = false;
           }
         })
+        this.setState({modalVisibility: visibility});
       }
     });
   },
