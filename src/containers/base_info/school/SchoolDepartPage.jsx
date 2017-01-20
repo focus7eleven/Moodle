@@ -302,7 +302,7 @@ const SchoolDepartPage = React.createClass({
               </Button>:null
             }
           </div>
-          <Search style={{width:'260px'}} placeholder="请输入学校机构姓名" value={this.state.searchStr} onChange={this.handleSearchStrChanged} onSearch={this.handleSearchTableData} />
+          <Search style={{width:'260px'}} placeholder="请输入学校机构名称" value={this.state.searchStr} onChange={this.handleSearchStrChanged} onSearch={this.handleSearchTableData} />
         </div>
         <div className={styles.body}>
           <div className={styles.wrapper}>

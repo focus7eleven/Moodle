@@ -72,6 +72,7 @@ const config = _.extend({
 		grade:{
 			post:`${baseURL}/grade/add`,
 			update:`${baseURL}/grade/edit`,
+			getGradeList: (phaseId) => `${baseURL}/grade/gradeList?phaseId=${phaseId}`,
 		},
 		dict:{
 			post:`${baseURL}/dict/add`,

@@ -1,5 +1,5 @@
 import {actionNames} from '../utils/action-utils'
-import {GET_WORKSPACEDATA} from './workspace'
+import {GET_WORKSPACEDATA,getWorkspaceData} from './workspace'
 import config from '../config.js'
 import {notification} from 'antd'
 
@@ -14,18 +14,7 @@ export function addStaff(data,type){
       body: data
     }).then(res => res.json()).then(res => {
       if(res.title == 'Success'){
-        dispatch({
-          types:GET_WORKSPACEDATA,
-          callAPI:()=>{
-            return fetch(config.api.workspace.baseInfo.baseData.get(type,'','',''),{
-              method:'GET',
-              headers:{
-                'from':'nodejs',
-                'token':sessionStorage.getItem('accessToken'),
-              }
-            }).then(res => res.json()).then(res => {notification.success({message:'添加成功'});return res})
-          }
-        })
+        dispatch(getWorkspaceData(type,'','','')).then(res => {notification.success({message:'添加成功'});return res})
       }else{
         notification.error({message:'添加失败',description: res.result});
         return "error";
@@ -45,18 +34,7 @@ export function editStaff(data,type){
       body: data
     }).then(res => res.json()).then(res => {
       if(res.title == 'Success'){
-        dispatch({
-          types:GET_WORKSPACEDATA,
-          callAPI:()=>{
-            return fetch(config.api.workspace.baseInfo.baseData.get(type,'','',''),{
-              method:'GET',
-              headers:{
-                'from':'nodejs',
-                'token':sessionStorage.getItem('accessToken'),
-              }
-            }).then(res => res.json()).then(res => {notification.success(data.action=='edit'?{message:'编辑成功'}:{message:'删除成功'});return res})
-          }
-        })
+        dispatch(getWorkspaceData(type,'','','')).then(res => {notification.success(data.get('action')=='edit'?{message:'编辑成功'}:{message:'删除成功'});return res});
       }else{
         notification.error({message:'失败',description:'编辑失败'})
         return "error";
@@ -120,18 +98,7 @@ export function importExcel(data,type){
       body:formData
     }).then(res => res.json()).then(res => {
       if(res.title == 'Success'){
-        dispatch({
-          types:GET_WORKSPACEDATA,
-          callAPI:()=>{
-            return fetch(config.api.workspace.baseInfo.baseData.get(type,'','',''),{
-              method:'GET',
-              headers:{
-                'from':'nodejs',
-                'token':sessionStorage.getItem('accessToken'),
-              }
-            }).then(res => res.json()).then(res => {notification.success({message:'导入成功'});return res})
-          }
-        })
+        dispatch(getWorkspaceData(type,'','','')).then(res => {notification.success({message:'导入成功'});return res})
       }else{
         notification.error({message:'失败',description:'导入失败'})
       }

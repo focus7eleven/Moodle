@@ -17,6 +17,9 @@ export function getWorkspaceData(type,currentPage,pageShow,search,suffix='page')
   if(type==="madegroup"){
     realType='group/made'
   }
+  if(type==="classes"){
+    realType='class'
+  }
   if(type=='school'){
     suffix='pageByArea'
   }
@@ -217,8 +220,12 @@ export const editArea = require('./area').editArea
 
 export const addSchoolDepart = require('./schoolDepart').addSchoolDepart
 export const editSchoolDepart = require('./schoolDepart').editSchoolDepart
-
 export const addClass = require('./class').addClass
 export const editClass = require('./class').editClass
+export const GET_PHASE_LIST = require('./class').GET_PHASE_LIST
+export const getPhaseList = require('./class').getPhaseList
+export const GET_GRADE_LIST = require('./class').GET_GRADE_LIST
+export const getGradeList = require('./class').getGradeList
+
 export const searchSchool = require('./school').searchSchool
 export const SEARCH_SCHOOL = require('./school').SEARCH_SCHOOL

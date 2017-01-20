@@ -236,12 +236,14 @@ const SubjectPage = React.createClass({
     return (
       <div className={styles.container}>
         <div className={styles.header}>
-          {
-            this._currentMenu.get('authList').find((v)=>v.get('authName')=='增加') ?
-            <Button data-action="add" type="primary" style={{backgroundColor:'#FD9B09',borderColor:'#FD9B09'}} onClick={this.handleShowAddSubjectModal}>
-              新建
-            </Button>:null
-          }
+          <div className={styles.headerOperation}>
+            {
+              this._currentMenu.get('authList').find((v)=>v.get('authName')=='增加') ?
+              <Button data-action="add" type="primary" className={styles.operationButton} onClick={this.handleShowAddSubjectModal}>
+                新建
+              </Button>:null
+            }
+          </div>
           <Search style={{width: '260px'}} placeholder="请输入学科名称" value={this.state.searchStr} onChange={(e)=>{this.setState({searchStr:e.target.value})}} onSearch={this.handleSearchTableData} />
         </div>
         <div className={styles.body}>

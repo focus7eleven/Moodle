@@ -4,6 +4,8 @@ import {
   SEARCH_TEXTBOOK,
   GET_ALL_RESOURCES,
   GET_ALL_AREAS,
+  GET_PHASE_LIST,
+  GET_GRADE_LIST,
   SEARCH_SCHOOL,
 } from '../actions/workspace'
 import {findPath} from '../reducer/menu'
@@ -16,6 +18,8 @@ const initialState = fromJS({
   otherMsg:fromJS({}),
   allResourcesList:[],
   allAreasList: [],
+  phaseList: [],
+  gradeList: [],
 })
 
 export default (state = initialState,action)=>{
@@ -32,6 +36,10 @@ export default (state = initialState,action)=>{
       return state.set('allResourcesList',action.data)
     case GET_ALL_AREAS[1]:
       return state.set('allAreasList',action.data)
+    case GET_PHASE_LIST[1]:
+      return state.set('phaseList',action.data)
+    case GET_GRADE_LIST[1]:
+      return state.set('gradeList',action.data)
     case SEARCH_SCHOOL[0]:
       return state.set('loading',true)
     case SEARCH_SCHOOL[1]:

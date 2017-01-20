@@ -4,7 +4,7 @@ import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 import {Row,Col,Upload,Select,DatePicker,Icon,Input,Table,Button,Modal,Form} from 'antd'
 import PermissionDic from '../../../utils/permissionDic'
-import {addClass,editClass,getWorkspaceData} from '../../../actions/workspace'
+import {getGradeList,getPhaseList,addClass,editClass,getWorkspaceData} from '../../../actions/workspace'
 import {fromJS,Map,List} from 'immutable'
 import {findMenuInTree} from '../../../reducer/menu'
 import moment from 'moment'
@@ -30,7 +30,7 @@ const ClassPage = React.createClass({
 
   componentWillMount(){
     if(!this.props.menu.get('data').isEmpty()){
-      this._currentMenu = findMenuInTree(this.props.menu.get('data'),'class')
+      this._currentMenu = findMenuInTree(this.props.menu.get('data'),'classes')
     }
   },
 
@@ -38,7 +38,6 @@ const ClassPage = React.createClass({
     let tableHeader = List()
     let tableBody = List()
     let authList = this._currentMenu.get('authList')
-    console.log(authList.toJS());
     tableHeader = fromJS([{
       title: '名称',
       dataIndex: 'className',
@@ -179,27 +178,37 @@ const ClassPage = React.createClass({
     const visibility = evt.currentTarget.getAttribute("data-visible")==="true"?true:false;
     const type = evt.currentTarget.getAttribute('data-modaltype');
     if(type==='add'){
+      this.props.getPhaseList();
       this.props.form.resetFields();
       this.setState({modalVisibility: visibility,modalType: type});
     }else if(!visibility){
       this.setState({modalVisibility: visibility,modalType: type});
     }else{
+      this.props.getPhaseList();
       const {setFieldsValue} = this.props.form
       this._currentRow = this.props.workspace.get('data').get('result').get(type)
+      this.props.getGradeList(this._currentRow.get('phaseCode'))
       setFieldsValue({
-        'className':this._currentRow.get('departmentName'),
-        'phaseCode':this._currentRow.get('phone'),
-        'gradeId':this._currentRow.get('function'),
+        'className':this._currentRow.get('className'),
+        'phaseCode':this._currentRow.get('phaseCode'),
+        'gradeId':this._currentRow.get('gradeId'),
         'enrolmentDate':moment(this._currentRow.get('enrolmentDate')),
       })
       this.setState({modalVisibility: visibility,modalType: 'edit'});
     }
   },
 
+  handlePhaseSelected(value){
+    this.props.getGradeList(value);
+    this.props.form.setFieldsValue({'gradeId':""});
+  },
+
   renderModal(){
     const { getFieldDecorator } = this.props.form;
     const { modalType, modalVisibility } = this.state;
     const formItemLayout = {labelCol:{span:5},wrapperCol:{span:12}};
+    const phaseList = this.props.workspace.get('phaseList');
+    const gradeList = this.props.workspace.get('gradeList');
     return (
       <Modal title={modalType==="add"?"添加班级":"编辑班级"} visible={modalVisibility}
           onOk={modalType==="add"?this.handleAddRecord:this.handleEditRecord} data-visible={false} data-modaltype="" onCancel={this.handleModalDispaly}
@@ -234,39 +243,26 @@ const ClassPage = React.createClass({
             <Row>
               <Col span={24}>
                 <FormItem
-                  label="职能"
+                  label="所属学段"
                   {...formItemLayout}
-                  key='function'
+                  key='phaseCode'
                 >
                   {
-                    getFieldDecorator('function', {initialValue: "",
-                      rules: [{max:200, message: '输入不超过200个字' }],
-                    })(<Input type="textarea" placeholder='输入不超过200个字' rows={3}/>)
-                  }
-                </FormItem>
-              </Col>
-            </Row>
-            <Row>
-              <Col span={24}>
-                <FormItem
-                  label="电话"
-                  {...formItemLayout}
-                  key='phone'
-                >
-                  {
-                    getFieldDecorator('phone', {
-                      rules: [{
-                        validator(rule, value, callback, source, options) {
-                          var errors = [];
-                          if(value && value.length > 15){
-                            errors.push(
-                              new Error('电话应不超过15位')
-                            )
-                          }
-                          callback(errors);
+                    getFieldDecorator('phaseCode', {initialValue: "",
+                      rules: [{required: true,message: "学段不能为空"}],
+                    })(
+                      <Select
+                        placeholder="请选择学段"
+                        optionFilterProp="children"
+                        onChange={this.handlePhaseSelected}
+                      >
+                        {
+                          phaseList.map((item)=>{
+                            return <Option key={item.phase_code} value={item.phase_code}>{item.phase_name}</Option>
+                          })
                         }
-                      }],
-                    })(<Input placeholder='输入不超过15位'/>)
+                      </Select>
+                    )
                   }
                 </FormItem>
               </Col>
@@ -274,14 +270,40 @@ const ClassPage = React.createClass({
             <Row>
               <Col span={24}>
                 <FormItem
-                  label="备注"
+                  label="所属年级"
                   {...formItemLayout}
-                  key='remark'
+                  key='gradeId'
                 >
                   {
-                    getFieldDecorator('remark', {initialValue: "",
-                      rules: [{max:50, message: '输入不超过50个字' }],
-                    })(<Input type="textarea" placeholder='输入不超过50个字' rows={3}/>)
+                    getFieldDecorator('gradeId', {initialValue: "",
+                      rules: [{required: true,message: "年级不能为空"}],
+                    })(
+                      <Select
+                        placeholder="请选择年级"
+                        optionFilterProp="children"
+                      >
+                        {
+                          gradeList.map((item)=>{
+                            return <Option key={item.gradeId} value={item.gradeId}>{item.gradeName}</Option>
+                          })
+                        }
+                      </Select>
+                    )
+                  }
+                </FormItem>
+              </Col>
+            </Row>
+            <Row>
+              <Col span={24}>
+                <FormItem
+                  label="入学日期"
+                  {...formItemLayout}
+                  key='enrolmentDate'
+                >
+                  {
+                    getFieldDecorator('enrolmentDate',{rules:[{required: true, message: "入学日期不能为空"}]})(
+                      <DatePicker style={{width: '100%'}} placeholder="选择入学日期" disabledDate={(current)=> current && current.valueOf() > Date.now()} />
+                    )
                   }
                 </FormItem>
               </Col>
@@ -307,7 +329,7 @@ const ClassPage = React.createClass({
               </Button>:null
             }
           </div>
-          <Search style={{width:'260px'}} placeholder="请输入学校机构姓名" value={this.state.searchStr} onChange={this.handleSearchStrChanged} onSearch={this.handleSearchTableData} />
+          <Search style={{width:'260px'}} placeholder="请输入班级名称" value={this.state.searchStr} onChange={this.handleSearchStrChanged} onSearch={this.handleSearchTableData} />
         </div>
         <div className={styles.body}>
           <div className={styles.wrapper}>
@@ -351,6 +373,8 @@ function mapDispatchToProps(dispatch){
     getWorkspaceData: bindActionCreators(getWorkspaceData,dispatch),
     addClass: bindActionCreators(addClass,dispatch),
     editClass: bindActionCreators(editClass,dispatch),
+    getPhaseList: bindActionCreators(getPhaseList,dispatch),
+    getGradeList: bindActionCreators(getGradeList,dispatch),
   }
 }
 
