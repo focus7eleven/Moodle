@@ -6,6 +6,9 @@ import {
   GET_ALL_AREAS,
   GET_PHASE_LIST,
   GET_GRADE_LIST,
+  GET_SCHOOL_USERLIST,
+  GET_LEADER_LIST,
+  GET_MEMBER_LIST,
   SEARCH_SCHOOL,
 } from '../actions/workspace'
 import {findPath} from '../reducer/menu'
@@ -20,6 +23,9 @@ const initialState = fromJS({
   allAreasList: [],
   phaseList: [],
   gradeList: [],
+  schoolUserList: [],
+  leaderList: [],
+  memberList: [],
 })
 
 export default (state = initialState,action)=>{
@@ -40,6 +46,12 @@ export default (state = initialState,action)=>{
       return state.set('phaseList',action.data)
     case GET_GRADE_LIST[1]:
       return state.set('gradeList',action.data)
+    case GET_SCHOOL_USERLIST[1]:
+      return state.set('schoolUserList',action.data)
+    case GET_LEADER_LIST[1]:
+      return state.set('leaderList',action.data)
+    case GET_MEMBER_LIST[1]:
+      return state.set('memberList',action.data)
     case SEARCH_SCHOOL[0]:
       return state.set('loading',true)
     case SEARCH_SCHOOL[1]:

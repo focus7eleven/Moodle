@@ -25,6 +25,7 @@ import MadeGroupPage from './containers/base_info/made_group/MadeGroupPage'
 import DepartmentPage from './containers/base_info/department/DepartmentPage'
 import SchoolDepartPage from './containers/base_info/school/SchoolDepartPage'
 import ClassPage from './containers/base_info/class/ClassPage'
+import GradeManagementPage from './containers/base_info/grade/GradeManagementPage'
 import AreaPage from './containers/base_info/area/AreaPage'
 import SchoolPage from './containers/base_info/school/SchoolPage'
 
@@ -74,6 +75,7 @@ const routes = (
 					<Route path='schoolDepart' component={SchoolDepartPage}></Route>
 					<Route path='classes' component={ClassPage}></Route>
 					<Route path='school' component={SchoolPage}></Route>
+					<Route path='gradeSet' component={GradeManagementPage}></Route>
 				</Route>
 				{/*<Route path='notice_mgr' component={NoticeManagerContainer} />*/}
 			</Route>

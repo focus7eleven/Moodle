@@ -132,6 +132,10 @@ const config = _.extend({
 		schoolDepart: {
 			addSchoolDepart: `${baseURL}/schoolDepart/add`,
 			editSchoolDepart: `${baseURL}/schoolDepart/edit`,
+			getSchoolUserList: `${baseURL}/schoolDepart/userList`,
+			getLeaderList: (departmentId,filter) => `${baseURL}/schoolDepart/leaderList?deparmentId=${departmentId}&filter=${filter}`,
+			getMemberList: (departmentId,filter) => `${baseURL}/schoolDepart/memberList?deparmentId=${departmentId}&filter=${filter}`,
+			setStaff: (type) => `${baseURL}/schoolDepart/set${type}`,
 		},
 		class: {
 			addClass: `${baseURL}/class/add`,

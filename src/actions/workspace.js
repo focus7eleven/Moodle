@@ -23,6 +23,10 @@ export function getWorkspaceData(type,currentPage,pageShow,search,suffix='page')
   if(type=='school'){
     suffix='pageByArea'
   }
+  if(type=='gradeSet'){
+    suffix='gradeBySchool'
+    realType='grade'
+  }
   return {
     types:GET_WORKSPACEDATA,
     callAPI:()=>{
@@ -220,6 +224,14 @@ export const editArea = require('./area').editArea
 
 export const addSchoolDepart = require('./schoolDepart').addSchoolDepart
 export const editSchoolDepart = require('./schoolDepart').editSchoolDepart
+export const GET_SCHOOL_USERLIST = require('./schoolDepart').GET_SCHOOL_USERLIST
+export const getSchoolUserList = require('./schoolDepart').getSchoolUserList
+export const GET_LEADER_LIST = require('./schoolDepart').GET_LEADER_LIST
+export const getLeaderList = require('./schoolDepart').getLeaderList
+export const GET_MEMBER_LIST = require('./schoolDepart').GET_MEMBER_LIST
+export const getMemberList = require('./schoolDepart').getMemberList
+export const setStaff = require('./schoolDepart').setStaff
+
 export const addClass = require('./class').addClass
 export const editClass = require('./class').editClass
 export const GET_PHASE_LIST = require('./class').GET_PHASE_LIST

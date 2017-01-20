@@ -4,9 +4,10 @@ import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 import {Row,Col,Upload,Select,DatePicker,Icon,Input,Table,Button,Modal,Form} from 'antd'
 import PermissionDic from '../../../utils/permissionDic'
-import {addSchoolDepart,editSchoolDepart,getWorkspaceData} from '../../../actions/workspace'
+import {setStaff,getLeaderList,getMemberList,getSchoolUserList,addSchoolDepart,editSchoolDepart,getWorkspaceData} from '../../../actions/workspace'
 import {fromJS,Map,List} from 'immutable'
 import {findMenuInTree} from '../../../reducer/menu'
+import _ from 'lodash'
 
 const FormItem = Form.Item
 const Search = Input.Search
@@ -18,11 +19,19 @@ const SchoolDepartPage = React.createClass({
     authList:List()
   }),
 
+  _departmentId: 0,
+
   getInitialState(){
     return {
       searchStr: "",
       modalType: "",
       modalVisibility: false,
+      staffModalType: "",
+      staffModalVisibility: false,
+      selectedStaff: [],
+      selectedRecord: [],
+      intersection: [],
+      rowsChanged: false,
     }
   },
 
@@ -30,13 +39,15 @@ const SchoolDepartPage = React.createClass({
     if(!this.props.menu.get('data').isEmpty()){
       this._currentMenu = findMenuInTree(this.props.menu.get('data'),'schoolDepart')
     }
+    let formData = new FormData()
+    formData.append("filter","");
+    this.props.getSchoolUserList(formData);
   },
 
   getTableData(){
     let tableHeader = List()
     let tableBody = List()
     let authList = this._currentMenu.get('authList')
-    console.log(authList.toJS());
     tableHeader = fromJS([{
       title: '机构名称',
       dataIndex: 'departmentName',
@@ -58,7 +69,7 @@ const SchoolDepartPage = React.createClass({
       key: 'leaderCount',
       className:styles.tableColumn,
       render: (text, record) => {
-        return <span>领导个数：{text}</span>
+        return <a onClick={this.handleStaffModalDisplay.bind(null,true,"leader",record.key)}><Icon type="edit" /> 领导个数：{text}</a>
       }
     },{
       title: '机构成员',
@@ -66,7 +77,7 @@ const SchoolDepartPage = React.createClass({
       key: 'memberCount',
       className:styles.tableColumn,
       render: (text, record) => {
-        return <span>成员个数：{text}</span>
+        return <a onClick={this.handleStaffModalDisplay.bind(null,true,"member",record.key)}><Icon type="edit" /> 成员个数：{text}</a>
       }
     },{
       title: '备注',
@@ -100,6 +111,106 @@ const SchoolDepartPage = React.createClass({
       tableHeader:tableHeader.toJS(),
       tableBody:tableBody.toJS(),
     }
+  },
+
+  handleStaffModalDisplay(visibility,type,id){
+    if(type=="leader"){
+      const userList = this.props.workspace.get('schoolUserList');
+      this._departmentId = this.props.workspace.get('data').get('result').get(id).get('departmentId');
+      this.props.getLeaderList(this._departmentId,"").then((res)=>{
+        const leaderList = res.data;
+        const intersection = _.intersectionWith(userList,leaderList,(a,b)=>a.userId===b.userId);
+        const selected = intersection.map((item)=>_.indexOf(userList,item))
+        this.setState({selectedStaff:selected,intersection,staffModalType:type,staffModalVisibility:visibility});
+      });
+    }else if(type=="member"){
+      const userList = this.props.workspace.get('schoolUserList');
+      this._departmentId = this.props.workspace.get('data').get('result').get(id).get('departmentId');
+      this.props.getMemberList(this._departmentId,"").then((res)=>{
+        const memberList = res.data;
+        const intersection = _.intersectionWith(userList,memberList,(a,b)=>a.userId===b.userId);
+        const selected = intersection.map((item)=>_.indexOf(userList,item))
+        this.setState({selectedStaff:selected,intersection,staffModalType:type,staffModalVisibility:visibility});
+      });
+    }else{
+      this.setState({staffModalType:type,staffModalVisibility:visibility});
+    }
+  },
+
+  handleSetStaff(){
+    const {intersection,selectedRecord,staffModalType,rowsChanged} = this.state;
+    if(!rowsChanged){
+      this.setState({staffModalVisibility: false});
+    }else {
+      const changeList = _.xorWith(intersection,selectedRecord,(a,b)=>a.userId===b.userId);
+      let removeList = [];
+      let addList = [];
+      changeList.map((item)=>{
+        if(_.indexOf(intersection,item)>=0){
+          removeList.push(item.userId);
+        }else{
+          addList.push(item.userId);
+        }
+      })
+      let formData = new FormData();
+      formData.append('departmentId',this._departmentId);
+      formData.append('addList',addList.join(","));
+      formData.append('removeList',removeList.join(","));
+      const result = this.props.setStaff(formData,staffModalType==="leader"?"Leader":"Member");
+      let visibility = true;
+      result.then((res)=>{
+        if(res!=="error"){
+          visibility = false;
+        }
+      })
+      this.setState({staffModalVisibility: visibility})
+    }
+  },
+
+  renderStaffModal(){
+    const {staffModalType,staffModalVisibility,selectedStaff} = this.state
+    const columns = [{
+      title: '教师编号',
+      dataIndex: 'userId',
+      // key: 'userId',
+    },{
+      title: '教师姓名',
+      dataIndex: 'name',
+      // key: 'name',
+    }];
+    const rowSelection = {
+      onChange: (selectedRowKeys, selectedRows) => {
+        console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+        this.setState({selectedStaff: selectedRowKeys, selectedRecord: selectedRows,rowsChanged: true});
+      },
+      onSelect: (record, selected, selectedRows) => {
+        // console.log(record, selected, selectedRows);
+      },
+      onSelectAll: (selected, selectedRows, changeRows) => {
+        // console.log(selected, selectedRows, changeRows);
+      },
+      selectedRowKeys: selectedStaff,
+      getCheckboxProps: record => ({
+        disabled: record.name === 'Disabled User',    // Column configuration not to be checked
+      }),
+    };
+    const data = this.props.workspace.get('schoolUserList').length>=0?this.props.workspace.get('schoolUserList').map((v,key) => {
+      return {
+        key: key,
+        name: v.name,
+        userId: v.userId,
+      }
+    }):[];
+    return (
+      <Modal title={staffModalType==="leader"?"设置领导人":"设置成员"} visible={staffModalVisibility}
+        onOk={this.handleSetStaff} onCancel={this.handleStaffModalDisplay.bind(null,false,"",null)}
+      >
+        <div>
+          <Table pagination={false} rowSelection={rowSelection} columns={columns} dataSource={data} />
+        </div>
+
+      </Modal>
+    )
   },
 
   handleAddRecord(){
@@ -330,6 +441,7 @@ const SchoolDepartPage = React.createClass({
           </div>
         </div>
         {this.renderModal()}
+        {this.renderStaffModal()}
       </div>
     )
   }
@@ -346,6 +458,10 @@ function mapDispatchToProps(dispatch){
     getWorkspaceData: bindActionCreators(getWorkspaceData,dispatch),
     addSchoolDepart: bindActionCreators(addSchoolDepart,dispatch),
     editSchoolDepart: bindActionCreators(editSchoolDepart,dispatch),
+    getSchoolUserList: bindActionCreators(getSchoolUserList,dispatch),
+    getMemberList: bindActionCreators(getMemberList,dispatch),
+    getLeaderList: bindActionCreators(getLeaderList,dispatch),
+    setStaff: bindActionCreators(setStaff,dispatch)
   }
 }
 
