@@ -358,13 +358,6 @@ const AreaDepartmentPage = React.createClass({
       onCancel={()=>{this.setState({showAddMemberModal:false})}}
       >
         <div>
-          <div style={{marginBottom:'10px'}}>
-            <Search
-              placeholder="输入姓名，身份证号或者电话号码"
-              style={{ width: 200 }}
-              onSearch={value => console.log(value)}
-            />
-          </div>
           <div>
             <Table pagination={false} dataSource={tableData} columns={tableColumn} />
           </div>
