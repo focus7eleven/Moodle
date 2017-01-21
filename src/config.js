@@ -47,7 +47,8 @@ const config = _.extend({
 		workspace:{
 			baseInfo:{
 				baseData:{
-					get:(type,currentPage,pageShow,search,suffix='page') => `${baseURL}/${type}/${suffix}?currentPage=${currentPage}&search=${search}&pageShow=${pageShow}`
+					get:(type,currentPage,pageShow,search,suffix='page') => `${baseURL}/${type}/${suffix}?currentPage=${currentPage}&search=${search}&pageShow=${pageShow}`,
+					getWithUrl: (url) => `${baseURL}/${url}`,
 				}
 			}
 		},
@@ -73,6 +74,8 @@ const config = _.extend({
 			post:`${baseURL}/grade/add`,
 			update:`${baseURL}/grade/edit`,
 			getGradeList: (phaseId) => `${baseURL}/grade/gradeList?phaseId=${phaseId}`,
+			getGradeTeacherList: `${baseURL}/teacher/all`,
+			setGradeLeader: `${baseURL}/grade/assignLeader`,
 		},
 		dict:{
 			post:`${baseURL}/dict/add`,
@@ -140,6 +143,10 @@ const config = _.extend({
 		class: {
 			addClass: `${baseURL}/class/add`,
 			editClass: `${baseURL}/class/edit`,
+			getClassLeaderList: (classId) => `${baseURL}/class/classTeacher?classId=${classId}`,
+			setClassLeader: `${baseURL}/class/classTeacher`,
+			getClassSubject: (classId) => `${baseURL}/subject/class?classId=${classId}`,
+			getClassSubjectTeacher: (classId) => `${baseURL}/class/subjectTeacher?classId=${classId}`,
 		},
 		school:{
 			search:(search,currentPage,areaSelectId)=>`${baseURL}/school/pageByArea?search=${search}&currentPage=${currentPage}&areaSelectId=${areaSelectId}`

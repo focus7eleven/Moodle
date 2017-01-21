@@ -55,3 +55,17 @@
     @include deleteButton;
   }
 }
+
+:local(.subjectList){
+  margin-bottom: 8px;
+}
+
+:local(.subjectRadio){
+  margin-bottom: 8px !important;
+  >span:nth-child(n+2){
+    font-size: 14px;
+    >span{
+      color: $primary-color;
+    }
+  }
+}

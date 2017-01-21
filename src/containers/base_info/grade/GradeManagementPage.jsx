@@ -4,7 +4,7 @@ import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 import {Row,Col,Upload,Select,DatePicker,Icon,Input,Table,Button,Modal,Form} from 'antd'
 import PermissionDic from '../../../utils/permissionDic'
-import {getWorkspaceData} from '../../../actions/workspace'
+import {setGradeLeader,getGradeTeacherList,getWorkspaceData} from '../../../actions/workspace'
 import {fromJS,Map,List} from 'immutable'
 import {findMenuInTree} from '../../../reducer/menu'
 
@@ -14,28 +14,26 @@ const confirm = Modal.confirm
 const Option = Select.Option;
 
 const GradeManagementPage = React.createClass({
-  _currentMenu:Map({
-    authList:List()
-  }),
-
   getInitialState(){
     return {
       searchStr: "",
       modalType: "",
       modalVisibility: false,
+      leaderModalVisibility: false,
+      selectedStaff: [],
+      rowsChanged: false,
     }
   },
 
   componentWillMount(){
-    if(!this.props.menu.get('data').isEmpty()){
-      this._currentMenu = findMenuInTree(this.props.menu.get('data'),'classes')
-    }
+    let formData = new FormData();
+    formData.append("filter","");
+    this.props.getGradeTeacherList(formData);
   },
 
   getTableData(){
     let tableHeader = List()
     let tableBody = List()
-    let authList = this._currentMenu.get('authList')
     tableHeader = fromJS([{
       title: '名称',
       dataIndex: 'gradeName',
@@ -57,7 +55,7 @@ const GradeManagementPage = React.createClass({
       key: 'userName',
       className:styles.tableColumn,
       render: (text, record) => {
-        return <a><Icon type="edit" />{text}</a>
+        return <a onClick={this.handleLeaderModalDisplay.bind(null,true,record.key)}><Icon type="edit" />{text}</a>
       }
     }])
     tableBody = !this.props.workspace.get('data').isEmpty()?this.props.workspace.get('data').get('result').map( (v,key) => {
@@ -72,6 +70,35 @@ const GradeManagementPage = React.createClass({
     }
   },
 
+  handleLeaderModalDisplay(visibility,key){
+    if(visibility){
+      this._currentLeaderId = this.props.workspace.get('data').get('result').get(key).get('userId');
+      this._currentGradeId = this.props.workspace.get('data').get('result').get(key).get('gradeId');
+      const index = _.findIndex(this.props.workspace.get('gradeTeacherList'),(v)=>v.userId===this._currentLeaderId);
+      this.setState({selectedStaff:[index]});
+    }
+    this.setState({leaderModalVisibility: visibility});
+  },
+
+  handleSetLeader(){
+    const {rowsChanged,selectedStaff} = this.state;
+    if(!rowsChanged){
+      this.setState({leaderModalVisibility: false});
+    }else{
+      let formData = new FormData()
+      formData.append('gradeId',this._currentGradeId);
+      formData.append('leaderUserId',this.props.workspace.get('gradeTeacherList')[selectedStaff[0]].userId);
+      const result = this.props.setGradeLeader(formData);
+      let visibility = true;
+      result.then((res)=>{
+        if(res!=="error"){
+          visibility = false;
+        }
+      })
+      this.setState({leaderModalVisibility: visibility})
+    }
+  },
+
   handleSearchStrChanged(e){
     this.setState({searchStr: e.target.value});
   },
@@ -80,159 +107,36 @@ const GradeManagementPage = React.createClass({
     this.props.getWorkspaceData('class',this.props.workspace.get('data').get('nowPage'),this.props.workspace.get('data').get('pageShow'),value)
   },
 
-  handleEditRecord(){
-    const {getFieldsValue,getFieldValue,getFieldError,validateFields} = this.props.form
-    validateFields((err, values) => {
-      if (!err) {
-        let formData = new FormData()
-        formData.append('classId',this._currentRow.get('classId'))
-        formData.append('action',"edit")
-        formData.append('className',values.className)
-        formData.append('gradeId',values.gradeId)
-        formData.append('phaseCode',values.phaseCode)
-        formData.append('enrolmentDate',moment(values.enrolmentDate).format("YYYY/MM/DD"))
-        const result = this.props.editClass(formData)
-        let visibility = true;
-        result.then((res)=>{
-          if(res!=="error"){
-            visibility = false;
-          }
-        })
-        this.setState({modalVisibility: visibility});
+  renderLeaderModal(){
+    const {leaderModalVisibility,selectedStaff} = this.state
+    const columns = [{
+      title: '教师编号',
+      dataIndex: 'workNum',
+    },{
+      title: '教师姓名',
+      dataIndex: 'teacherName',
+    }];
+    const rowSelection = {
+      type: "radio",
+      onChange: (selectedRowKeys, selectedRows) => {
+        // console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+        this.setState({selectedStaff: selectedRowKeys,rowsChanged: true});
+      },
+      selectedRowKeys: selectedStaff,
+    };
+    const data = this.props.workspace.get('gradeTeacherList').length>=0?this.props.workspace.get('gradeTeacherList').map((v,key) => {
+      return {
+        key: key,
+        teacherName: v.teacherName,
+        workNum: v.workNum,
       }
-    });
-  },
-
-  handleModalDispaly(evt){
-    const visibility = evt.currentTarget.getAttribute("data-visible")==="true"?true:false;
-    const type = evt.currentTarget.getAttribute('data-modaltype');
-    if(type==='add'){
-      this.props.getPhaseList();
-      this.props.form.resetFields();
-      this.setState({modalVisibility: visibility,modalType: type});
-    }else if(!visibility){
-      this.setState({modalVisibility: visibility,modalType: type});
-    }else{
-      this.props.getPhaseList();
-      const {setFieldsValue} = this.props.form
-      this._currentRow = this.props.workspace.get('data').get('result').get(type)
-      this.props.getGradeList(this._currentRow.get('phaseCode'))
-      setFieldsValue({
-        'className':this._currentRow.get('className'),
-        'phaseCode':this._currentRow.get('phaseCode'),
-        'gradeId':this._currentRow.get('gradeId'),
-        'enrolmentDate':moment(this._currentRow.get('enrolmentDate')),
-      })
-      this.setState({modalVisibility: visibility,modalType: 'edit'});
-    }
-  },
-
-  renderModal(){
-    const { getFieldDecorator } = this.props.form;
-    const { modalType, modalVisibility } = this.state;
-    const formItemLayout = {labelCol:{span:5},wrapperCol:{span:12}};
-    const phaseList = this.props.workspace.get('phaseList');
-    const gradeList = this.props.workspace.get('gradeList');
+    }):[];
     return (
-      <Modal title={modalType==="add"?"添加班级":"编辑班级"} visible={modalVisibility}
-          onOk={modalType==="add"?this.handleAddRecord:this.handleEditRecord} data-visible={false} data-modaltype="" onCancel={this.handleModalDispaly}
-        >
+      <Modal title="设置年级组长" visible={leaderModalVisibility}
+        onOk={this.handleSetLeader} onCancel={this.handleLeaderModalDisplay.bind(null,false,"")}
+      >
         <div>
-          <Form>
-            <Row>
-              <Col span={24}>
-                <FormItem
-                  label="班级名称"
-                  {...formItemLayout}
-                  key='className'
-                >
-                  {
-                    getFieldDecorator('className', {
-                      rules: [{required: true,message: "班级名称不能为空"},{
-                        validator(rule, value, callback, source, options) {
-                          var errors = [];
-                          if(value && value.length > 20){
-                            errors.push(
-                              new Error('姓名应不超过20个字')
-                            )
-                          }
-                          callback(errors);
-                        }
-                      }],
-                    })(<Input placeholder='输入不超过20个字'/>)
-                  }
-                </FormItem>
-              </Col>
-            </Row>
-            <Row>
-              <Col span={24}>
-                <FormItem
-                  label="所属学段"
-                  {...formItemLayout}
-                  key='phaseCode'
-                >
-                  {
-                    getFieldDecorator('phaseCode', {initialValue: "",
-                      rules: [{required: true,message: "学段不能为空"}],
-                    })(
-                      <Select
-                        placeholder="请选择学段"
-                        optionFilterProp="children"
-                        onChange={this.handlePhaseSelected}
-                      >
-                        {
-                          phaseList.map((item)=>{
-                            return <Option key={item.phase_code} value={item.phase_code}>{item.phase_name}</Option>
-                          })
-                        }
-                      </Select>
-                    )
-                  }
-                </FormItem>
-              </Col>
-            </Row>
-            <Row>
-              <Col span={24}>
-                <FormItem
-                  label="所属年级"
-                  {...formItemLayout}
-                  key='gradeId'
-                >
-                  {
-                    getFieldDecorator('gradeId', {initialValue: "",
-                      rules: [{required: true,message: "年级不能为空"}],
-                    })(
-                      <Select
-                        placeholder="请选择年级"
-                        optionFilterProp="children"
-                      >
-                        {
-                          gradeList.map((item)=>{
-                            return <Option key={item.gradeId} value={item.gradeId}>{item.gradeName}</Option>
-                          })
-                        }
-                      </Select>
-                    )
-                  }
-                </FormItem>
-              </Col>
-            </Row>
-            <Row>
-              <Col span={24}>
-                <FormItem
-                  label="入学日期"
-                  {...formItemLayout}
-                  key='enrolmentDate'
-                >
-                  {
-                    getFieldDecorator('enrolmentDate',{rules:[{required: true, message: "入学日期不能为空"}]})(
-                      <DatePicker style={{width: '100%'}} placeholder="选择入学日期" disabledDate={(current)=> current && current.valueOf() > Date.now()} />
-                    )
-                  }
-                </FormItem>
-              </Col>
-            </Row>
-          </Form>
+          <Table pagination={false} rowSelection={rowSelection} columns={columns} dataSource={data} />
         </div>
       </Modal>
     )
@@ -273,7 +177,7 @@ const GradeManagementPage = React.createClass({
             <div className={styles.tableMsg}>当前条目{workspace.get('data').get('start')}-{parseInt(workspace.get('data').get('start'))+parseInt(workspace.get('data').get('pageShow'))}/总条目{workspace.get('data').get('totalCount')}</div>
           </div>
         </div>
-        {this.renderModal()}
+        {this.renderLeaderModal()}
       </div>
     )
   }
@@ -288,6 +192,8 @@ function mapStateToProps(state){
 function mapDispatchToProps(dispatch){
   return {
     getWorkspaceData: bindActionCreators(getWorkspaceData,dispatch),
+    getGradeTeacherList: bindActionCreators(getGradeTeacherList,dispatch),
+    setGradeLeader: bindActionCreators(setGradeLeader,dispatch),
   }
 }
 

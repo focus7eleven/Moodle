@@ -24,8 +24,18 @@ export function getWorkspaceData(type,currentPage,pageShow,search,suffix='page')
     suffix='pageByArea'
   }
   if(type=='gradeSet'){
-    suffix='gradeBySchool'
-    realType='grade'
+    return {
+      types:GET_WORKSPACEDATA,
+      callAPI:()=>{
+        return fetch(config.api.workspace.baseInfo.baseData.getWithUrl('grade/pageBySchool?search=&currentPage=1'),{
+          method:'GET',
+          headers:{
+            'from':'nodejs',
+            'token':sessionStorage.getItem('accessToken'),
+          }
+        }).then(res => res.json())
+      }
+    }
   }
   return {
     types:GET_WORKSPACEDATA,
@@ -183,6 +193,9 @@ export function addPhaseSubject(data){
 
 export const addGrade = require('./grade').addGrade
 export const editGrade = require('./grade').editGrade
+export const GET_GRADE_TEACHER_LIST = require('./grade').GET_GRADE_TEACHER_LIST
+export const getGradeTeacherList = require('./grade').getGradeTeacherList
+export const setGradeLeader = require('./grade').setGradeLeader
 
 export const addSubject = require('./subject').addSubject
 export const editSubject = require('./subject').editSubject
@@ -238,6 +251,13 @@ export const GET_PHASE_LIST = require('./class').GET_PHASE_LIST
 export const getPhaseList = require('./class').getPhaseList
 export const GET_GRADE_LIST = require('./class').GET_GRADE_LIST
 export const getGradeList = require('./class').getGradeList
+export const GET_CLASS_LEADER_LIST = require('./class').GET_CLASS_LEADER_LIST
+export const getClassLeaderList = require('./class').getClassLeaderList
+export const setClassLeader = require('./class').setClassLeader
+export const GET_CLASS_SUBJECT = require('./class').GET_CLASS_SUBJECT
+export const getClassSubject = require('./class').getClassSubject
+export const GET_CLASS_SUBJECT_TEACHER = require('./class').GET_CLASS_SUBJECT_TEACHER
+export const getClassSubjectTeacher = require('./class').getClassSubjectTeacher
 
 export const searchSchool = require('./school').searchSchool
 export const SEARCH_SCHOOL = require('./school').SEARCH_SCHOOL

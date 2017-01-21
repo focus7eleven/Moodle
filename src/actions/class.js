@@ -76,3 +76,74 @@ export function getGradeList(phaseId){
     }
   }
 }
+
+export const GET_CLASS_LEADER_LIST = actionNames('GET_CLASS_LEADER_LIST')
+
+export function getClassLeaderList(classId){
+  return {
+    types: GET_CLASS_LEADER_LIST,
+    callAPI:()=>{
+      return fetch(config.api.class.getClassLeaderList(classId),{
+        method:'GET',
+        headers:{
+          'from':'nodejs',
+          'token':sessionStorage.getItem('accessToken'),
+        },
+      }).then(res => res.json())
+    }
+  }
+}
+
+export function setClassLeader(data){
+  return dispatch => {
+    return fetch(config.api.class.setClassLeader,{
+      method:'post',
+      headers:{
+        'from':'nodejs',
+        'token':sessionStorage.getItem('accessToken'),
+      },
+      body: data
+    }).then(res => res.json()).then(res => {
+      if(res.title == 'Success'){
+        dispatch(getWorkspaceData('classes','','','')).then(res => {notification.success({message:'设置成功'});return res})
+      }else{
+        notification.error({message:'设置失败',description: res.result});
+        return "error";
+      }
+    })
+  }
+}
+
+export const GET_CLASS_SUBJECT = actionNames('GET_CLASS_SUBJECT')
+
+export function getClassSubject(classId){
+  return {
+    types: GET_CLASS_SUBJECT,
+    callAPI:()=>{
+      return fetch(config.api.class.getClassSubject(classId),{
+        method:'GET',
+        headers:{
+          'from':'nodejs',
+          'token':sessionStorage.getItem('accessToken'),
+        },
+      }).then(res => res.json())
+    }
+  }
+}
+
+export const GET_CLASS_SUBJECT_TEACHER = actionNames('GET_CLASS_SUBJECT_TEACHER')
+
+export function getClassSubjectTeacher(classId){
+  return {
+    types: GET_CLASS_SUBJECT_TEACHER,
+    callAPI:()=>{
+      return fetch(config.api.class.getClassSubjectTeacher(classId),{
+        method:'GET',
+        headers:{
+          'from':'nodejs',
+          'token':sessionStorage.getItem('accessToken'),
+        },
+      }).then(res => res.json())
+    }
+  }
+}

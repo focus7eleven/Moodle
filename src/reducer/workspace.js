@@ -9,6 +9,10 @@ import {
   GET_SCHOOL_USERLIST,
   GET_LEADER_LIST,
   GET_MEMBER_LIST,
+  GET_GRADE_TEACHER_LIST,
+  GET_CLASS_LEADER_LIST,
+  GET_CLASS_SUBJECT,
+  GET_CLASS_SUBJECT_TEACHER,
   SEARCH_SCHOOL,
 } from '../actions/workspace'
 import {findPath} from '../reducer/menu'
@@ -26,6 +30,10 @@ const initialState = fromJS({
   schoolUserList: [],
   leaderList: [],
   memberList: [],
+  gradeTeacherList: [],
+  classLeaderList: [],
+  classSubject: [],
+  classSubjectTeacher: [],
 })
 
 export default (state = initialState,action)=>{
@@ -52,6 +60,14 @@ export default (state = initialState,action)=>{
       return state.set('leaderList',action.data)
     case GET_MEMBER_LIST[1]:
       return state.set('memberList',action.data)
+    case GET_GRADE_TEACHER_LIST[1]:
+      return state.set('gradeTeacherList',action.data)
+    case GET_CLASS_LEADER_LIST[1]:
+      return state.set('classLeaderList',action.data)
+    case GET_CLASS_SUBJECT[1]:
+      return state.set('classSubject',action.data)
+    case GET_CLASS_SUBJECT_TEACHER[1]:
+      return state.set('classSubjectTeacher',action.data)
     case SEARCH_SCHOOL[0]:
       return state.set('loading',true)
     case SEARCH_SCHOOL[1]:

@@ -183,3 +183,11 @@
   background-color: $primary-color;
   border-color: $primary-color;
 }
+
+:global(.ant-radio-checked .ant-radio-inner){
+  border-color: $primary-color;
+}
+
+:global(.ant-radio-inner:after){
+  background-color: $primary-color;
+}

@@ -105,9 +105,9 @@ export function setStaff(data,type){
       body: data
     }).then(res => res.json()).then(res => {
       if(res.title == 'Success'){
-        dispatch(getWorkspaceData('schoolDepart','','','')).then(res => {notification.success({message:'添加成功'});return res})
+        dispatch(getWorkspaceData('schoolDepart','','','')).then(res => {notification.success({message:'设置成功'});return res})
       }else{
-        notification.error({message:'添加失败',description: res.result});
+        notification.error({message:'设置失败',description: res.result});
         return "error";
       }
     })

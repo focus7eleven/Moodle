@@ -2,17 +2,19 @@ import React from 'react'
 import styles from './ClassPage.scss'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
-import {Row,Col,Upload,Select,DatePicker,Icon,Input,Table,Button,Modal,Form} from 'antd'
+import {Radio,Row,Col,Upload,Select,DatePicker,Icon,Input,Table,Button,Modal,Form} from 'antd'
 import PermissionDic from '../../../utils/permissionDic'
-import {getGradeList,getPhaseList,addClass,editClass,getWorkspaceData} from '../../../actions/workspace'
+import {getGradeTeacherList,getClassSubject,getClassSubjectTeacher,getClassLeaderList,setClassLeader,getGradeList,getPhaseList,addClass,editClass,getWorkspaceData} from '../../../actions/workspace'
 import {fromJS,Map,List} from 'immutable'
 import {findMenuInTree} from '../../../reducer/menu'
 import moment from 'moment'
+import _ from 'lodash'
 
 const FormItem = Form.Item
 const Search = Input.Search
 const confirm = Modal.confirm
 const Option = Select.Option;
+const RadioGroup = Radio.Group;
 moment.locale('zh-cn');
 
 const ClassPage = React.createClass({
@@ -25,6 +27,12 @@ const ClassPage = React.createClass({
       searchStr: "",
       modalType: "",
       modalVisibility: false,
+      classLeaderModalVisibility: false,
+      classLeaderIndex: [],
+      rowsChanged: false,
+      teacherModalVisibility: false,
+      subjectTeacherIndex: [],
+      subjectTeacherChanged: false,
     }
   },
 
@@ -32,6 +40,9 @@ const ClassPage = React.createClass({
     if(!this.props.menu.get('data').isEmpty()){
       this._currentMenu = findMenuInTree(this.props.menu.get('data'),'classes')
     }
+    let formData = new FormData();
+    formData.append("filter","");
+    this.props.getGradeTeacherList(formData);
   },
 
   getTableData(){
@@ -67,7 +78,7 @@ const ClassPage = React.createClass({
       key: 'userName',
       className:styles.tableColumn,
       render: (text, record) => {
-        return <span>{text}</span>
+        return <a onClick={this.handleLeaderModalDisplay.bind(null,true,record.key)}><Icon type="edit" />{text}</a>
       }
     },{
       title: '任课教师',
@@ -75,7 +86,7 @@ const ClassPage = React.createClass({
       key: 'teacherCount',
       className:styles.tableColumn,
       render: (text, record) => {
-        return <span>{text}</span>
+        return <a onClick={this.handleTeacherModalDisplay.bind(null,true,record.key)}><Icon type="edit" />{text}</a>
       }
     }])
     tableHeader = tableHeader.concat(authList.filter(v => (v.get('authUrl').split('/')[2] != 'import')&&(v.get('authUrl').split('/')[2] != 'view')&&(v.get('authUrl').split('/')[2] != 'add')).map( v => {
@@ -103,6 +114,69 @@ const ClassPage = React.createClass({
     return {
       tableHeader:tableHeader.toJS(),
       tableBody:tableBody.toJS(),
+    }
+  },
+
+  handleLeaderModalDisplay(visibility,key){
+    if(visibility){
+      this._currentLeaderId = this.props.workspace.get('data').get('result').get(key).get('userId');
+      this._currentClassId = this.props.workspace.get('data').get('result').get(key).get('classId');
+      this.props.getClassLeaderList(this._currentClassId).then((res)=>{
+        const index = _.findIndex(this.props.workspace.get('classLeaderList'),(v)=>v.userId===this._currentLeaderId);
+        this.setState({classLeaderModalVisibility: true,classLeaderIndex:[index]});
+      })
+    }else {
+      this.setState({classLeaderModalVisibility: visibility});
+    }
+  },
+
+  handleTeacherModalDisplay(visibility,key){
+    if(visibility){
+      this._currentClassId = this.props.workspace.get('data').get('result').get(key).get('classId');
+      this.props.getClassSubject(this._currentClassId).then((res)=>{
+        this.props.getClassSubjectTeacher(this._currentClassId).then((res)=>{
+          const currentSubject = this.props.workspace.get('classSubject').length>0?this.props.workspace.get('classSubject')[0].subject_id:"";
+          const subjectTeacherIndex = _.findIndex(this.props.workspace.get('classSubjectTeacher'),(v)=>v.subjectId===currentSubject);
+          this.setState({currentSubject,subjectTeacherIndex:[subjectTeacherIndex],teacherModalVisibility: visibility});
+        })
+      })
+      // this.props.getClassLeaderList(this._currentClassId).then((res)=>{
+      //   const index = _.findIndex(this.props.workspace.get('classLeaderList'),(v)=>v.userId===this._currentLeaderId);
+      //   this.setState({classLeaderModalVisibility: true,classLeaderIndex:[index]});
+      // })
+    }else {
+      this.setState({teacherModalVisibility: visibility});
+    }
+  },
+
+  handleSubjectChange(e){
+    console.log('radio checked', e.target.value);
+    const subjectId = e.target.value;
+    const subjectTeacherIndex = _.findIndex(this.props.workspace.get('classSubjectTeacher'),(v)=>v.subjectId===subjectId);
+    this.setState({currentSubject: subjectId,subjectTeacherIndex:[subjectTeacherIndex]});
+  },
+
+  handleSubjectTeacherDisplay(id){
+    const subjectTeacher = this.props.workspace.get('classSubjectTeacher').find((item)=>item.subjectId==id);
+    return subjectTeacher?subjectTeacher.teacherName:"未设置";
+  },
+
+  handleSetLeader(){
+    const {rowsChanged,classLeaderIndex} = this.state;
+    if(!rowsChanged){
+      this.setState({classLeaderModalVisibility: false});
+    }else{
+      let formData = new FormData()
+      formData.append('classId',this._currentClassId);
+      formData.append('userId',this.props.workspace.get('classLeaderList')[classLeaderIndex[0]].userId);
+      const result = this.props.setClassLeader(formData);
+      let visibility = true;
+      result.then((res)=>{
+        if(res!=="error"){
+          visibility = false;
+        }
+      })
+      this.setState({classLeaderModalVisibility: visibility})
     }
   },
 
@@ -314,6 +388,85 @@ const ClassPage = React.createClass({
     )
   },
 
+  renderLeaderModal(){
+    const {classLeaderModalVisibility,classLeaderIndex} = this.state
+    const columns = [{
+      title: '教师编号',
+      dataIndex: 'teacherNum',
+    },{
+      title: '教师姓名',
+      dataIndex: 'teacherName',
+    }];
+    const rowSelection = {
+      type: "radio",
+      onChange: (selectedRowKeys, selectedRows) => {
+        this.setState({classLeaderIndex: selectedRowKeys,rowsChanged: true});
+      },
+      selectedRowKeys: classLeaderIndex,
+    };
+    const data = this.props.workspace.get('classLeaderList').length>=0?this.props.workspace.get('classLeaderList').map((v,key) => {
+      return {
+        key: key,
+        teacherName: v.teacherName,
+        teacherNum: v.teacherNum,
+      }
+    }):[];
+    return (
+      <Modal title="设置班主任" visible={classLeaderModalVisibility}
+        onOk={this.handleSetLeader} onCancel={this.handleLeaderModalDisplay.bind(null,false,"")}
+      >
+        <div>
+          <Table pagination={false} rowSelection={rowSelection} columns={columns} dataSource={data} />
+        </div>
+      </Modal>
+    )
+  },
+
+  renderTeacherModal(){
+    const {teacherModalVisibility,subjectTeacherIndex} = this.state
+    const columns = [{
+      title: '教师编号',
+      dataIndex: 'teacherNum',
+    },{
+      title: '教师姓名',
+      dataIndex: 'teacherName',
+    }];
+    const rowSelection = {
+      type: "radio",
+      onChange: (selectedRowKeys, selectedRows) => {
+        this.setState({subjectTeacherIndex: selectedRowKeys,subjectTeacherChanged: true});
+      },
+      selectedRowKeys: subjectTeacherIndex,
+    };
+    const data = this.props.workspace.get('gradeTeacherList').length>=0?this.props.workspace.get('gradeTeacherList').map((v,key) => {
+      return {
+        key: key,
+        teacherName: v.teacherName,
+        teacherNum: v.workNum,
+      }
+    }):[];
+    return (
+      <Modal width={650} title="设置任课老师" visible={teacherModalVisibility}
+        onOk={this.handleSetTeacher} onCancel={this.handleTeacherModalDisplay.bind(null,false,"")}
+      >
+        <div>
+          <div className={styles.subjectList}>
+            <RadioGroup onChange={this.handleSubjectChange} value={this.state.currentSubject}>
+              {
+                this.props.workspace.get('classSubject').map((item,index)=>{
+                  return (
+                    <Radio className={styles.subjectRadio} value={item.subject_id} key={item.subject_id}>{item.subject_name}(<span>{this.handleSubjectTeacherDisplay(item.subject_id)}</span>)</Radio>
+                  )
+                })
+              }
+            </RadioGroup>
+          </div>
+          <Table pagination={false} rowSelection={rowSelection} columns={columns} dataSource={data} />
+        </div>
+      </Modal>
+    )
+  },
+
   render(){
     const tableData = this.getTableData()
     const {workspace} = this.props
@@ -357,6 +510,8 @@ const ClassPage = React.createClass({
           </div>
         </div>
         {this.renderModal()}
+        {this.renderLeaderModal()}
+        {this.renderTeacherModal()}
       </div>
     )
   }
@@ -375,6 +530,11 @@ function mapDispatchToProps(dispatch){
     editClass: bindActionCreators(editClass,dispatch),
     getPhaseList: bindActionCreators(getPhaseList,dispatch),
     getGradeList: bindActionCreators(getGradeList,dispatch),
+    getGradeTeacherList: bindActionCreators(getGradeTeacherList,dispatch),
+    getClassLeaderList: bindActionCreators(getClassLeaderList,dispatch),
+    setClassLeader: bindActionCreators(setClassLeader,dispatch),
+    getClassSubject: bindActionCreators(getClassSubject,dispatch),
+    getClassSubjectTeacher: bindActionCreators(getClassSubjectTeacher,dispatch),
   }
 }
 
