@@ -157,6 +157,7 @@ const config = _.extend({
 			setClassLeader: `${baseURL}/class/classTeacher`,
 			getClassSubject: (classId) => `${baseURL}/subject/class?classId=${classId}`,
 			getClassSubjectTeacher: (classId) => `${baseURL}/class/subjectTeacher?classId=${classId}`,
+			setClassTeacher: `${baseURL}/class/teacher/edit`
 		},
 		school:{
 			search:(search,currentPage,areaSelectId)=>`${baseURL}/school/pageByArea?search=${search}&currentPage=${currentPage}&areaSelectId=${areaSelectId}`,

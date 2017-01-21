@@ -4,7 +4,7 @@ import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 import {Radio,Row,Col,Upload,Select,DatePicker,Icon,Input,Table,Button,Modal,Form} from 'antd'
 import PermissionDic from '../../../utils/permissionDic'
-import {getGradeTeacherList,getClassSubject,getClassSubjectTeacher,getClassLeaderList,setClassLeader,getGradeList,getPhaseList,addClass,editClass,getWorkspaceData} from '../../../actions/workspace'
+import {setClassTeacher,getGradeTeacherList,getClassSubject,getClassSubjectTeacher,getClassLeaderList,setClassLeader,getGradeList,getPhaseList,addClass,editClass,getWorkspaceData} from '../../../actions/workspace'
 import {fromJS,Map,List} from 'immutable'
 import {findMenuInTree} from '../../../reducer/menu'
 import moment from 'moment'
@@ -31,7 +31,7 @@ const ClassPage = React.createClass({
       classLeaderIndex: [],
       rowsChanged: false,
       teacherModalVisibility: false,
-      subjectTeacherIndex: [],
+      subjectTeacherIndex: {},
       subjectTeacherChanged: false,
     }
   },
@@ -135,30 +135,56 @@ const ClassPage = React.createClass({
       this._currentClassId = this.props.workspace.get('data').get('result').get(key).get('classId');
       this.props.getClassSubject(this._currentClassId).then((res)=>{
         this.props.getClassSubjectTeacher(this._currentClassId).then((res)=>{
-          const currentSubject = this.props.workspace.get('classSubject').length>0?this.props.workspace.get('classSubject')[0].subject_id:"";
-          const subjectTeacherIndex = _.findIndex(this.props.workspace.get('classSubjectTeacher'),(v)=>v.subjectId===currentSubject);
-          this.setState({currentSubject,subjectTeacherIndex:[subjectTeacherIndex],teacherModalVisibility: visibility});
+          const subjectList = this.props.workspace.get('classSubject');
+          const subjectTeacherList = this.props.workspace.get('classSubjectTeacher');
+          let subjectTeacherIndex = {};
+          let teacherUserId = 0;
+          subjectTeacherList.forEach((item,index)=>{
+            teacherUserId = _.findIndex(this.props.workspace.get('gradeTeacherList'),(v)=>v.userId===item.userId);
+            subjectTeacherIndex[item.subjectId] = [teacherUserId];
+          })
+          const currentSubject = subjectList.length>0?subjectList[0].subject_id:"";
+          this.setState({currentSubject,subjectTeacherIndex,teacherModalVisibility: visibility});
         })
       })
-      // this.props.getClassLeaderList(this._currentClassId).then((res)=>{
-      //   const index = _.findIndex(this.props.workspace.get('classLeaderList'),(v)=>v.userId===this._currentLeaderId);
-      //   this.setState({classLeaderModalVisibility: true,classLeaderIndex:[index]});
-      // })
     }else {
       this.setState({teacherModalVisibility: visibility});
     }
   },
 
   handleSubjectChange(e){
-    console.log('radio checked', e.target.value);
-    const subjectId = e.target.value;
-    const subjectTeacherIndex = _.findIndex(this.props.workspace.get('classSubjectTeacher'),(v)=>v.subjectId===subjectId);
-    this.setState({currentSubject: subjectId,subjectTeacherIndex:[subjectTeacherIndex]});
+    this.setState({currentSubject:e.target.value})
   },
 
   handleSubjectTeacherDisplay(id){
     const subjectTeacher = this.props.workspace.get('classSubjectTeacher').find((item)=>item.subjectId==id);
     return subjectTeacher?subjectTeacher.teacherName:"未设置";
+  },
+
+  handleSetTeacher(){
+    const {subjectTeacherChanged,subjectTeacherIndex} = this.state;
+    if(!subjectTeacherChanged){
+      this.setState({classLeaderModalVisibility: false});
+    }else{
+      const gradeTeacherList = this.props.workspace.get('gradeTeacherList');
+      let res = {};
+      _.keys(subjectTeacherIndex).map((key)=>{
+        if(subjectTeacherIndex[key]>=0){
+          res[key] = gradeTeacherList[subjectTeacherIndex[key]].userId;
+        }
+      })
+      let formData = new FormData()
+      formData.append('classId',this._currentClassId);
+      formData.append('result',JSON.stringify(res));
+      const result = this.props.setClassTeacher(formData);
+      let visibility = true;
+      result.then((res)=>{
+        if(res!=="error"){
+          visibility = false;
+        }
+      })
+      this.setState({teacherModalVisibility: visibility})
+    }
   },
 
   handleSetLeader(){
@@ -423,7 +449,7 @@ const ClassPage = React.createClass({
   },
 
   renderTeacherModal(){
-    const {teacherModalVisibility,subjectTeacherIndex} = this.state
+    const {currentSubject,teacherModalVisibility,subjectTeacherIndex} = this.state
     const columns = [{
       title: '教师编号',
       dataIndex: 'teacherNum',
@@ -434,9 +460,11 @@ const ClassPage = React.createClass({
     const rowSelection = {
       type: "radio",
       onChange: (selectedRowKeys, selectedRows) => {
-        this.setState({subjectTeacherIndex: selectedRowKeys,subjectTeacherChanged: true});
+        let newTeacherIndex = subjectTeacherIndex;
+        newTeacherIndex[currentSubject] = selectedRowKeys
+        this.setState({subjectTeacherIndex: newTeacherIndex,subjectTeacherChanged: true});
       },
-      selectedRowKeys: subjectTeacherIndex,
+      selectedRowKeys: subjectTeacherIndex[currentSubject],
     };
     const data = this.props.workspace.get('gradeTeacherList').length>=0?this.props.workspace.get('gradeTeacherList').map((v,key) => {
       return {
@@ -535,6 +563,7 @@ function mapDispatchToProps(dispatch){
     setClassLeader: bindActionCreators(setClassLeader,dispatch),
     getClassSubject: bindActionCreators(getClassSubject,dispatch),
     getClassSubjectTeacher: bindActionCreators(getClassSubjectTeacher,dispatch),
+    setClassTeacher: bindActionCreators(setClassTeacher,dispatch),
   }
 }
 

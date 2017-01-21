@@ -114,6 +114,26 @@ export function setClassLeader(data){
   }
 }
 
+export function setClassTeacher(data){
+  return dispatch => {
+    return fetch(config.api.class.setClassTeacher,{
+      method:'post',
+      headers:{
+        'from':'nodejs',
+        'token':sessionStorage.getItem('accessToken'),
+      },
+      body: data
+    }).then(res => res.json()).then(res => {
+      if(res.title == 'Success'){
+        dispatch(getWorkspaceData('classes','','','')).then(res => {notification.success({message:'设置成功'});return res})
+      }else{
+        notification.error({message:'设置失败',description: res.result});
+        return "error";
+      }
+    })
+  }
+}
+
 export const GET_CLASS_SUBJECT = actionNames('GET_CLASS_SUBJECT')
 
 export function getClassSubject(classId){

@@ -260,6 +260,7 @@ export const GET_CLASS_SUBJECT = require('./class').GET_CLASS_SUBJECT
 export const getClassSubject = require('./class').getClassSubject
 export const GET_CLASS_SUBJECT_TEACHER = require('./class').GET_CLASS_SUBJECT_TEACHER
 export const getClassSubjectTeacher = require('./class').getClassSubjectTeacher
+export const setClassTeacher = require('./class').setClassTeacher
 
 export const searchSchool = require('./school').searchSchool
 export const SEARCH_SCHOOL = require('./school').SEARCH_SCHOOL
