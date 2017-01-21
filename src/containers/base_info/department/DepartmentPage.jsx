@@ -1,7 +1,7 @@
 import React from 'react'
 import {Icon,Input,Table,Button,Modal,Form,Spin,Select,Radio,Checkbox} from 'antd'
 import PermissionDic from '../../../utils/permissionDic'
-import {getWorkspaceData,addDepartment,editDepartment,addOffice} from '../../../actions/workspace'
+import {getWorkspaceData,addDepartment,editDepartment,addOffice,addMember} from '../../../actions/workspace'
 import {fromJS,Map,List} from 'immutable'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
@@ -307,23 +307,22 @@ const DepartmentPage = React.createClass({
         },
       }).then(res => res.json()).then(res => {
         this.setState({
-          alreadySelectMembers:res,
+          alreadySelectMembers:res.map(v => v.id),
           showAddMemberModal:true,
         })
       })
     })
   },
   handleAddMember(){
-    let addList = this.state.selectedMembers.keySeq().toJS().map(v => this.state.allMembers[v]).map(v => v.id)
     this.props.addMember({
       departmentId:this._currentRow.get('departmentId'),
-      addList:JSON.stringify(addList),
+      addList:this.state.alreadySelectMembers.join(',')
       // removeList:JSON.stringfy()
     })
   },
   renderAddMemberModal(){
     const tableData = this.state.allMembers.map((v,k)=>({
-      key:k,
+      key:v.id,
       ...v
     }))
     const tableColumn = [{
@@ -339,9 +338,13 @@ const DepartmentPage = React.createClass({
       dataIndex:'phone',
       key:'phone',
     }]
-    const rowSelection = {
-      type:'checkbox',
-
+    const rowSelection ={
+      selectedRowKeys:this.state.alreadySelectMembers,
+      onChange:(selectedRowKeys,selectedRows)=>{
+        this.setState({
+          alreadySelectMembers:selectedRowKeys
+        })
+      }
     }
     return (
       <Modal title="添加成员" visible={true}
@@ -496,6 +499,7 @@ function mapDispatchToProps(dispatch){
     addDepartment:bindActionCreators(addDepartment,dispatch),
     editDepartment:bindActionCreators(editDepartment,dispatch),
     addOffice:bindActionCreators(addOffice,dispatch),
+    addMember:bindActionCreators(addMember,dispatch),
   }
 }
 

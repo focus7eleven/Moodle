@@ -105,3 +105,34 @@ export function addOffice(data){
     })
   }
 }
+
+export function addMember(data){
+  return dispatch => {
+    let formData = new FormData()
+    formData.append('departmentId',data.departmentId)
+    formData.append('addList',data.addList)
+    fetch(config.api.department.areaDepartment.officer.edit,{
+      method:'post',
+      headers:{
+        'from':'nodejs',
+        'token':sessionStorage.getItem('accessToken')
+      },
+      body:formData
+    }).then(res => res.json()).then(res => {
+      if(res.title == 'Success'){
+        dispatch({
+          types:GET_WORKSPACEDATA,
+          callAPI:()=>{
+            return fetch(config.api.workspace.baseInfo.baseData.get('cityDepartment','','',''),{
+              method:'GET',
+              headers:{
+                'from':'nodejs',
+                'token':sessionStorage.getItem('accessToken'),
+              }
+            }).then(res => res.json()).then(res => {notification.success({message:'编辑成功'});return res})
+          }
+        })
+      }
+    })
+  }
+}

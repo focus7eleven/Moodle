@@ -120,6 +120,9 @@ const config = _.extend({
 			areaDepartment:{
 				post:`${baseURL}/areaDepartment/add`,
 				update:`${baseURL}/areaDepartment/edit`,
+				officer:{
+					edit:`${baseURL}/areaDepartment/officer/edit`
+				},
 				listOfficersByDepartmentId:{
 					get:(departmentId)=>`${baseURL}/areaDepartment/listOfficersByDepartmentId?departmentId=${departmentId}`
 				}
