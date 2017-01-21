@@ -400,8 +400,8 @@ const SchoolPage = React.createClass({
               ))
             }
             </Select>
+          <Search style={{width: '260px'}} placeholder="请选择所属教育局" value={this.state.searchStr} onChange={(e)=>{this.setState({searchStr:e.target.value})}} onSearch={this.handleSearchTableData} />
           </div>
-          <Search style={{width: '260px'}} placeholder="请输入学校名称" value={this.state.searchStr} onChange={(e)=>{this.setState({searchStr:e.target.value})}} onSearch={this.handleSearchTableData} />
         </div>
         <div className={styles.body}>
           <div className={styles.wrapper}>

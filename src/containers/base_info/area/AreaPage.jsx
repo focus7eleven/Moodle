@@ -93,7 +93,7 @@ const AreaPage = React.createClass({
           return (
             <div>
               <Button type="primary" style={{backgroundColor:'#30D18E',borderColor:'#30D18E'}} onClick={this.handleShowEditAreaModal.bind(this,record.key)}>编辑</Button>
-              <Button type="primary" style={{backgroundColor:'#FD9B09',borderColor:'#FD9B09',marginLeft:'10px'}} onClick={this.handleShowDeleteModal.bind(this,record.key)}>删除</Button>
+              <Button type="primary" className={styles.deleteButton} style={{marginLeft:'10px'}} onClick={this.handleShowDeleteModal.bind(this,record.key)}>删除</Button>
             </div>
           )
         }
@@ -266,7 +266,19 @@ const AreaPage = React.createClass({
             wrapperCol={{ span: 12 }}
             key='website'>
             {getFieldDecorator('website', {
-              rules: [{ max:60, message: '输入不超过50个字' }],
+              rules: [{ max:60, message: '输入不超过50个字' },{
+                validator(rule, value, callback, source, options) {
+                  var errors = [];
+                  // test if email address already exists in a database
+                  // and add a validation error to the errors array if it does
+                  var regExp = /^((ht|f)tps?):\/\/[\w\-]+(\.[\w\-]+)+([\w\-\.,@?^=%&:\/~\+#]*[\w\-\@?^=%&\/~\+#])?$/
+                  if(!regExp.test(value)){
+                    errors.push(new Error('输入网址'))
+                  }
+
+                  callback(errors);
+                }
+              }],
             })(
               <Input placeholder='输入不超过60个字'/>
             )}

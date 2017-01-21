@@ -30,4 +30,7 @@
       }
     }
   }
+  :local(.deleteButton){
+    @include deleteButton;
+  }
 }

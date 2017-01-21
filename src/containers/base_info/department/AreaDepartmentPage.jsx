@@ -78,7 +78,7 @@ const AreaDepartmentPage = React.createClass({
       key: 'phaseName',
       className:styles.tableColumn,
       render:(text,record)=>{
-        return (<Icon type='edit' onClick={this.handleShowAddOfficerModal.bind(this,record.key)}/>)
+        return (<a onClick={this.handleShowAddOfficerModal.bind(this,record.key)}><Icon type='edit' /></a>)
       }
     },{
       title: '科室成员',
@@ -86,7 +86,7 @@ const AreaDepartmentPage = React.createClass({
       key: 'leaderCount',
       className:styles.tableColumn,
       render:(text,record)=>{
-        return (<span><Icon type='edit' onClick={this.handleShowAddMemberModal.bind(this,record.key)}/>成员人数:{text}</span>)
+        return (<a onClick={this.handleShowAddMemberModal.bind(this,record.key)}><Icon type='edit' />成员人数:{text}</a>)
       }
     },{
       title: '所属教育局',
@@ -109,7 +109,7 @@ const AreaDepartmentPage = React.createClass({
           return (
             <div>
               <Button type="primary" style={{backgroundColor:'#30D18E',borderColor:'#30D18E'}} onClick={this.handleShowEditDepartmentModal.bind(this,record.key)}>编辑</Button>
-              <Button type="primary" style={{backgroundColor:'#FD9B09',borderColor:'#FD9B09',marginLeft:'10px'}} onClick={this.handleShowDeleteModal.bind(this,record.key)}>删除</Button>
+              <Button type="primary" className={styles.deleteButton} style={{marginLeft:'10px'}} onClick={this.handleShowDeleteModal.bind(this,record.key)}>删除</Button>
             </div>
           )
         }
@@ -242,7 +242,16 @@ const AreaDepartmentPage = React.createClass({
     const tableColumn = [{
       title:'姓名',
       dataIndex:'name',
-      key:'name'
+      key:'name',
+      filterDropdown:(
+        <div style={{marginBottom:'10px'}}>
+          <Search
+            placeholder="输入姓名，身份证号或者电话号码"
+            style={{ width: 200 }}
+            onSearch={this.handelSearchOfficer}
+          />
+        </div>
+      )
     },{
       title:'身份证号码',
       dataIndex:'id',
@@ -273,13 +282,7 @@ const AreaDepartmentPage = React.createClass({
       onCancel={()=>{this.setState({showAddOfficerModal:false})}}
       >
         <div>
-          <div style={{marginBottom:'10px'}}>
-            <Search
-              placeholder="输入姓名，身份证号或者电话号码"
-              style={{ width: 200 }}
-              onSearch={this.handelSearchOfficer}
-            />
-          </div>
+
           <div>
             <Table rowSelection={rowSelection} pagination={false} dataSource={tableData} columns={tableColumn} />
           </div>
@@ -415,7 +418,7 @@ const AreaDepartmentPage = React.createClass({
             {getFieldDecorator('function', {
               rules: [{max:200,message:'输入不超过200个字'}],
             })(
-              <Input placeholder="输入不超过200个字"/>
+              <Input type='textarea' rows={3} placeholder="输入不超过200个字"/>
             )}
             </FormItem>
             <FormItem
