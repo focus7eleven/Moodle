@@ -117,6 +117,13 @@ const config = _.extend({
 		department: {
 			post:`${baseURL}/cityDepartment/add`,
 			update:`${baseURL}/cityDepartment/edit`,
+			areaDepartment:{
+				post:`${baseURL}/areaDepartment/add`,
+				update:`${baseURL}/areaDepartment/edit`,
+				listOfficersByDepartmentId:{
+					get:(departmentId)=>`${baseURL}/areaDepartment/listOfficersByDepartmentId?departmentId=${departmentId}`
+				}
+			}
 		},
 		area: {
 			post:`${baseURL}/area/add`,
@@ -145,6 +152,14 @@ const config = _.extend({
 			update:`${baseURL}/school/edit`,
 			phase:{
 				get:(target)=>`${baseURL}/school/phases/${target}`
+			}
+		},
+		officer:{
+			list:{
+				get:(departmentId,filter='')=>`${baseURL}/officer/list?departmentId=${departmentId}&filter=${filter}`
+			},
+			find:{
+				get:(name,areaId)=>`${baseURL}/officer/find?name=${name}&areaId=${areaId}`
 			}
 		}
 	}

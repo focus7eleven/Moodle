@@ -211,6 +211,7 @@ export const importExcel = require('./staff').importExcel
 
 export const addDepartment = require('./department').addDepartment
 export const editDepartment = require('./department').editDepartment
+export const addOffice = require('./department').addOffice
 
 export const addArea = require('./area').addArea
 export const editArea = require('./area').editArea

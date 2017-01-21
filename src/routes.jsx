@@ -27,6 +27,7 @@ import SchoolDepartPage from './containers/base_info/school/SchoolDepartPage'
 import ClassPage from './containers/base_info/class/ClassPage'
 import AreaPage from './containers/base_info/area/AreaPage'
 import SchoolPage from './containers/base_info/school/SchoolPage'
+import AreaDepartmentPage from './containers/base_info/department/AreaDepartmentPage'
 
 const routes = (
 	<Router history={browserHistory}>
@@ -70,6 +71,7 @@ const routes = (
 					<Route path='madegroup' component={MadeGroupPage}></Route>
 
 					<Route path='cityDepartment' component={DepartmentPage}></Route>
+					<Route path='areaDepartment' component={AreaDepartmentPage}></Route>
 					<Route path='area' component={AreaPage}></Route>
 					<Route path='schoolDepart' component={SchoolDepartPage}></Route>
 					<Route path='classes' component={ClassPage}></Route>

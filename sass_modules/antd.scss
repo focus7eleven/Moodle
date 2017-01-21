@@ -41,6 +41,11 @@
       font-size: 16px;
       font-weight:normal;
     }
+
+  }
+  :global(.ant-modal-body){
+    max-height: 300px;
+    overflow: scroll;
   }
 }
 
