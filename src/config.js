@@ -121,6 +121,16 @@ const config = _.extend({
 		department: {
 			post:`${baseURL}/cityDepartment/add`,
 			update:`${baseURL}/cityDepartment/edit`,
+			areaDepartment:{
+				post:`${baseURL}/areaDepartment/add`,
+				update:`${baseURL}/areaDepartment/edit`,
+				officer:{
+					edit:`${baseURL}/areaDepartment/officer/edit`
+				},
+				listOfficersByDepartmentId:{
+					get:(departmentId)=>`${baseURL}/areaDepartment/listOfficersByDepartmentId?departmentId=${departmentId}`
+				}
+			}
 		},
 		area: {
 			post:`${baseURL}/area/add`,
@@ -149,8 +159,24 @@ const config = _.extend({
 			getClassSubjectTeacher: (classId) => `${baseURL}/class/subjectTeacher?classId=${classId}`,
 		},
 		school:{
-			search:(search,currentPage,areaSelectId)=>`${baseURL}/school/pageByArea?search=${search}&currentPage=${currentPage}&areaSelectId=${areaSelectId}`
+			search:(search,currentPage,areaSelectId)=>`${baseURL}/school/pageByArea?search=${search}&currentPage=${currentPage}&areaSelectId=${areaSelectId}`,
+			check:{
+				get:(schoolName,schoolCode) => `${baseURL}/school/checkSchool?schoolName=${schoolName}&schoolCode=${schoolCode}`
+			},
+			post:`${baseURL}/school/add`,
+			update:`${baseURL}/school/edit`,
+			phase:{
+				get:(target)=>`${baseURL}/school/phases/${target}`
+			}
 		},
+		officer:{
+			list:{
+				get:(departmentId,filter='')=>`${baseURL}/officer/list?departmentId=${departmentId}&filter=${filter}`
+			},
+			find:{
+				get:(name,areaId)=>`${baseURL}/officer/find?name=${name}&areaId=${areaId}`
+			}
+		}
 	}
 })
 

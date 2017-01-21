@@ -1,7 +1,7 @@
 import React from 'react'
 import {Icon,Input,Table,Button,Modal,Form,Spin,Select} from 'antd'
 import PermissionDic from '../../../utils/permissionDic'
-import {getWorkspaceData,searchSchool,addGrade,editGrade} from '../../../actions/workspace'
+import {getWorkspaceData,searchSchool,addSchool,editSchool} from '../../../actions/workspace'
 import {fromJS,Map,List} from 'immutable'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
@@ -142,8 +142,8 @@ const SchoolPage = React.createClass({
       title: '你先删除这条记录吗？',
       content: '删除后不可恢复',
       onOk() {
-        that.props.editGrade({
-          gradeId:currentRow.get('gradeId'),
+        that.props.editSchool({
+          schoolId:currentRow.get('school_id'),
           action:'delete'
         })
       },
@@ -166,53 +166,81 @@ const SchoolPage = React.createClass({
     }
   },
   handleShowEditSchoolModal(key){
-    console.log(key)
+
     const {setFieldsValue} = this.props.form
     this._currentRow = this.props.workspace.get('data').get('result').get(key)
-    this.setState({
-      showEditSchoolModal:true
-    },()=>{
-      setFieldsValue({
-        gradeName:this._currentRow.get('gradeName'),
-        gradeNickName:this._currentRow.get('gradeNickName'),
-        phaseName:this._currentRow.get('phaseCode'),
+    console.log(key,'-->:',this._currentRow.toJS())
+    fetch(config.api.school.phase.get(this._currentRow.get('school_code')),{
+      method:'get',
+      headers:{
+        'from':'nodejs',
+        'token':sessionStorage.getItem('accessToken')
+      }
+    }).then(res => res.json()).then(res => {
+      this.setState({
+        showEditSchoolModal:true
+      },()=>{
+        setFieldsValue({
+          school_name:this._currentRow.get('school_name'),
+          school_code:this._currentRow.get('school_code'),
+          admin_name:this._currentRow.get('admin_name'),
+          admin_code:this._currentRow.get('admin_code'),
+          area_id:this._currentRow.get('area_id'),
+          phase_value:res,
+          school_desc:this._currentRow.get('school_desc'),
+          address:this._currentRow.get('address'),
+          remark:this._currentRow.get('remark')
+        })
       })
     })
 
   },
   handleAddSchool(){
+
     const {getFieldValue,getFieldError} = this.props.form
+    console.log("--<:",getFieldValue('phase_value'))
     let errors = [getFieldError('school_name'),getFieldError('admin_name'),getFieldError('school_code')]
     if(!errors.reduce((pre,cur)=>pre||cur,false)){
-      this.props.addGrade({
-        gradeName:getFieldValue('gradeName'),
-        gradeNickName:getFieldValue('gradeNickName'),
-        phaseCode:getFieldValue('phaseName')
+      this.props.addSchool({
+        schoolName:getFieldValue('school_name'),
+        schoolCode:getFieldValue('school_code'),
+        adminName:getFieldValue('admin_name'),
+        adminCode:getFieldValue('admin_code'),
+        areaId:getFieldValue('area_id'),
+        phaseValue:getFieldValue('phase_value'),
+        schoolDesc:getFieldValue('school_desc'),
+        address:getFieldValue('address'),
+        remark:getFieldValue('remark')
       })
     }
   },
-  handleEditGrade(){
+  handleEditSchool(){
     const {getFieldValue,getFieldError} = this.props.form
     let errors = [getFieldError('school_name'),getFieldError('admin_name'),getFieldError('school_code')]
     if(!errors.reduce((pre,cur)=>pre||cur,false)){
-      this.props.editGrade({
-        gradeName:getFieldValue('gradeName'),
-        gradeNickName:getFieldValue('gradeNickName'),
-        phaseCode:getFieldValue('phaseName'),
+      this.props.editSchool({
+        schoolName:getFieldValue('school_name'),
+        schoolCode:getFieldValue('school_code'),
+        adminName:getFieldValue('admin_name'),
+        adminCode:getFieldValue('admin_code'),
+        areaId:getFieldValue('area_id'),
+        phaseValue:getFieldValue('phase_value'),
+        schoolDesc:getFieldValue('school_desc'),
+        address:getFieldValue('address'),
+        remark:getFieldValue('remark'),
         action:'edit',
-        gradeId:this._currentRow.get('gradeId')
+        schoolId:this._currentRow.get('school_id')
       })
     }
   },
   renderAddSchoolModal(type){
-    console.log("-->:",this._phaseList)
     const {getFieldDecorator,getFieldValue} = this.props.form
     return (
       <Modal title='添加学校' visible={true} onCancel={this.handleCloseAddGradeModal.bind(this,type)}
       footer={[
         <Button key='cancel' type='ghost' onClick={this.handleCloseAddGradeModal.bind(this,type)}>取消</Button>,
         <Button key='ok' type='primary'
-        disabled={!getFieldValue('gradeName')&&!getFieldValue('phaseName')}
+        disabled={!getFieldValue('school_name')&&!getFieldValue('school_code')}
         onClick={type=='edit'?this.handleEditSchool:this.handleAddSchool}>确认</Button>
       ]}
       >
@@ -240,28 +268,32 @@ const SchoolPage = React.createClass({
               <Input placeholder="输入不超过10个字"/>
             )}
             </FormItem>
-            <FormItem
-            label='管理员用户名'
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 12 }}
-            key='admin_name'>
-            {getFieldDecorator('admin_name', {
-              rules: [{ required: true, message: '输入年级名称' },{min:6,max:16,message:'输入6-16个字'}],
-            })(
-              <Input placeholder="输入6-16个字"/>
-            )}
-            </FormItem>
-            <FormItem
-            label='管理员密码'
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 12 }}
-            key='admin_code'>
-            {getFieldDecorator('admin_code', {
-              rules: [{ required: true, message: '输入年级名称' },{max:10,message:'输入不超过10个字'}],
-            })(
-              <Input placeholder="输入不超过10个字"/>
-            )}
-            </FormItem>
+            {
+              type=='edit'?null:<FormItem
+              label='管理员用户名'
+              labelCol={{ span: 5 }}
+              wrapperCol={{ span: 12 }}
+              key='admin_name'>
+              {getFieldDecorator('admin_name', {
+                rules: [{ required: true, message: '输入年级名称' },{min:6,max:16,message:'输入6-16个字'}],
+              })(
+                <Input placeholder="输入6-16个字"/>
+              )}
+              </FormItem>
+            }
+            {
+              type=='edit'?null:<FormItem
+              label='管理员密码'
+              labelCol={{ span: 5 }}
+              wrapperCol={{ span: 12 }}
+              key='admin_code'>
+              {getFieldDecorator('admin_code', {
+                rules: [{ required: true, message: '输入年级名称' },{max:10,message:'输入不超过10个字'}],
+              })(
+                <Input placeholder="输入不超过10个字"/>
+              )}
+              </FormItem>
+            }
             <FormItem
             label='所属教育局'
             labelCol={{ span: 5 }}
@@ -270,7 +302,7 @@ const SchoolPage = React.createClass({
             {getFieldDecorator('area_id', {
               rules: [{ required: true, message: '选择学段' }],
             })(
-              <Select placeholder='选择教育局' style={{ width: 244 }}>
+              <Select placeholder='选择教育局' style={{ width: 244 }} disabled={type=='edit'}>
                 {
                   this.state.areaList.map(v => (
                     <Option key={v.get('areaId')} value={v.get('areaId')} title={v.get('areaName')}>{v.get('areaName')}</Option>
@@ -284,7 +316,7 @@ const SchoolPage = React.createClass({
             labelCol={{ span: 5 }}
             wrapperCol={{ span: 12 }}
             key='phase_value'>
-            {getFieldDecorator('phaes_value',{
+            {getFieldDecorator('phase_value',{
               rules:[{required:true,message:'选择学段'}]
             })(
               <Select
@@ -369,7 +401,7 @@ const SchoolPage = React.createClass({
             }
             </Select>
           </div>
-          <Search style={{width: '260px'}} placeholder="请输入年级名称" value={this.state.searchStr} onChange={(e)=>{this.setState({searchStr:e.target.value})}} onSearch={this.handleSearchTableData} />
+          <Search style={{width: '260px'}} placeholder="请输入学校名称" value={this.state.searchStr} onChange={(e)=>{this.setState({searchStr:e.target.value})}} onSearch={this.handleSearchTableData} />
         </div>
         <div className={styles.body}>
           <div className={styles.wrapper}>
@@ -406,8 +438,8 @@ function mapDispatchToProps(dispatch){
   return {
     getWorkspaceData:bindActionCreators(getWorkspaceData,dispatch),
     searchSchool:bindActionCreators(searchSchool,dispatch),
-    addGrade:bindActionCreators(addGrade,dispatch),
-    editGrade:bindActionCreators(editGrade,dispatch)
+    addSchool:bindActionCreators(addSchool,dispatch),
+    editSchool:bindActionCreators(editSchool,dispatch)
   }
 }
 

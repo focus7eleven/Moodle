@@ -231,6 +231,8 @@ export const importExcel = require('./staff').importExcel
 
 export const addDepartment = require('./department').addDepartment
 export const editDepartment = require('./department').editDepartment
+export const addOffice = require('./department').addOffice
+export const addMember = require('./department').addMember
 
 export const addArea = require('./area').addArea
 export const editArea = require('./area').editArea
@@ -261,3 +263,5 @@ export const getClassSubjectTeacher = require('./class').getClassSubjectTeacher
 
 export const searchSchool = require('./school').searchSchool
 export const SEARCH_SCHOOL = require('./school').SEARCH_SCHOOL
+export const addSchool = require('./school').addSchool
+export const editSchool = require('./school').editSchool

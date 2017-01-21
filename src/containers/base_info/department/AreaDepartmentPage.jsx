@@ -1,12 +1,12 @@
 import React from 'react'
 import {Icon,Input,Table,Button,Modal,Form,Spin,Select,Radio,Checkbox} from 'antd'
 import PermissionDic from '../../../utils/permissionDic'
-import {getWorkspaceData,addDepartment,editDepartment,addOffice,addMember} from '../../../actions/workspace'
+import {getWorkspaceData,addDepartment,editDepartment,addOffice} from '../../../actions/workspace'
 import {fromJS,Map,List} from 'immutable'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 import { findMenuInTree,findPath} from '../../../reducer/menu'
-import styles from './DepartmentPage.scss'
+import styles from './AreaDepartmentPage.scss'
 import _ from 'lodash'
 import config from '../../../config'
 
@@ -16,7 +16,7 @@ const Option = Select.Option
 const confirm = Modal.confirm
 
 
-const DepartmentPage = React.createClass({
+const AreaDepartmentPage = React.createClass({
   _currentMenu:Map({
     authList:List()
   }),
@@ -33,7 +33,7 @@ const DepartmentPage = React.createClass({
   },
   componentWillMount(){
     if(!this.props.menu.get('data').isEmpty()){
-      this._currentMenu = findMenuInTree(this.props.menu.get('data'),'cityDepartment')
+      this._currentMenu = findMenuInTree(this.props.menu.get('data'),'areaDepartment')
     }
   },
   // componentWillReceiveProps(nextProps){
@@ -136,7 +136,7 @@ const DepartmentPage = React.createClass({
         that.props.editDepartment({
           departmentId:currentRow.get('departmentId'),
           action:'delete'
-        })
+        },'area')
       },
       onCancel() {},
     });
@@ -183,7 +183,7 @@ const DepartmentPage = React.createClass({
         _function:getFieldValue('function'),
         phone:getFieldValue('phone'),
         remark:getFieldValue('remark')
-      })
+      },'area')
     }
   },
   handleEditDepartment(){
@@ -199,7 +199,7 @@ const DepartmentPage = React.createClass({
 
         action:'edit',
         departmentId:this._currentRow.get('departmentId')
-      })
+      },'area')
     }
   },
   handleShowAddOfficerModal(key){
@@ -220,7 +220,7 @@ const DepartmentPage = React.createClass({
   handleShowAddOfficer(){
     this.props.addOffice({
       departmentId:this._currentRow.get('departmentId'),
-      leaderId:this.state.officerList[this.state.selectedOffice[0]].id,
+      leaderId:this.state.officerList[this.state.chosenOfficer].id,
       action:'edit'
     })
   },
@@ -251,6 +251,12 @@ const DepartmentPage = React.createClass({
       title:'手机号',
       dataIndex:'phone',
       key:'phone',
+    },{
+      title:'操作',
+      key:'action',
+      render:(text,record)=>{
+        return record.key==this.state.chosenOfficer?<Radio checked={true} onClick={()=>{this.setState({chosenOfficer:record.key})}}></Radio>:<Radio checked={false} onClick={()=>{this.setState({chosenOfficer:record.key})}}></Radio>
+      }
     }]
     const rowSelection ={
       type:'radio',
@@ -271,7 +277,7 @@ const DepartmentPage = React.createClass({
             <Search
               placeholder="输入姓名，身份证号或者电话号码"
               style={{ width: 200 }}
-              onSearch={this.handleSearchOfficer}
+              onSearch={this.handelSearchOfficer}
             />
           </div>
           <div>
@@ -307,22 +313,23 @@ const DepartmentPage = React.createClass({
         },
       }).then(res => res.json()).then(res => {
         this.setState({
-          alreadySelectMembers:res.map(v => v.id),
+          alreadySelectMembers:res,
           showAddMemberModal:true,
         })
       })
     })
   },
   handleAddMember(){
+    let addList = this.state.selectedMembers.keySeq().toJS().map(v => this.state.allMembers[v]).map(v => v.id)
     this.props.addMember({
       departmentId:this._currentRow.get('departmentId'),
-      addList:this.state.alreadySelectMembers.join(',')
+      addList:JSON.stringify(addList),
       // removeList:JSON.stringfy()
     })
   },
   renderAddMemberModal(){
     const tableData = this.state.allMembers.map((v,k)=>({
-      key:v.id,
+      key:k,
       ...v
     }))
     const tableColumn = [{
@@ -337,15 +344,14 @@ const DepartmentPage = React.createClass({
       title:'电话',
       dataIndex:'phone',
       key:'phone',
-    }]
-    const rowSelection ={
-      selectedRowKeys:this.state.alreadySelectMembers,
-      onChange:(selectedRowKeys,selectedRows)=>{
-        this.setState({
-          alreadySelectMembers:selectedRowKeys
-        })
+    },{
+      title:'操作',
+      key:'action',
+      render:(text,record)=>{
+        let key = record.key
+        return (<Checkbox checked={this.state.selectedMembers.get(key)||(this.state.alreadySelectMembers[key]&&true)} onChange={this.handleSelectMember.bind(this,key)}></Checkbox>)
       }
-    }
+    }]
     return (
       <Modal title="添加成员" visible={true}
       onOk={this.handleAddMember}
@@ -353,7 +359,7 @@ const DepartmentPage = React.createClass({
       >
         <div>
           <div>
-            <Table rowSelection={rowSelection} pagination={false} dataSource={tableData} columns={tableColumn} />
+            <Table pagination={false} dataSource={tableData} columns={tableColumn} />
           </div>
         </div>
       </Modal>
@@ -447,11 +453,12 @@ const DepartmentPage = React.createClass({
 
   render(){
     const tableData = this.getTableData()
+
     const {workspace} = this.props
     return (
       <div className={styles.container}>
         <div className={styles.header}>
-          {this._currentMenu.get('authList').some(v => v.get('authUrl')=='/cityDepartment/add')?<Button type="primary" style={{backgroundColor:'#FD9B09',borderColor:'#FD9B09'}} onClick={()=>{this.setState({showAddDepartmentModal:true})}}>新建</Button>:<div> </div>}<Search style={{width: '260px'}} placeholder="请输入机关名称" value={this.state.searchStr} onChange={(e)=>{this.setState({searchStr:e.target.value})}} onSearch={this.handleSearchTableData} />
+          {this._currentMenu.get('authList').some(v => v.get('authUrl')=='/areaDepartment/add')?<Button type="primary" style={{backgroundColor:'#FD9B09',borderColor:'#FD9B09'}} onClick={()=>{this.setState({showAddDepartmentModal:true})}}>新建</Button>:<div> </div>}<Search style={{width: '260px'}} placeholder="请输入机关名称" value={this.state.searchStr} onChange={(e)=>{this.setState({searchStr:e.target.value})}} onSearch={this.handleSearchTableData} />
         </div>
         <div className={styles.body}>
           <div className={styles.wrapper}>
@@ -461,11 +468,11 @@ const DepartmentPage = React.createClass({
               pageSize:this.props.workspace.get('data').get('pageShow'),
               current:this.props.workspace.get('data').get('nowPage'),
               onChange:(page)=>{
-                this.props.getWorkspaceData('cityDepartment',page,this.props.workspace.get('data').get('pageShow'),this.state.searchStr)
+                this.props.getWorkspaceData('areaDepartment',page,this.props.workspace.get('data').get('pageShow'),this.state.searchStr)
               },
               showQuickJumper:true,
               onShowSizeChange:(current,size)=>{
-                this.props.getWorkspaceData('cityDepartment',this.props.workspace.get('data').get('nowPage'),size,this.state.searchStr)
+                this.props.getWorkspaceData('areaDepartment',this.props.workspace.get('data').get('nowPage'),size,this.state.searchStr)
               }
             }:null} />
             <div className={styles.tableMsg}>当前条目{workspace.get('data').get('start')}-{parseInt(workspace.get('data').get('start'))+parseInt(workspace.get('data').get('pageShow'))}/总条目{workspace.get('data').get('totalCount')}</div>
@@ -492,8 +499,7 @@ function mapDispatchToProps(dispatch){
     addDepartment:bindActionCreators(addDepartment,dispatch),
     editDepartment:bindActionCreators(editDepartment,dispatch),
     addOffice:bindActionCreators(addOffice,dispatch),
-    addMember:bindActionCreators(addMember,dispatch),
   }
 }
 
-export default connect(mapStateToProps,mapDispatchToProps)(Form.create()(DepartmentPage))
+export default connect(mapStateToProps,mapDispatchToProps)(Form.create()(AreaDepartmentPage))
