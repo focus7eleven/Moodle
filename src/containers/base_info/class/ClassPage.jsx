@@ -33,6 +33,14 @@ const ClassPage = React.createClass({
       teacherModalVisibility: false,
       subjectTeacherIndex: {},
       subjectTeacherChanged: false,
+      // filter string for leader
+      searchTeacherName: "",
+      searchWorkNum: "",
+      modalLeaderData: [],
+      // filter string for subject teacher
+      searchSubjectTeacherName: "",
+      searchSubjectTeacherWorkNum: "",
+      modalSubjectTeacherData: [],
     }
   },
 
@@ -122,8 +130,8 @@ const ClassPage = React.createClass({
       this._currentLeaderId = this.props.workspace.get('data').get('result').get(key).get('userId');
       this._currentClassId = this.props.workspace.get('data').get('result').get(key).get('classId');
       this.props.getClassLeaderList(this._currentClassId).then((res)=>{
-        const index = _.findIndex(this.props.workspace.get('classLeaderList'),(v)=>v.userId===this._currentLeaderId);
-        this.setState({classLeaderModalVisibility: true,classLeaderIndex:[index]});
+        this._classLeaderList = this.props.workspace.get('classLeaderList');
+        this.setState({modalLeaderData: this._classLeaderList,classLeaderModalVisibility: true,classLeaderIndex:[this._currentLeaderId]});
       })
     }else {
       this.setState({classLeaderModalVisibility: visibility});
@@ -135,16 +143,15 @@ const ClassPage = React.createClass({
       this._currentClassId = this.props.workspace.get('data').get('result').get(key).get('classId');
       this.props.getClassSubject(this._currentClassId).then((res)=>{
         this.props.getClassSubjectTeacher(this._currentClassId).then((res)=>{
-          const subjectList = this.props.workspace.get('classSubject');
           const subjectTeacherList = this.props.workspace.get('classSubjectTeacher');
+          this._gradeTeacherList = this.props.workspace.get('gradeTeacherList');
+          const subjectList = this.props.workspace.get('classSubject');
           let subjectTeacherIndex = {};
-          let teacherUserId = 0;
           subjectTeacherList.forEach((item,index)=>{
-            teacherUserId = _.findIndex(this.props.workspace.get('gradeTeacherList'),(v)=>v.userId===item.userId);
-            subjectTeacherIndex[item.subjectId] = [teacherUserId];
+            subjectTeacherIndex[item.subjectId] = [item.userId];
           })
           const currentSubject = subjectList.length>0?subjectList[0].subject_id:"";
-          this.setState({currentSubject,subjectTeacherIndex,teacherModalVisibility: visibility});
+          this.setState({modalSubjectTeacherData: this._gradeTeacherList,currentSubject,subjectTeacherIndex,teacherModalVisibility: visibility});
         })
       })
     }else {
@@ -166,13 +173,13 @@ const ClassPage = React.createClass({
     if(!subjectTeacherChanged){
       this.setState({classLeaderModalVisibility: false});
     }else{
-      const gradeTeacherList = this.props.workspace.get('gradeTeacherList');
       let res = {};
       _.keys(subjectTeacherIndex).map((key)=>{
         if(subjectTeacherIndex[key]>=0){
-          res[key] = gradeTeacherList[subjectTeacherIndex[key]].userId;
+          res[key] = subjectTeacherIndex[key][0];
         }
       })
+      console.log("~~~",res);
       let formData = new FormData()
       formData.append('classId',this._currentClassId);
       formData.append('result',JSON.stringify(res));
@@ -194,7 +201,7 @@ const ClassPage = React.createClass({
     }else{
       let formData = new FormData()
       formData.append('classId',this._currentClassId);
-      formData.append('userId',this.props.workspace.get('classLeaderList')[classLeaderIndex[0]].userId);
+      formData.append('userId',classLeaderIndex[0]);
       const result = this.props.setClassLeader(formData);
       let visibility = true;
       result.then((res)=>{
@@ -415,13 +422,39 @@ const ClassPage = React.createClass({
   },
 
   renderLeaderModal(){
-    const {classLeaderModalVisibility,classLeaderIndex} = this.state
+    const {modalLeaderData,searchTeacherName,searchWorkNum,workNumDropdownVisible,teacherNameDropdownVisible,classLeaderModalVisibility,classLeaderIndex} = this.state
     const columns = [{
       title: '教师编号',
-      dataIndex: 'teacherNum',
+      dataIndex: 'workNum',
+      filterDropdown: (
+        <div className={styles.customFilterDropdown}>
+          <Search
+            className={styles.filterInput}
+            placeholder="请输入教师编号"
+            value={searchWorkNum}
+            onSearch={this.onSearchWorkNum}
+            onChange={this.onWorkNumInputChange}
+          />
+        </div>
+      ),
+      filterDropdownVisible: workNumDropdownVisible,
+      onFilterDropdownVisibleChange: visible => this.setState({workNumDropdownVisible: visible})
     },{
       title: '教师姓名',
       dataIndex: 'teacherName',
+      filterDropdown: (
+        <div className={styles.customFilterDropdown}>
+          <Search
+            className={styles.filterInput}
+            placeholder="请输入教师姓名"
+            value={searchTeacherName}
+            onSearch={this.onSearchTeacherName}
+            onChange={this.onTeacherNameInputChange}
+          />
+        </div>
+      ),
+      filterDropdownVisible: teacherNameDropdownVisible,
+      onFilterDropdownVisibleChange: visible => this.setState({teacherNameDropdownVisible: visible})
     }];
     const rowSelection = {
       type: "radio",
@@ -430,11 +463,11 @@ const ClassPage = React.createClass({
       },
       selectedRowKeys: classLeaderIndex,
     };
-    const data = this.props.workspace.get('classLeaderList').length>=0?this.props.workspace.get('classLeaderList').map((v,key) => {
+    const data = modalLeaderData.length>=0?modalLeaderData.map((v,key) => {
       return {
-        key: key,
+        key: v.userId,
         teacherName: v.teacherName,
-        teacherNum: v.teacherNum,
+        workNum: v.teacherNum,
       }
     }):[];
     return (
@@ -448,14 +481,152 @@ const ClassPage = React.createClass({
     )
   },
 
+  onSearchWorkNum(value){
+    const {searchWorkNum} = this.state;
+    const reg = new RegExp(searchWorkNum, 'gi');
+    this.setState({
+      workNumDropdownVisible: false,
+      modalLeaderData: this._classLeaderList.map((record) => {
+        const match = record.teacherNum.match(reg);
+        if (!match) {
+          return null;
+        }
+        return {
+          ...record,
+          teacherNum: (
+            <span>
+              {record.teacherNum.split(reg).map((text, i) => (
+                i > 0 ? [<span className={styles.highlight}>{match[0]}</span>, text] : text
+              ))}
+            </span>
+          ),
+        };
+      }).filter(record => !!record),
+    });
+  },
+
+  onSearchSubjectTeacherWorkNum(value){
+    const {searchSubjectTeacherWorkNum} = this.state;
+    const reg = new RegExp(searchSubjectTeacherWorkNum, 'gi');
+    this.setState({
+      workNumDropdownVisible: false,
+      modalSubjectTeacherData: this._gradeTeacherList.map((record) => {
+        const match = record.workNum.match(reg);
+        if (!match) {
+          return null;
+        }
+        return {
+          ...record,
+          workNum: (
+            <span>
+              {record.workNum.split(reg).map((text, i) => (
+                i > 0 ? [<span className={styles.highlight}>{match[0]}</span>, text] : text
+              ))}
+            </span>
+          ),
+        };
+      }).filter(record => !!record),
+    });
+  },
+
+  onWorkNumInputChange(e) {
+    this.setState({searchWorkNum: e.target.value});
+  },
+
+  onSubjectTeacherWorkNumInputChange(e) {
+    this.setState({searchSubjectTeacherWorkNum: e.target.value});
+  },
+
+  onSearchTeacherName(value){
+    const {searchTeacherName} = this.state;
+    const reg = new RegExp(searchTeacherName, 'gi');
+    this.setState({
+      teacherNameDropdownVisible: false,
+      modalLeaderData: this._classLeaderList.map((record) => {
+        const match = record.teacherName.match(reg);
+        if (!match) {
+          return null;
+        }
+        return {
+          ...record,
+          teacherName: (
+            <span>
+              {record.teacherName.split(reg).map((text, i) => (
+                i > 0 ? [<span className={styles.highlight}>{match[0]}</span>, text] : text
+              ))}
+            </span>
+          ),
+        };
+      }).filter(record => !!record),
+    });
+  },
+
+  onSearchSubjectTeacherName(value){
+    const {searchSubjectTeacherName} = this.state;
+    const reg = new RegExp(searchSubjectTeacherName, 'gi');
+    this.setState({
+      teacherNameDropdownVisible: false,
+      modalSubjectTeacherData: this._gradeTeacherList.map((record) => {
+        const match = record.teacherName.match(reg);
+        if (!match) {
+          return null;
+        }
+        return {
+          ...record,
+          teacherName: (
+            <span>
+              {record.teacherName.split(reg).map((text, i) => (
+                i > 0 ? [<span className={styles.highlight}>{match[0]}</span>, text] : text
+              ))}
+            </span>
+          ),
+        };
+      }).filter(record => !!record),
+    });
+  },
+
+  onTeacherNameInputChange(e) {
+    this.setState({searchTeacherName: e.target.value});
+  },
+
+  onSubjectTeacherNameInputChange(e) {
+    this.setState({searchSubjectTeacherName: e.target.value});
+  },
+
   renderTeacherModal(){
-    const {currentSubject,teacherModalVisibility,subjectTeacherIndex} = this.state
+    const {modalSubjectTeacherData,searchSubjectTeacherName,searchSubjectTeacherWorkNum,workNumDropdownVisible,teacherNameDropdownVisible,currentSubject,teacherModalVisibility,subjectTeacherIndex} = this.state
     const columns = [{
       title: '教师编号',
-      dataIndex: 'teacherNum',
+      dataIndex: 'workNum',
+      filterDropdown: (
+        <div className={styles.customFilterDropdown}>
+          <Search
+            className={styles.filterInput}
+            placeholder="请输入教师编号"
+            value={searchSubjectTeacherWorkNum}
+            onSearch={this.onSearchSubjectTeacherWorkNum}
+            onChange={this.onSubjectTeacherWorkNumInputChange}
+          />
+        </div>
+      ),
+      filterDropdownVisible: workNumDropdownVisible,
+      onFilterDropdownVisibleChange: visible => this.setState({workNumDropdownVisible: visible})
     },{
       title: '教师姓名',
       dataIndex: 'teacherName',
+      filterDropdown: (
+        <div className={styles.customFilterDropdown}>
+          <Search
+            className={styles.filterInput}
+            placeholder="请输入教师姓名"
+            value={searchSubjectTeacherName}
+            onSearch={this.onSearchSubjectTeacherName}
+            onChange={this.onSubjectTeacherNameInputChange}
+          />
+        </div>
+      ),
+      filterDropdownVisible: teacherNameDropdownVisible,
+      onFilterDropdownVisibleChange: visible => this.setState({teacherNameDropdownVisible: visible})
     }];
     const rowSelection = {
       type: "radio",
@@ -466,11 +637,11 @@ const ClassPage = React.createClass({
       },
       selectedRowKeys: subjectTeacherIndex[currentSubject],
     };
-    const data = this.props.workspace.get('gradeTeacherList').length>=0?this.props.workspace.get('gradeTeacherList').map((v,key) => {
+    const data = modalSubjectTeacherData.length>=0?modalSubjectTeacherData.map((v,key) => {
       return {
-        key: key,
+        key: v.userId,
         teacherName: v.teacherName,
-        teacherNum: v.workNum,
+        workNum: v.workNum,
       }
     }):[];
     return (

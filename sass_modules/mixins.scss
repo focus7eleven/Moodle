@@ -62,3 +62,18 @@
     border-color: $warning-color;
   }
 }
+
+@mixin customFilterDropdown{
+  padding: 8px;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, .2);
+}
+
+@mixin filterInput{
+  width: 150px;
+}
+
+@mixin highlight{
+  color: #f50;
+}
