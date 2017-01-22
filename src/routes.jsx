@@ -29,6 +29,7 @@ import GradeManagementPage from './containers/base_info/grade/GradeManagementPag
 import AreaPage from './containers/base_info/area/AreaPage'
 import SchoolPage from './containers/base_info/school/SchoolPage'
 import AreaDepartmentPage from './containers/base_info/department/AreaDepartmentPage'
+import CreateClassPage from './containers/class_container/CreateClassPage'
 
 const routes = (
 	<Router history={browserHistory}>
@@ -80,6 +81,8 @@ const routes = (
 					<Route path='gradeSet' component={GradeManagementPage}></Route>
 				</Route>
 				{/*<Route path='notice_mgr' component={NoticeManagerContainer} />*/}
+
+				<Route path='/*/newCourse' component={CreateClassPage}/>
 			</Route>
 		</Route>
 	</Router>
