@@ -76,6 +76,9 @@ const config = _.extend({
 			getGradeList: (phaseId) => `${baseURL}/grade/gradeList?phaseId=${phaseId}`,
 			getGradeTeacherList: `${baseURL}/teacher/all`,
 			setGradeLeader: `${baseURL}/grade/assignLeader`,
+			getBySubject:{
+				get:(subjectId) => `${baseURL}/grade/getBySubject?subjectId=${subjectId}`
+			},
 		},
 		dict:{
 			post:`${baseURL}/dict/add`,
@@ -176,6 +179,9 @@ const config = _.extend({
 			find:{
 				get:(name,areaId)=>`${baseURL}/officer/find?name=${name}&areaId=${areaId}`
 			}
+		},
+		courseCenter:{
+			getdistinctsubject: `${baseURL}/class/distinctsubject`,
 		}
 	}
 })
