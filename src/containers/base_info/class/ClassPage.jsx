@@ -4,7 +4,7 @@ import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 import {Radio,Row,Col,Upload,Select,DatePicker,Icon,Input,Table,Button,Modal,Form} from 'antd'
 import PermissionDic from '../../../utils/permissionDic'
-import {setClassTeacher,getGradeTeacherList,getClassSubject,getClassSubjectTeacher,getClassLeaderList,setClassLeader,getGradeList,getPhaseList,addClass,editClass,getWorkspaceData} from '../../../actions/workspace'
+import {setStudent,getStudent,findStudent,setClassTeacher,getGradeTeacherList,getClassSubject,getClassSubjectTeacher,getClassLeaderList,setClassLeader,getGradeList,getPhaseList,addClass,editClass,getWorkspaceData} from '../../../actions/workspace'
 import {fromJS,Map,List} from 'immutable'
 import {findMenuInTree} from '../../../reducer/menu'
 import moment from 'moment'
@@ -25,12 +25,14 @@ const ClassPage = React.createClass({
   getInitialState(){
     return {
       searchStr: "",
+      searchStu: "",
       modalType: "",
       modalVisibility: false,
       classLeaderModalVisibility: false,
       classLeaderIndex: [],
       rowsChanged: false,
       teacherModalVisibility: false,
+      studentModalVisibility: false,
       subjectTeacherIndex: {},
       subjectTeacherChanged: false,
       // filter string for leader
@@ -41,6 +43,9 @@ const ClassPage = React.createClass({
       searchSubjectTeacherName: "",
       searchSubjectTeacherWorkNum: "",
       modalSubjectTeacherData: [],
+      // list for add student
+      studentForClassList: [],
+      studentIndex: [],
     }
   },
 
@@ -78,7 +83,7 @@ const ClassPage = React.createClass({
       key: 'count',
       className:styles.tableColumn,
       render: (text, record) => {
-        return <span>{text}</span>
+        return <a onClick={this.handleStudentModalDisplay.bind(null,true,record.key)}><Icon type="edit" />{text}</a>
       }
     },{
       title: '班主任',
@@ -125,17 +130,37 @@ const ClassPage = React.createClass({
     }
   },
 
+  handleStudentModalDisplay(visibility,key){
+    if(visibility){
+      this._currentClassId = this.props.workspace.get('data').get('result').get(key).get('classId');
+      this.props.getStudent(this._currentClassId).then((res)=>{
+        const studentForClassList = this.props.workspace.get('studentForClassList')
+        this._studentIndex = studentForClassList.map((item)=>item.studentId)
+        this.setState({rowsChanged:false,searchStu:"",studentIndex:this._studentIndex,studentForClassList,studentModalVisibility: true});
+      })
+    }else {
+      this.setState({studentModalVisibility: visibility});
+    }
+  },
+
   handleLeaderModalDisplay(visibility,key){
     if(visibility){
       this._currentLeaderId = this.props.workspace.get('data').get('result').get(key).get('userId');
       this._currentClassId = this.props.workspace.get('data').get('result').get(key).get('classId');
       this.props.getClassLeaderList(this._currentClassId).then((res)=>{
         this._classLeaderList = this.props.workspace.get('classLeaderList');
-        this.setState({modalLeaderData: this._classLeaderList,classLeaderModalVisibility: true,classLeaderIndex:[this._currentLeaderId]});
+        this.setState({rowsChanged:false,modalLeaderData: this._classLeaderList,classLeaderModalVisibility: true,classLeaderIndex:[this._currentLeaderId]});
       })
     }else {
       this.setState({classLeaderModalVisibility: visibility});
     }
+  },
+
+  handleFindStudent(value){
+    this.props.findStudent(this.state.searchStu).then((res)=>{
+      const studentForClassList = this.props.workspace.get('studentForClassList');
+      this.setState({studentForClassList})
+    })
   },
 
   handleTeacherModalDisplay(visibility,key){
@@ -168,6 +193,29 @@ const ClassPage = React.createClass({
     return subjectTeacher?subjectTeacher.teacherName:"未设置";
   },
 
+  handleSetStudent(){
+    const {studentIndex,rowsChanged} = this.state;
+    if(!rowsChanged){
+      this.setState({studentModalVisibility: false})
+    }else{
+      const intersection = _.intersection(studentIndex,this._studentIndex);
+      const addList = _.xor(studentIndex,intersection)
+      const removeList = _.xor(this._studentIndex,intersection)
+      let formData = new FormData();
+      formData.append('classId',this._currentClassId)
+      formData.append('addList',addList.join(','))
+      formData.append('removeList',removeList.join(','))
+      const result = this.props.setStudent(formData)
+      let visibility = true;
+      result.then((res)=>{
+        if(res!=="error"){
+          visibility = false;
+        }
+      })
+      this.setState({studentModalVisibility: visibility})
+    }
+  },
+
   handleSetTeacher(){
     const {subjectTeacherChanged,subjectTeacherIndex} = this.state;
     if(!subjectTeacherChanged){
@@ -179,7 +227,6 @@ const ClassPage = React.createClass({
           res[key] = subjectTeacherIndex[key][0];
         }
       })
-      console.log("~~~",res);
       let formData = new FormData()
       formData.append('classId',this._currentClassId);
       formData.append('result',JSON.stringify(res));
@@ -236,6 +283,10 @@ const ClassPage = React.createClass({
 
   handleSearchStrChanged(e){
     this.setState({searchStr: e.target.value});
+  },
+
+  handleSearchStuChanged(e){
+    this.setState({searchStu: e.target.value});
   },
 
   handleSearchTableData(value){
@@ -308,6 +359,118 @@ const ClassPage = React.createClass({
   handlePhaseSelected(value){
     this.props.getGradeList(value);
     this.props.form.setFieldsValue({'gradeId':""});
+  },
+
+  onSearchWorkNum(value){
+    const {searchWorkNum} = this.state;
+    const reg = new RegExp(searchWorkNum, 'gi');
+    this.setState({
+      workNumDropdownVisible: false,
+      modalLeaderData: this._classLeaderList.map((record) => {
+        const match = record.teacherNum.match(reg);
+        if (!match) {
+          return null;
+        }
+        return {
+          ...record,
+          teacherNum: (
+            <span>
+              {record.teacherNum.split(reg).map((text, i) => (
+                i > 0 ? [<span className={styles.highlight}>{match[0]}</span>, text] : text
+              ))}
+            </span>
+          ),
+        };
+      }).filter(record => !!record),
+    });
+  },
+
+  onSearchSubjectTeacherWorkNum(value){
+    const {searchSubjectTeacherWorkNum} = this.state;
+    const reg = new RegExp(searchSubjectTeacherWorkNum, 'gi');
+    this.setState({
+      workNumDropdownVisible: false,
+      modalSubjectTeacherData: this._gradeTeacherList.map((record) => {
+        const match = record.workNum.match(reg);
+        if (!match) {
+          return null;
+        }
+        return {
+          ...record,
+          workNum: (
+            <span>
+              {record.workNum.split(reg).map((text, i) => (
+                i > 0 ? [<span className={styles.highlight}>{match[0]}</span>, text] : text
+              ))}
+            </span>
+          ),
+        };
+      }).filter(record => !!record),
+    });
+  },
+
+  onWorkNumInputChange(e) {
+    this.setState({searchWorkNum: e.target.value});
+  },
+
+  onSubjectTeacherWorkNumInputChange(e) {
+    this.setState({searchSubjectTeacherWorkNum: e.target.value});
+  },
+
+  onSearchTeacherName(value){
+    const {searchTeacherName} = this.state;
+    const reg = new RegExp(searchTeacherName, 'gi');
+    this.setState({
+      teacherNameDropdownVisible: false,
+      modalLeaderData: this._classLeaderList.map((record) => {
+        const match = record.teacherName.match(reg);
+        if (!match) {
+          return null;
+        }
+        return {
+          ...record,
+          teacherName: (
+            <span>
+              {record.teacherName.split(reg).map((text, i) => (
+                i > 0 ? [<span className={styles.highlight}>{match[0]}</span>, text] : text
+              ))}
+            </span>
+          ),
+        };
+      }).filter(record => !!record),
+    });
+  },
+
+  onSearchSubjectTeacherName(value){
+    const {searchSubjectTeacherName} = this.state;
+    const reg = new RegExp(searchSubjectTeacherName, 'gi');
+    this.setState({
+      teacherNameDropdownVisible: false,
+      modalSubjectTeacherData: this._gradeTeacherList.map((record) => {
+        const match = record.teacherName.match(reg);
+        if (!match) {
+          return null;
+        }
+        return {
+          ...record,
+          teacherName: (
+            <span>
+              {record.teacherName.split(reg).map((text, i) => (
+                i > 0 ? [<span className={styles.highlight}>{match[0]}</span>, text] : text
+              ))}
+            </span>
+          ),
+        };
+      }).filter(record => !!record),
+    });
+  },
+
+  onTeacherNameInputChange(e) {
+    this.setState({searchTeacherName: e.target.value});
+  },
+
+  onSubjectTeacherNameInputChange(e) {
+    this.setState({searchSubjectTeacherName: e.target.value});
   },
 
   renderModal(){
@@ -481,118 +644,6 @@ const ClassPage = React.createClass({
     )
   },
 
-  onSearchWorkNum(value){
-    const {searchWorkNum} = this.state;
-    const reg = new RegExp(searchWorkNum, 'gi');
-    this.setState({
-      workNumDropdownVisible: false,
-      modalLeaderData: this._classLeaderList.map((record) => {
-        const match = record.teacherNum.match(reg);
-        if (!match) {
-          return null;
-        }
-        return {
-          ...record,
-          teacherNum: (
-            <span>
-              {record.teacherNum.split(reg).map((text, i) => (
-                i > 0 ? [<span className={styles.highlight}>{match[0]}</span>, text] : text
-              ))}
-            </span>
-          ),
-        };
-      }).filter(record => !!record),
-    });
-  },
-
-  onSearchSubjectTeacherWorkNum(value){
-    const {searchSubjectTeacherWorkNum} = this.state;
-    const reg = new RegExp(searchSubjectTeacherWorkNum, 'gi');
-    this.setState({
-      workNumDropdownVisible: false,
-      modalSubjectTeacherData: this._gradeTeacherList.map((record) => {
-        const match = record.workNum.match(reg);
-        if (!match) {
-          return null;
-        }
-        return {
-          ...record,
-          workNum: (
-            <span>
-              {record.workNum.split(reg).map((text, i) => (
-                i > 0 ? [<span className={styles.highlight}>{match[0]}</span>, text] : text
-              ))}
-            </span>
-          ),
-        };
-      }).filter(record => !!record),
-    });
-  },
-
-  onWorkNumInputChange(e) {
-    this.setState({searchWorkNum: e.target.value});
-  },
-
-  onSubjectTeacherWorkNumInputChange(e) {
-    this.setState({searchSubjectTeacherWorkNum: e.target.value});
-  },
-
-  onSearchTeacherName(value){
-    const {searchTeacherName} = this.state;
-    const reg = new RegExp(searchTeacherName, 'gi');
-    this.setState({
-      teacherNameDropdownVisible: false,
-      modalLeaderData: this._classLeaderList.map((record) => {
-        const match = record.teacherName.match(reg);
-        if (!match) {
-          return null;
-        }
-        return {
-          ...record,
-          teacherName: (
-            <span>
-              {record.teacherName.split(reg).map((text, i) => (
-                i > 0 ? [<span className={styles.highlight}>{match[0]}</span>, text] : text
-              ))}
-            </span>
-          ),
-        };
-      }).filter(record => !!record),
-    });
-  },
-
-  onSearchSubjectTeacherName(value){
-    const {searchSubjectTeacherName} = this.state;
-    const reg = new RegExp(searchSubjectTeacherName, 'gi');
-    this.setState({
-      teacherNameDropdownVisible: false,
-      modalSubjectTeacherData: this._gradeTeacherList.map((record) => {
-        const match = record.teacherName.match(reg);
-        if (!match) {
-          return null;
-        }
-        return {
-          ...record,
-          teacherName: (
-            <span>
-              {record.teacherName.split(reg).map((text, i) => (
-                i > 0 ? [<span className={styles.highlight}>{match[0]}</span>, text] : text
-              ))}
-            </span>
-          ),
-        };
-      }).filter(record => !!record),
-    });
-  },
-
-  onTeacherNameInputChange(e) {
-    this.setState({searchTeacherName: e.target.value});
-  },
-
-  onSubjectTeacherNameInputChange(e) {
-    this.setState({searchSubjectTeacherName: e.target.value});
-  },
-
   renderTeacherModal(){
     const {modalSubjectTeacherData,searchSubjectTeacherName,searchSubjectTeacherWorkNum,workNumDropdownVisible,teacherNameDropdownVisible,currentSubject,teacherModalVisibility,subjectTeacherIndex} = this.state
     const columns = [{
@@ -666,6 +717,40 @@ const ClassPage = React.createClass({
     )
   },
 
+  renderStudentModal(){
+    const {studentIndex,studentForClassList,studentModalVisibility} = this.state
+    const columns = [{
+      title: '学号',
+      dataIndex: 'stuNum',
+    },{
+      title: '学生姓名',
+      dataIndex: 'stuName',
+    }];
+    const rowSelection = {
+      onChange: (selectedRowKeys, selectedRows) => {
+        this.setState({studentIndex: selectedRowKeys,rowsChanged: true});
+      },
+      selectedRowKeys: studentIndex,
+    };
+    const data = studentForClassList.length>=0?studentForClassList.map((v,key) => {
+      return {
+        key: v.studentId,
+        stuName: v.stuName,
+        stuNum: v.stuNum,
+      }
+    }):[];
+    return (
+      <Modal title="设置班级学生" visible={studentModalVisibility}
+        onOk={this.handleSetStudent} onCancel={this.handleStudentModalDisplay.bind(null,false,"")}
+      >
+        <div>
+          <Search style={{width:'260px',marginBottom:'5px'}} placeholder="请输入学生姓名或编号" value={this.state.searchStu} onChange={this.handleSearchStuChanged} onSearch={this.handleFindStudent} />
+          <Table pagination={false} rowSelection={rowSelection} columns={columns} dataSource={data} />
+        </div>
+      </Modal>
+    )
+  },
+
   render(){
     const tableData = this.getTableData()
     const {workspace} = this.props
@@ -711,6 +796,7 @@ const ClassPage = React.createClass({
         {this.renderModal()}
         {this.renderLeaderModal()}
         {this.renderTeacherModal()}
+        {this.renderStudentModal()}
       </div>
     )
   }
@@ -735,6 +821,9 @@ function mapDispatchToProps(dispatch){
     getClassSubject: bindActionCreators(getClassSubject,dispatch),
     getClassSubjectTeacher: bindActionCreators(getClassSubjectTeacher,dispatch),
     setClassTeacher: bindActionCreators(setClassTeacher,dispatch),
+    findStudent: bindActionCreators(findStudent,dispatch),
+    getStudent: bindActionCreators(getStudent,dispatch),
+    setStudent: bindActionCreators(setStudent,dispatch),
   }
 }
 

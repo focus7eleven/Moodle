@@ -8,6 +8,7 @@ import {downloadExcel,importExcel,editStaff,addStaff,getWorkspaceData} from '../
 import {fromJS,Map,List} from 'immutable'
 import {findMenuInTree} from '../../../reducer/menu'
 import moment from 'moment'
+import config from '../../../config.js'
 
 const FormItem = Form.Item
 const Search = Input.Search
@@ -28,6 +29,14 @@ const TeacherPage = React.createClass({
       importModalVisibility: false,
       imageUrl: "",
       excelFile: null,
+      // 设置角色
+      roleModalVisibility: false,
+      userRoleList: [],
+      roles:[],
+      roleChanged: false,
+      // 查看教师班级
+      classModalVisibility: false,
+      teacherClassList: [],
     }
   },
 
@@ -56,6 +65,9 @@ const TeacherPage = React.createClass({
       dataIndex: 'role',
       key: 'role',
       className:styles.tableColumn,
+      render: (text, record) => {
+        return <a onClick={this.handleRoleModalDispaly.bind(null,true,record.key)}>设置</a>
+      }
     },{
       title: '教授学科',
       dataIndex: 'subjectName',
@@ -90,7 +102,7 @@ const TeacherPage = React.createClass({
       key: 'classCount',
       className:styles.tableColumn,
       render: (text,record) => {
-        return <span>班级个数： {text}</span>
+        return <a onClick={this.handleClassModalDisplay.bind(null,true,record.key)}><Icon type="edit" /> 班级个数：{text}</a>
       }
     }])
     tableHeader = tableHeader.concat(authList.filter(v => (v.get('authUrl').split('/')[2] != 'import')&&(v.get('authUrl').split('/')[2] != 'view')&&(v.get('authUrl').split('/')[2] != 'add')).map( v => {
@@ -118,6 +130,43 @@ const TeacherPage = React.createClass({
     return {
       tableHeader:tableHeader.toJS(),
       tableBody:tableBody.toJS(),
+    }
+  },
+
+  handleRoleModalDispaly(visibility,key){
+    if(visibility){
+      this._teacherUserId = this.props.workspace.get('data').get('result').get(key).get('userId');
+      fetch(config.api.staff.getTeacherRole(this._teacherUserId),{
+        method:'GET',
+        headers:{
+          'from':'nodejs',
+          'token':sessionStorage.getItem('accessToken'),
+        }
+      }).then(res => res.json()).then((json)=>{
+        this.setState({roleModalVisibility: true, roles: json.roles, userRoleList: json.userRoleList})
+      })
+    }else {
+      this.setState({roleModalVisibility: visibility});
+    }
+  },
+
+  handleSetRole(){
+  },
+
+  handleClassModalDisplay(visibility,key){
+    if(visibility){
+      this._teacherUserId = this.props.workspace.get('data').get('result').get(key).get('userId');
+      fetch(config.api.staff.getTeacherClass(this._teacherUserId),{
+        method:'GET',
+        headers:{
+          'from':'nodejs',
+          'token':sessionStorage.getItem('accessToken'),
+        }
+      }).then(res => res.json()).then((json)=>{
+        this.setState({classModalVisibility: visibility,teacherClassList: json})
+      })
+    }else {
+      this.setState({classModalVisibility: visibility});
     }
   },
 
@@ -268,6 +317,74 @@ const TeacherPage = React.createClass({
           <p>2. 按模板要求完善导入人员的信息</p>
           <p>3. 选择该文件进行导入</p>
           <input type="file" onChange={this.handleImportFileChange} />
+        </div>
+      </Modal>
+    )
+  },
+
+  renderRoleModal(){
+    const {roles,userRoleList,roleModalVisibility} = this.state
+    const columns = [{
+      title: '角色',
+      dataIndex: 'roleName',
+    },{
+      title: '角色描述',
+      dataIndex: 'roleDesc',
+    }];
+    const rowSelection = {
+      onChange: (selectedRowKeys, selectedRows) => {
+        this.setState({userRoleList: selectedRowKeys,roleChanged: true});
+      },
+      selectedRowKeys: userRoleList,
+    };
+    const data = roles.length>=0?roles.map((v,key) => {
+      return {
+        key: v.roleId,
+        roleName: v.roleName,
+        roleDesc: v.roleDesc,
+      }
+    }):[];
+    return (
+      <Modal title="设置教师角色" visible={roleModalVisibility}
+        onOk={this.handleSetRole} onCancel={this.handleRoleModalDispaly.bind(null,false,"")}
+      >
+        <div>
+          <Table pagination={false} rowSelection={rowSelection} columns={columns} dataSource={data} />
+        </div>
+      </Modal>
+    )
+  },
+
+  renderClassModal(){
+    const {teacherClassList,classModalVisibility} = this.state
+    const columns = [{
+      title: '班级名称',
+      dataIndex: 'className',
+    },{
+      title: '班级人数',
+      dataIndex: 'studentCount',
+    },{
+      title: '任课科目',
+      dataIndex: 'subjectName',
+    },{
+      title: '班主任',
+      dataIndex: 'mentorName',
+    }];
+    const data = teacherClassList.length>=0?teacherClassList.map((v,key) => {
+      return {
+        key: key,
+        className: v.className,
+        studentCount: v.studentCount,
+        subjectName: v.subjectName,
+        mentorName: v.mentorName,
+      }
+    }):[];
+    return (
+      <Modal title="查看教师所在班级" visible={classModalVisibility}
+        onOk={this.handleClassModalDisplay.bind(null,false,"")} onCancel={this.handleClassModalDisplay.bind(null,false,"")}
+      >
+        <div>
+          <Table pagination={false} columns={columns} dataSource={data} />
         </div>
       </Modal>
     )
@@ -599,6 +716,8 @@ const TeacherPage = React.createClass({
         </div>
         {this.renderModal()}
         {this.renderImportModal()}
+        {this.renderRoleModal()}
+        {this.renderClassModal()}
       </div>
     )
   }

@@ -134,6 +134,26 @@ export function setClassTeacher(data){
   }
 }
 
+export function setStudent(data){
+  return dispatch => {
+    return fetch(config.api.class.setStudent,{
+      method:'post',
+      headers:{
+        'from':'nodejs',
+        'token':sessionStorage.getItem('accessToken'),
+      },
+      body: data
+    }).then(res => res.json()).then(res => {
+      if(res.title == 'Success'){
+        dispatch(getWorkspaceData('classes','','','')).then(res => {notification.success({message:'设置成功'});return res})
+      }else{
+        notification.error({message:'设置失败',description: res.result});
+        return "error";
+      }
+    })
+  }
+}
+
 export const GET_CLASS_SUBJECT = actionNames('GET_CLASS_SUBJECT')
 
 export function getClassSubject(classId){
@@ -158,6 +178,39 @@ export function getClassSubjectTeacher(classId){
     types: GET_CLASS_SUBJECT_TEACHER,
     callAPI:()=>{
       return fetch(config.api.class.getClassSubjectTeacher(classId),{
+        method:'GET',
+        headers:{
+          'from':'nodejs',
+          'token':sessionStorage.getItem('accessToken'),
+        },
+      }).then(res => res.json())
+    }
+  }
+}
+
+export const GET_STUDENT_FOR_CLASS = actionNames('GET_STUDENT_FOR_CLASS')
+export const FIND_STUDENT = actionNames('FIND_STUDENT')
+
+export function getStudent(classId){
+  return {
+    types: GET_STUDENT_FOR_CLASS,
+    callAPI:()=>{
+      return fetch(config.api.class.getStudent(classId),{
+        method:'GET',
+        headers:{
+          'from':'nodejs',
+          'token':sessionStorage.getItem('accessToken'),
+        },
+      }).then(res => res.json())
+    }
+  }
+}
+
+export function findStudent(filter){
+  return {
+    types: FIND_STUDENT,
+    callAPI:()=>{
+      return fetch(config.api.class.findStudent(filter),{
         method:'GET',
         headers:{
           'from':'nodejs',
