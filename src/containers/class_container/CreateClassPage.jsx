@@ -60,7 +60,7 @@ const CreateClassPage = React.createClass({
                 {getFieldDecorator('subject', {
                 rules: [{ required: true, message: '选择学科' }],
                 })(
-                  <Select placeholder='选择学科' size="large" style={{ width: 200 }}>
+                  <Select placeholder='选择学科' size="large" >
                   {
                     this.state.subjectList.map(v => (
                       <Option key={v.get('subject_id')} value={v.get('subject_id')} title={v.get('subject_name')}>{v.get('subject_name')}</Option>
@@ -76,7 +76,7 @@ const CreateClassPage = React.createClass({
                 {getFieldDecorator('version', {
                 rules: [{ required: true, message: '选择版本' }],
                 })(
-                  <Select placeholder='选择版本' size="large" style={{ width: 200 }}>
+                  <Select placeholder='选择版本' size="large" >
                   {
                     this.state.versionList.map(v => (
                       <Option key={v.get('id')} value={v.get('id')} title={v.get('text')}>{v.get('text')}</Option>
@@ -92,7 +92,7 @@ const CreateClassPage = React.createClass({
                 {getFieldDecorator('grade', {
                 rules: [{ required: true, message: '选择年级' }],
                 })(
-                  <Select placeholder='选择年级' size="large" style={{ width: 200 }}>
+                  <Select placeholder='选择年级' size="large" >
                   {
                     this.state.gradeList.map(v => (
                       <Option key={v.get('gradeId')} value={v.get('gradeId')} title={v.get('gradeName')}>{v.get('gradeName')}</Option>
@@ -108,7 +108,7 @@ const CreateClassPage = React.createClass({
                 {getFieldDecorator('term', {
                 rules: [{ required: true, message: '选择学期' }],
                 })(
-                  <Select placeholder='学则学期' size="large" style={{ width: 200 }}>
+                  <Select placeholder='学则学期' size="large" >
                   {
                     this.state.termList.map(v => (
                       <Option key={v.get('id')} value={v.get('id')} title={v.get('text')}>{v.get('text')}</Option>
@@ -126,7 +126,7 @@ const CreateClassPage = React.createClass({
                 {getFieldDecorator('charpter', {
                 rules: [{ required: true, message: '选择章节课程' }],
                 })(
-                  <Select placeholder='选择章节课程' size="large" style={{ width: 200 }}>
+                  <Select placeholder='选择章节课程' size="large" >
                   {
                     this.state.charpterList.map(v => (
                       <Option key={v.get('id')} value={v.get('id')} title={v.get('text')}>{v.get('text')}</Option>
@@ -142,7 +142,7 @@ const CreateClassPage = React.createClass({
                 {getFieldDecorator('time', {
                 rules: [{ required: true, message: '选择上课时间' }],
                 })(
-                  <DatePicker style={{width:'200px'}} showTime format="YYYY-MM-DD HH:mm:ss" />
+                  <DatePicker style={{width:'100%'}} showTime format="YYYY-MM-DD HH:mm:ss" />
                 )}
                 </FormItem>
               </Col>
@@ -152,7 +152,7 @@ const CreateClassPage = React.createClass({
                 {getFieldDecorator('name', {
                 rules: [{ required: true, message: '请输入课程名称' },{max:30,message:'输入小于30个字'}],
                 })(
-                <Input style={{width:'455px'}} placeholder="输入小于30个字" />
+                <Input placeholder="输入小于30个字" />
                 )}
                 </FormItem>
               </Col>
@@ -164,7 +164,7 @@ const CreateClassPage = React.createClass({
                 {getFieldDecorator('remark', {
                 rules: [{ required: true, message: '请输入课程说明' }],
                 })(
-                <Input placeholder="请输入课程说明" style={{width:'960px'}}/>
+                <Input placeholder="请输入课程说明"/>
                 )}
                 </FormItem>
               </Col>
