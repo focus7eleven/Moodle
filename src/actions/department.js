@@ -66,7 +66,7 @@ export function editDepartment(data,type){
                 'from':'nodejs',
                 'token':sessionStorage.getItem('accessToken'),
               }
-            }).then(res => res.json()).then(res => {notification.success({message:'编辑成功'});return res})
+            }).then(res => res.json()).then(res => {notification.success(data.action=='delete'?{message:'删除成功'}:{message:'编辑成功'});return res})
           }
         })
       }
