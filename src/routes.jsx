@@ -43,9 +43,10 @@ const routes = (
 			</Route>
 			<Route path='login' component={LoginContainer}></Route>
 			<Route path='index' component={LoginControlHOC(MainContainer)}>
-				<IndexRedirect to='base-info/phase' component={PhasePage} />
-				<Route path='base-info' component={BaseInfoContainer}>
-					<IndexRedirect to='phase'/>
+				{/* <IndexRedirect to='base-info/phase' component={PhasePage} /> */}
+				{/* <Route path='base-info' component={BaseInfoContainer}> */}
+				<Route path=':second' component={BaseInfoContainer}>
+					{/* <IndexRedirect to='phase'/> */}
 
 					{/* 基础数据 */}
 					<Route path='phase' component={PhasePage}></Route>
