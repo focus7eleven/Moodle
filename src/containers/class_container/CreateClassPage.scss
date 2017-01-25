@@ -22,3 +22,6 @@
     justify-content: flex-end;
   }
 }
+:local(.deleteButton){
+  @include deleteButton;
+}

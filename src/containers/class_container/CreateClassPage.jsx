@@ -26,6 +26,8 @@ const CreateClassPage = React.createClass({
       gradeOption:'',
       termOption:'',
       charpterOption:'',
+
+      videoHomeworkList:List(),
     }
   },
   getFilter(){
@@ -174,6 +176,38 @@ const CreateClassPage = React.createClass({
 
     }
   },
+  handleAddVideoHome(selectedMircroVideos){
+    this.setState({
+      videoHomeworkList:selectedMircroVideos,
+      showMicroClassModal:false
+    })
+  },
+  renderVideoHomeworkList(){
+    console.log("-->:",this.state.videoHomeworkList.toJS())
+    const tableColumn =[{
+      title:'类型',
+      dataIndex:'type',
+      key:'type',
+      render:(text,record)=>{
+        return text=='video'?'微课':'作业'
+      }
+    },{
+      title:'名称',
+      dataIndex:'name',
+      key:'name',
+    },{
+      title:'创建时间',
+      dataIndex:'createdAt',
+      key:'createdAt',
+    },{
+      title:'操作',
+      key:'action',
+      render:(text,record)=>{
+        return (<Button className={styles.deleteButton}>删除</Button>)
+      }
+    }]
+    return this.state.videoHomeworkList.isEmpty()?null:<Table columns={tableColumn} dataSource={this.state.videoHomeworkList.toJS()}/>
+  },
   render(){
     const {getFieldDecorator} = this.props.form
     return (
@@ -269,12 +303,15 @@ const CreateClassPage = React.createClass({
               </Col>
             </Row>
           </Form>
+          <div>
+          {this.renderVideoHomeworkList()}
+          </div>
         </div>
         <div className={styles.footer}>
           <Button type='primary' style={{marginRight:'10px'}}>保存为学校课程</Button><Button type='primary'>保存为个人课程</Button>
         </div>
         {this.state.showHomeworkModal?<AddHomeworkModal onCancel={()=>{this.setState({showHomeworkModal:false})}} />:null}
-        {this.state.showMicroClassModal?<AddMicroClassModal onCancel={()=>{this.setState({showMicroClassModal:false})}} subjectList={this.state.subjectList} versionList={this.state.versionList} termList={this.state.termList}/>:null}
+        {this.state.showMicroClassModal?<AddMicroClassModal onSubmit={(selectedMircroVideos)=>{this.handleAddVideoHome(selectedMircroVideos)}} onCancel={()=>{this.setState({showMicroClassModal:false})}} subjectList={this.state.subjectList} versionList={this.state.versionList} termList={this.state.termList}/>:null}
       </div>
     )
   }

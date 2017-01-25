@@ -1,0 +1,16 @@
+:local(.modal){
+  :global(.ant-modal-content){
+    :global(.ant-modal-header){
+      display:none;
+    }
+    :global(.ant-modal-body){
+      padding: 0;
+      :global(video){
+        width:520px;
+      }
+    }
+    :global(.ant-modal-footer){
+      display: none;
+    }
+  }
+}

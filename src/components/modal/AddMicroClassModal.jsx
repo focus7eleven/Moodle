@@ -3,6 +3,7 @@ import {Modal,Row,Col,Select,Input,Form,Table,Icon} from 'antd'
 import config from '../../config'
 import {List,fromJS} from 'immutable'
 import styles from './AddMicroClassModal.scss'
+import VideoModal from './VideoModal'
 const Option = Select.Option
 const FormItem = Form.Item
 const Search = Input.Search
@@ -136,10 +137,10 @@ const AddMicroClassModal = React.createClass({
       })
     })
   },
-  handlePlay(){
-    console.log("ddd")
+  handlePlay(key){
     this.setState({
-      showPlayModal:true
+      showPlayModal:true,
+      videoUrl:this.state.microVideo.get('result').find(v => v.get('id')==key).get('url')
     })
   },
   getTableData(){
@@ -177,11 +178,11 @@ const AddMicroClassModal = React.createClass({
       dataIndex:'player',
       key:'player',
       render:(text,record)=>{
-        return (<a><Icon type="play-circle" onClick={this.handlePlay}/></a>)
+        return (<a><Icon type="play-circle" onClick={this.handlePlay.bind(this,record.key)}/></a>)
       }
     }]
     return (
-      <Modal title="添加微课" visible={true} onCancel={this.props.onCancel} width={850}>
+      <Modal title="添加微课" visible={true} onOk={()=>{this.props.onSubmit(this.state.selectedMircroVideos)}} onCancel={this.props.onCancel} width={850}>
         <div>
           <div className={styles.filters}>
             <Form>
@@ -267,10 +268,22 @@ const AddMicroClassModal = React.createClass({
             </Form>
           </div>
           <div className={styles.table}>
-          <Table columns={tableColumn} dataSource ={tableData}/>
+          <Table rowSelection={
+            {
+              onChange:(selectedRowKeys,selectedRows)=>{
+                const that = this
+                let selectedMircroVideos = selectedRowKeys.reduce((pre,cur)=>{
+                  return pre.push(that.state.microVideo.get('result').find(v => v.get('id')==cur).set('type','video'))
+                },List())
+                this.setState({
+                  selectedMircroVideos:selectedMircroVideos
+                })
+              }
+            }
+          } columns={tableColumn} dataSource ={tableData}/>
           </div>
         </div>
-        {this.state.showPlayModal?<Modal title='dd' visible={true}></Modal>:null}
+        {this.state.showPlayModal?<VideoModal videoUrl={this.state.videoUrl} onCancel={()=>{this.setState({showPlayModal:false})}}/>:null}
       </Modal>
     )
   }
