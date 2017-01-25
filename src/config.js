@@ -99,7 +99,8 @@ const config = _.extend({
 			menulist:{
 				get:(textbookId)=>`${baseURL}/textbook/menulist.json?textbook_id=${textbookId}`,
 				delete:`${baseURL}/textbook/menudel`,
-			}
+			},
+			getTextBookByCondition:(subjectId,gradeId,version,term)=>`${baseURL}/textbook/getTextBookByCondition?subjectId=${subjectId}&gradeId=${gradeId}&version=${version}&term=${term}`
 		},
 		resource: {
 			getAllResources: `${baseURL}/resource/list`,
@@ -182,6 +183,17 @@ const config = _.extend({
 		},
 		courseCenter:{
 			getdistinctsubject: `${baseURL}/class/distinctsubject`,
+		},
+		teachingPlan:{
+			course:{
+				schedules:(subjectId,gradeId,term,version)=>`${baseURL}/teachingPlan/course/schedules?subjectId=${subjectId}&gradeId=${gradeId}&term=${term}&version=${version}`
+			}
+		},
+		lesson:{
+			lastChapterTime:(scheduleId,hourNo)=>`${baseURL}/lesson/lastChapterTime?teaching_schedule_id=${scheduleId}&hour_no=${hourNo}`
+		},
+		microvideo:{
+			get:(type,currentPage,pageShow,subjectId,gradeId,textbookId,search)=>`${baseURL}/microvideo/${type}?currentPage=${currentPage}&pageShow=${pageShow}&subjectId=${subjectId}&gradeId=${gradeId}&textbookMenuId=${textbookId}&search=${search}`
 		}
 	}
 })

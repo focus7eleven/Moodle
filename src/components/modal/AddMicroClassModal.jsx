@@ -1,5 +1,5 @@
 import React from 'react'
-import {Modal,Row,Col,Select,Input,Form,Table} from 'antd'
+import {Modal,Row,Col,Select,Input,Form,Table,Icon} from 'antd'
 import config from '../../config'
 import {List,fromJS} from 'immutable'
 import styles from './AddMicroClassModal.scss'
@@ -7,55 +7,178 @@ const Option = Select.Option
 const FormItem = Form.Item
 const Search = Input.Search
 
+const getMicrovideo = (type,currentPage,pageShow,subjectId,gradeId,textbookId,search)=>{
+  return fetch(config.api.microvideo.get(type,currentPage,pageShow,subjectId,gradeId,textbookId,search),{
+    method:'get',
+    headers:{
+      'from':'nodejs',
+      'token':sessionStorage.getItem('accessToken')
+    }
+  }).then(res => res.json())
+}
+
+const getGradeList = (subjectList) => {
+  return fetch(config.api.grade.getBySubject.get(subjectList),{
+    method:'get',
+    headers:{
+      'from':'nodejs',
+      'token':sessionStorage.getItem('accessToken')
+    }
+  }).then(res => res.json())
+}
+
+const getTextbookList = (subjectId,term,gradeId,version,unit) =>{
+  return fetch(config.api.textbook.getTextBookByCondition(subjectId,term,gradeId,version,unit),{
+    method:'get',
+    headers:{
+      'from':'nodejs',
+      'token':sessionStorage.getItem('accessToken')
+    }
+  }).then(res => res.json())
+}
 const AddMicroClassModal = React.createClass({
   getDefaultProps(){
     return {
       subjectList:List(),
+      versionList:List(),
+      termList:List(),
       onSubmit:()=>{},
       onCancel:()=>{},
     }
   },
   getInitialState(){
     return {
+      subjectOption:'',
+      typeOption:'',
+      versionOption:'',
+      gradeOption:'',
+      termOption:'',
+      charpterOption:'',
 
-      subjectList:List(),
-      versionList:List(),
+      gradeList:List(),
+      charpterList:List(),
+
+      microVideo:List(),
     }
   },
-  componentDidMount(){
-    Promise.all([
-
-    ]).then(result => {
-
-    }).catch(error => {
+  handleChangeMicroClassType(value){
+    this.setState({
+      microClassTypeOption:value,
 
     })
+    getMicrovideo(value,'1','10','','','','').then(res => {
+      this.setState({
+        microVideo:fromJS(res)
+      })
+    })
+  },
+  handleChangeSubject(value){
+    this.setState({
+      subjectOption:value
+    })
+    Promise.all([
+      getMicrovideo(this.state.microClassTypeOption,'1','10',value,'','',''),
+      getGradeList(value),
+      getTextbookList(value,this.state.termOption||'',this.state.gradeOption||'',this.state.versionOption||'',''),
+    ]).then(result => {
+      this.setState({
+        microVideo:fromJS(result[0]),
+        gradeList:fromJS(result[1]),
+        charpterList:fromJS(result[2]),
+      })
+    })
+  },
+  handleChangeVersion(value){
+    this.setState({
+      versionOption:value
+    })
+    Promise.all([
+      getTextbookList(value,this.state.termOption||'',this.state.gradeOption||'',this.state.versionOption||'',''),
+      getMicrovideo(this.state.microClassTypeOption,'1','10',this.state.subjectOption,'','',''),
+    ]).then(result => {
+      this.setState({
+        charpterList:fromJS(result[0]),
+        microVideo:fromJS(result[1]),
+      })
+    })
+  },
+  handleChangeGrade(value){
+    this.setState({
+      gradeOption:value
+    })
+    getMicrovideo(this.state.microClassTypeOption,'1','10',this.state.subjectOption,this.state.gradeOption,'','').then(res => {
+      this.setState({
+        microVideo:fromJS(res)
+      })
+    })
+  },
+  handleChangeTerm(value){
+    this.setState({
+      termOption:value
+    })
+    Promise.all([
+      getTextbookList(this.state.subjectOption,value,this.state.gradeOption,this.state.versionOption,''),
+      getMicrovideo(this.state.microClassTypeOption,'1','10',this.state.subjectOption,this.state.gradeOption,this.state.charpterOption,'')
+    ]).then(result => {
+      this.setState({
+        charpterList:fromJS(result[0]),
+        microVideo:fromJS(result[1])
+      })
+    })
+  },
+  handleChangeCharpter(value){
+    this.setState({
+      charpterOption:value,
+    })
+    getMicrovideo(this.state.microClassTypeOption,'1','10',this.state.subjectOption,this.state.gradeOption,this.state.charpterOption,'').then(res => {
+      this.setState({
+        microVideo:fromJS(res)
+      })
+    })
+  },
+  handlePlay(){
+    console.log("ddd")
+    this.setState({
+      showPlayModal:true
+    })
+  },
+  getTableData(){
+    return this.state.microVideo.isEmpty()?[]:this.state.microVideo.get('result').map(v => ({
+      name:v.get('name'),
+      uploaderName:v.get('uploaderName'),
+      createdAt:v.get('createdAt'),
+      description:v.get('description'),
+      key:v.get('id')
+    })).toJS()
   },
   render(){
-    const microClassTypeList =fromJS([{id:'1',text:'公共微课'},{id:'2',text:'学校微课'},{id:'3',text:'个人微课'}])
-    const termList = fromJS([{id:'1',text:'上学期'},{id:'2',text:'下学期'}])
+    const microClassTypeList =fromJS([{id:'areaList',text:'公共微课'},{id:'schoolList',text:'学校微课'},{id:'privateList',text:'个人微课'}])
+    const termList = fromJS([{id:'上学期',text:'上学期'},{id:'下学期',text:'下学期'}])
     const {getFieldDecorator} = this.props.form
-    const tableData = this.state.microClassData
+    const tableData = this.getTableData()
     const tableColumn = [{
       title:'微课名称',
       dataIndex:'name',
       key:'name',
     },{
       title:'创建人',
-      dataIndex:'creator',
-      key:'creator',
+      dataIndex:'uploaderName',
+      key:'uploaderName',
     },{
       title:'创建时间',
-      dataIndex:'time',
-      key:'time',
+      dataIndex:'createdAt',
+      key:'createdAt',
     },{
       title:'简介',
-      dataIndex:'desc',
-      key:'desc',
+      dataIndex:'description',
+      key:'description',
     },{
       title:'播放',
       dataIndex:'player',
-      key:'player'
+      key:'player',
+      render:(text,record)=>{
+        return (<a><Icon type="play-circle" onClick={this.handlePlay}/></a>)
+      }
     }]
     return (
       <Modal title="添加微课" visible={true} onCancel={this.props.onCancel} width={850}>
@@ -64,102 +187,81 @@ const AddMicroClassModal = React.createClass({
             <Form>
               <Row gutter={8}>
                 <Col span={6}>
-                  <FormItem>
-                  {getFieldDecorator('microClassType', {
-                  rules: [{ required: true, message: '选择微课类型' }],
-                  })(
-                    <Select placeholder='选择微课类型' size="large" style={{ width: 200 }}>
+                  <div className={styles.filterItem}>
+                    <Select placeholder='选择微课类型' size="large"  value={this.state.microClassTypeOption} onChange={this.handleChangeMicroClassType}>
                     {
                       microClassTypeList.map(v => (
                         <Option key={v.get('id')} value={v.get('id')} title={v.get('text')}>{v.get('text')}</Option>
                       ))
                     }
                     </Select>
-                  )}
-                  </FormItem>
+                  </div>
                 </Col>
                 <Col span={6}>
-                  <FormItem>
-                  {getFieldDecorator('subject', {
-                  rules: [{ required: true, message: '选择学科' }],
-                  })(
-                    <Select placeholder='选择学科' size="large" style={{ width: 200 }}>
+                  <div className={styles.filterItem}>
+                    <Select placeholder='选择学科' size="large" value={this.state.subjectOption||undefined} onChange={this.handleChangeSubject}>
                     {
-                      this.state.subjectList.map(v => (
+                      this.props.subjectList.map(v => (
+                        <Option key={v.get('subject_id')} value={v.get('subject_id')} title={v.get('subject_name')}>{v.get('subject_name')}</Option>
+                      ))
+                    }
+                    </Select>
+                  </div>
+
+                </Col>
+                <Col span={6}>
+                  <div className={styles.filterItem}>
+                    <Select placeholder='选择版本' size="large" value={this.state.versionOption||undefined} onChange={this.handleChangeVersion}>
+                    {
+                      this.props.versionList.map(v => (
                         <Option key={v.get('id')} value={v.get('id')} title={v.get('text')}>{v.get('text')}</Option>
                       ))
                     }
                     </Select>
-                  )}
-                  </FormItem>
+                  </div>
                 </Col>
                 <Col span={6}>
-                  <FormItem>
-                  {getFieldDecorator('version', {
-                  rules: [{ required: true, message: '选择版本' }],
-                  })(
-                    <Select placeholder='选择版本' size="large" style={{ width: 200 }}>
+                  <div className={styles.filterItem}>
+                    <Select placeholder='选择年级' size="large" value={this.state.gradeOption||undefined} onChange={this.handleChangeGrade}>
                     {
-                      this.state.versionList.map(v => (
-                        <Option key={v.get('id')} value={v.get('id')} title={v.get('text')}>{v.get('text')}</Option>
+                      this.state.gradeList.map(v => (
+                        <Option key={v.get('gradeId')} value={v.get('gradeId')} title={v.get('gradeName')}>{v.get('gradeName')}</Option>
                       ))
                     }
                     </Select>
-                  )}
-                  </FormItem>
-                </Col>
-                <Col span={6}>
-                  <FormItem>
-                  {getFieldDecorator('subject', {
-                  rules: [{ required: true, message: '选择学科' }],
-                  })(
-                    <Select placeholder='选择微课类型' size="large" style={{ width: 200 }}>
-                    {
-                      microClassTypeList.map(v => (
-                        <Option key={v.get('id')} value={v.get('id')} title={v.get('text')}>{v.get('text')}</Option>
-                      ))
-                    }
-                    </Select>
-                  )}
-                  </FormItem>
+                  </div>
                 </Col>
               </Row>
               <Row gutter={8}>
                 <Col span={8}>
-                  <FormItem>
-                  {getFieldDecorator('term', {
-                  rules: [{ required: true, message: '选择学期' }],
-                  })(
-                    <Select placeholder='选择学期' size="large">
+                  <div className={styles.filterItem}>
+                    <Select placeholder='选择学期' size="large" value={this.state.termOption||undefined} onChange={this.handleChangeTerm}>
                     {
                       termList.map(v => (
                         <Option key={v.get('id')} value={v.get('id')} title={v.get('text')}>{v.get('text')}</Option>
                       ))
                     }
                     </Select>
-                  )}
-                  </FormItem>
+                  </div>
                 </Col>
                 <Col span={8}>
-                  <FormItem>
-                  {getFieldDecorator('subject', {
-                  rules: [{ required: true, message: '选择学科' }],
-                  })(
-                    <Select placeholder='选择微课类型' size="large">
+                  <div className={styles.filterItem}>
+                    <Select placeholder='选择章节课程' size="large" value={this.state.charpterOption||undefined} onChange={this.handleChangeCharpter}>
                     {
-                      microClassTypeList.map(v => (
+                      this.state.charpterList.map(v => (
                         <Option key={v.get('id')} value={v.get('id')} title={v.get('text')}>{v.get('text')}</Option>
                       ))
                     }
                     </Select>
-                  )}
-                  </FormItem>
+                  </div>
                 </Col>
                 <Col span={8}>
-                  <Search size="large"
-                    placeholder="教师姓名、学校名称"
-                    onSearch={value => console.log(value)}
-                  />
+                  <div className={styles.filterItem}>
+                    <Search size="large"
+                      placeholder="教师姓名、学校名称"
+                      onSearch={value => console.log(value)}
+                    />
+                  </div>
                 </Col>
               </Row>
             </Form>
@@ -168,6 +270,7 @@ const AddMicroClassModal = React.createClass({
           <Table columns={tableColumn} dataSource ={tableData}/>
           </div>
         </div>
+        {this.state.showPlayModal?<Modal title='dd' visible={true}></Modal>:null}
       </Modal>
     )
   }

@@ -12,6 +12,9 @@
       font-size:20px;
       margin-bottom: 10px;
     }
+    :local(.filterItem){
+      margin-bottom: 20px;
+    }
   }
   :local(.footer){
     display: flex;
