@@ -4,7 +4,8 @@ import {notification} from 'antd'
 
 const initialState = fromJS({
   isAuth:false,
-  data:{}
+  data:{},
+  userId: 0,
 })
 
 export default (state = initialState,action)=>{
@@ -14,7 +15,7 @@ export default (state = initialState,action)=>{
         message: '成功',
 				description: '您已成功登录。',
       })
-      return state.set('isAuth',action.isAuth)
+      return state.set('isAuth',action.isAuth).set('userId',action.userId)
     case LOGOUT:
       notification.success({
         message: '成功',

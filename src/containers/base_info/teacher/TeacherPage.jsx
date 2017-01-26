@@ -4,8 +4,9 @@ import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 import {Row,Col,Upload,Select,DatePicker,Icon,Input,Table,Button,Modal,Form} from 'antd'
 import PermissionDic from '../../../utils/permissionDic'
-import {downloadExcel,importExcel,editStaff,addStaff,getWorkspaceData} from '../../../actions/workspace'
+import {setTeacherRole,downloadExcel,importExcel,editStaff,addStaff,getWorkspaceData} from '../../../actions/workspace'
 import {fromJS,Map,List} from 'immutable'
+import TableComponent from '../../../components/table/TableComponent'
 import {findMenuInTree} from '../../../reducer/menu'
 import moment from 'moment'
 import config from '../../../config.js'
@@ -102,7 +103,7 @@ const TeacherPage = React.createClass({
       key: 'classCount',
       className:styles.tableColumn,
       render: (text,record) => {
-        return <a onClick={this.handleClassModalDisplay.bind(null,true,record.key)}><Icon type="edit" /> 班级个数：{text}</a>
+        return <a onClick={this.handleClassModalDisplay.bind(null,true,record.key)}>班级个数：{text}</a>
       }
     }])
     tableHeader = tableHeader.concat(authList.filter(v => (v.get('authUrl').split('/')[2] != 'import')&&(v.get('authUrl').split('/')[2] != 'view')&&(v.get('authUrl').split('/')[2] != 'add')).map( v => {
@@ -151,6 +152,12 @@ const TeacherPage = React.createClass({
   },
 
   handleSetRole(){
+    // Need to be fixed
+    console.log(this.state.userRoleList);
+    let formData = new FormData();
+    formData.append('userId',this._teacherUserId)
+    formData.append('roleIds',this.state.userRoleList)
+    this.props.setTeacherRole(formData);
   },
 
   handleClassModalDisplay(visibility,key){
@@ -690,29 +697,7 @@ const TeacherPage = React.createClass({
           <Search style={{width:'260px'}} placeholder="请输入教师姓名" value={this.state.searchStr} onChange={this.handleSearchStrChanged} onSearch={this.handleSearchTableData} />
         </div>
         <div className={styles.body}>
-          <div className={styles.wrapper}>
-            <Table
-              rowClassName={(record,index)=>index%2?styles.tableDarkRow:styles.tableLightRow}
-              bordered
-              columns={tableData.tableHeader}
-              dataSource={tableData.tableBody}
-              pagination={
-                !this.props.workspace.get('data').isEmpty() ?
-                  {
-                    total:this.props.workspace.get('data').get('totalCount'),
-                    pageSize:this.props.workspace.get('data').get('pageShow'),
-                    current:this.props.workspace.get('data').get('nowPage'),
-                    showQuickJumper:true,
-                    onChange:(page)=>{
-                      this.props.getWorkspaceData('teacher',page,this.props.workspace.get('data').get('pageShow'),this.state.searchStr)
-                    }
-                  }
-                  :
-                  null
-                }
-              />
-            <div className={styles.tableMsg}>当前条目{workspace.get('data').get('start')}-{parseInt(workspace.get('data').get('start'))+parseInt(workspace.get('data').get('pageShow'))}/总条目{workspace.get('data').get('totalCount')}</div>
-          </div>
+          <TableComponent tableData={tableData} pageType="teacher" searchStr={this.state.searchStr}></TableComponent>
         </div>
         {this.renderModal()}
         {this.renderImportModal()}
@@ -736,6 +721,7 @@ function mapDispatchToProps(dispatch){
     editStaff: bindActionCreators(editStaff,dispatch),
     downloadExcel: bindActionCreators(downloadExcel,dispatch),
     importExcel: bindActionCreators(importExcel,dispatch),
+    setTeacherRole: bindActionCreators(setTeacherRole,dispatch),
   }
 }
 

@@ -9,6 +9,7 @@ import NavigationMini from './containers/navigation/NavigationMini'
 import EduOutlinePage from './containers/base_info/edu_outline/EduOutline'
 import LoginContainer from './containers/LoginContainer'
 import Filter from './components/Filter'
+import CourseFilterComponent from './components/course_filter/CourseFilterComponent'
 import PhasePage from './containers/base_info/phase/PhasePage'
 import GradePage from './containers/base_info/grade/GradePage'
 import SubjectPage from './containers/base_info/subject/SubjectPage'
@@ -29,12 +30,15 @@ import GradeManagementPage from './containers/base_info/grade/GradeManagementPag
 import AreaPage from './containers/base_info/area/AreaPage'
 import SchoolPage from './containers/base_info/school/SchoolPage'
 import AreaDepartmentPage from './containers/base_info/department/AreaDepartmentPage'
-import CreateClassPage from './containers/class_container/CreateClassPage'
+// import CreateClassPage from './containers/class_container/CreateClassPage'
+import CourseCenterContainer from './containers/course_center/CourseCenterContainer'
+import PublicCoursePage from './containers/course_center/PublicCoursePage'
 
 const routes = (
 	<Router history={browserHistory}>
 		<Route path="/" component={AppContainer}>
 			<Route path="test">
+				<Route path="cf" component={CourseFilterComponent}></Route>
 				<Route path="editor" component={AnnouncementEditor}></Route>
 				<Route path='navigation' component={Navigation}></Route>
 				<Route path='navigation-mini' component={NavigationMini}></Route>
@@ -83,7 +87,11 @@ const routes = (
 				</Route>
 				{/*<Route path='notice_mgr' component={NoticeManagerContainer} />*/}
 
-				<Route path='/*/newCourse' component={CreateClassPage}/>
+				{/* 课程中心 */}
+				<Route path=':second' component={CourseCenterContainer}>
+					<Route path='publicCourse' component={PublicCoursePage}></Route>
+				</Route>
+
 			</Route>
 		</Route>
 	</Router>

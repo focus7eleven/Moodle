@@ -28,11 +28,20 @@ export const login = (user,password)=>{
       }).then(res => res.json()).then(res => {
         if(res.title==='Success'){
           sessionStorage.setItem('accessToken',res.resultData.accessToken)
-          dispatch({
-            type:LOGIN_SUCCESS,
-            isAuth:true
+          fetch(config.api.user.info.getUserId,{
+            method: 'GET',
+            headers: {
+              'from': 'NODEJS',
+              'token':sessionStorage.getItem('accessToken'),
+            },
+          }).then(res => res.json()).then(res => {
+            dispatch({
+              type:LOGIN_SUCCESS,
+              isAuth: true,
+              userId: Number.parseInt(res.userId),
+            })
           })
-        }else{
+      }else{
           notification.error({
             message:'失败',
             description:'账号与密码不匹配'

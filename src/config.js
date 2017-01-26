@@ -39,7 +39,13 @@ const config = _.extend({
 			},
 			logout:{
 				post:`${baseURL}/account/logout`
-			}
+			},
+			role: {
+				get: (userId) => `${baseURL}/user/role/get?userId=${userId}`,
+			},
+			info: {
+				getUserId: `${baseURL}/getuserid`,
+			},
 		},
 		menu:{
 			get:`${baseURL}/getMenuWithTreeFormat`
@@ -123,7 +129,9 @@ const config = _.extend({
 			importExcel: (type) => `${baseURL}/${type}/importExcel`,
 			getTeacherRole: (userId) => `${baseURL}/user/role/getbycode?userId=${userId}&userStyle=15`,
 			getTeacherClass: (userId) => `${baseURL}/class/listClass?userId=${userId}`,
-			getStudentClass: (studentId) => `${baseURL}/student/getStuClassByStudentId?studentId=${studentId}`
+			getStudentClass: (studentId) => `${baseURL}/student/getStuClassByStudentId?studentId=${studentId}`,
+			// 设置教师角色
+			setTeacherRole: `${baseURL}/user/role/setting`,
 		},
 		department: {
 			post:`${baseURL}/cityDepartment/add`,
@@ -189,7 +197,10 @@ const config = _.extend({
 			}
 		},
 		courseCenter:{
-			getdistinctsubject: `${baseURL}/class/distinctsubject`,
+			getTableData: (type,search,currentPage) => `${baseURL}/lesson/get/${type}?search=${search}&currentPage=${currentPage}`,
+			getDistinctSubject: `${baseURL}/class/distinctsubject`,
+			getCourseVersion: `${baseURL}/select?selectstyle=JKS`,
+			getUserGrade: `${baseURL}/grade/getUserGrade`,
 		},
 		teachingPlan:{
 			course:{
