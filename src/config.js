@@ -194,6 +194,11 @@ const config = _.extend({
 		},
 		microvideo:{
 			get:(type,currentPage,pageShow,subjectId,gradeId,textbookId,search)=>`${baseURL}/microvideo/${type}?currentPage=${currentPage}&pageShow=${pageShow}&subjectId=${subjectId}&gradeId=${gradeId}&textbookMenuId=${textbookId}&search=${search}`
+		},
+		homework:{
+			course:{
+				existHomework:(subjectId,type='1')=>`${baseURL}/homework/course/existHomework?subjectId=${subjectId}&type=${type}`
+			}
 		}
 	}
 })

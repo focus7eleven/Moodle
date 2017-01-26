@@ -28,6 +28,8 @@ const CreateClassPage = React.createClass({
       charpterOption:'',
 
       videoHomeworkList:List(),
+
+      homeworkType:'1',
     }
   },
   getFilter(){
@@ -178,18 +180,21 @@ const CreateClassPage = React.createClass({
   },
   handleAddVideoHome(selectedMircroVideos){
     this.setState({
-      videoHomeworkList:selectedMircroVideos,
-      showMicroClassModal:false
+      videoHomeworkList:this.state.videoHomeworkList.concat(selectedMircroVideos),
+      showMicroClassModal:false,
+      showHomeworkModal:false,
     })
   },
   renderVideoHomeworkList(){
-    console.log("-->:",this.state.videoHomeworkList.toJS())
     const tableColumn =[{
       title:'类型',
       dataIndex:'type',
       key:'type',
       render:(text,record)=>{
-        return text=='video'?'微课':'作业'
+        return text=='video'?'微课':(<Select size='large' value={this.state.homeworkType} onChange={(value)=>{this.setState({homeworkType:value})}} style={{width:'200px'}}>
+            <Option value='1' title='课后作业' key='1'>课后作业</Option>
+            <Option value='2' title='预习作业' key='2'>预习作业</Option>
+          </Select>)
       }
     },{
       title:'名称',
@@ -206,7 +211,22 @@ const CreateClassPage = React.createClass({
         return (<Button className={styles.deleteButton}>删除</Button>)
       }
     }]
-    return this.state.videoHomeworkList.isEmpty()?null:<Table columns={tableColumn} dataSource={this.state.videoHomeworkList.toJS()}/>
+    const tableData = this.state.videoHomeworkList.map(v => {
+      if(v.get('type')=='video'){
+        return {
+          type:v.get('type'),
+          name:v.get('name'),
+          createdAt:v.get('createdAt'),
+        }
+      }else{
+        return {
+          type:v.get('type'),
+          name:v.get('homework_name'),
+          createdAt:v.get('create_dt'),
+        }
+      }
+    }).toJS()
+    return this.state.videoHomeworkList.isEmpty()?null:<Table columns={tableColumn} dataSource={tableData}/>
   },
   render(){
     const {getFieldDecorator} = this.props.form
@@ -308,9 +328,9 @@ const CreateClassPage = React.createClass({
           </div>
         </div>
         <div className={styles.footer}>
-          <Button type='primary' style={{marginRight:'10px'}}>保存为学校课程</Button><Button type='primary'>保存为个人课程</Button>
+          <Button type='primary' style={{marginRight:'10px'}} onClick={this.saveAsSchool}>保存为学校课程</Button><Button type='primary' onClick={this.saveAsSchool}>保存为个人课程</Button>
         </div>
-        {this.state.showHomeworkModal?<AddHomeworkModal onCancel={()=>{this.setState({showHomeworkModal:false})}} />:null}
+        {this.state.showHomeworkModal?<AddHomeworkModal currentSubject={this.state.subjectOption} onSubmit={(selectedHomeworks)=>{this.handleAddVideoHome(selectedHomeworks)}} onCancel={()=>{this.setState({showHomeworkModal:false})}} />:null}
         {this.state.showMicroClassModal?<AddMicroClassModal onSubmit={(selectedMircroVideos)=>{this.handleAddVideoHome(selectedMircroVideos)}} onCancel={()=>{this.setState({showMicroClassModal:false})}} subjectList={this.state.subjectList} versionList={this.state.versionList} termList={this.state.termList}/>:null}
       </div>
     )
