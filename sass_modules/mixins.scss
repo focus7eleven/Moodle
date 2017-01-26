@@ -21,6 +21,11 @@
   }
 }
 
+@mixin body {
+  height: calc( 100% - 40px );
+  width: 100%;
+}
+
 @mixin tableDarkRow{
   text-align: center;
   background-color: #F5F5F5;
