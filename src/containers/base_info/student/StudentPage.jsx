@@ -8,6 +8,7 @@ import {downloadExcel,importExcel,editStaff,addStaff,getWorkspaceData} from '../
 import {fromJS,Map,List} from 'immutable'
 import {findMenuInTree} from '../../../reducer/menu'
 import moment from 'moment'
+import config from '../../../config.js'
 
 const FormItem = Form.Item
 const Search = Input.Search
@@ -28,6 +29,9 @@ const StudentPage = React.createClass({
       importModalVisibility: false,
       imageUrl: "",
       excelFile: null,
+      // 查看学生班级
+      studentClassList: [],
+      classModalVisibility: false,
     }
   },
 
@@ -70,7 +74,7 @@ const StudentPage = React.createClass({
       key: 'classCount',
       className:styles.tableColumn,
       render: (text,record) => {
-        return <span>所属班级个数： {text}</span>
+        return <a onClick={this.handleClassModalDisplay.bind(null,true,record.key)}><Icon type="edit" /> 所属班级个数：{text}</a>
       }
     },{
       title: '家长',
@@ -106,6 +110,23 @@ const StudentPage = React.createClass({
     return {
       tableHeader:tableHeader.toJS(),
       tableBody:tableBody.toJS(),
+    }
+  },
+
+  handleClassModalDisplay(visibility,key){
+    if(visibility){
+      this._studentId = this.props.workspace.get('data').get('result').get(key).get('studentId');
+      fetch(config.api.staff.getStudentClass(this._studentId),{
+        method:'GET',
+        headers:{
+          'from':'nodejs',
+          'token':sessionStorage.getItem('accessToken'),
+        }
+      }).then(res => res.json()).then((json)=>{
+        this.setState({classModalVisibility: visibility,studentClassList: json})
+      })
+    }else {
+      this.setState({classModalVisibility: visibility});
     }
   },
 
@@ -430,6 +451,37 @@ const StudentPage = React.createClass({
     )
   },
 
+  renderClassModal(){
+    const {studentClassList,classModalVisibility} = this.state
+    const columns = [{
+      title: '班级名称',
+      dataIndex: 'className',
+    },{
+      title: '所属学校',
+      dataIndex: 'schoolName',
+    },{
+      title: '所属年级',
+      dataIndex: 'gradeName',
+    }];
+    const data = studentClassList.length>=0?studentClassList.map((v,key) => {
+      return {
+        key: key,
+        className: v.className,
+        schoolName: v.schoolName,
+        gradeName: v.gradeName,
+      }
+    }):[];
+    return (
+      <Modal title="查看学生所在班级" visible={classModalVisibility}
+        onOk={this.handleClassModalDisplay.bind(null,false,"")} onCancel={this.handleClassModalDisplay.bind(null,false,"")}
+      >
+        <div>
+          <Table pagination={false} columns={columns} dataSource={data} />
+        </div>
+      </Modal>
+    )
+  },
+
   render(){
     const tableData = this.getTableData()
     const {workspace} = this.props
@@ -480,6 +532,7 @@ const StudentPage = React.createClass({
         </div>
         {this.renderModal()}
         {this.renderImportModal()}
+        {this.renderClassModal()}
       </div>
     )
   }

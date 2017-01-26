@@ -32,6 +32,9 @@ const SchoolDepartPage = React.createClass({
       selectedRecord: [],
       intersection: [],
       rowsChanged: false,
+      searchUserId: "",
+      searchTeacherName: "",
+      modalData: [],
     }
   },
 
@@ -114,14 +117,15 @@ const SchoolDepartPage = React.createClass({
   },
 
   handleStaffModalDisplay(visibility,type,id){
+    this._schoolUserList = this.props.workspace.get('schoolUserList');
     if(type=="leader"){
       const userList = this.props.workspace.get('schoolUserList');
       this._departmentId = this.props.workspace.get('data').get('result').get(id).get('departmentId');
       this.props.getLeaderList(this._departmentId,"").then((res)=>{
         const leaderList = res.data;
         const intersection = _.intersectionWith(userList,leaderList,(a,b)=>a.userId===b.userId);
-        const selected = intersection.map((item)=>_.indexOf(userList,item))
-        this.setState({selectedStaff:selected,intersection,staffModalType:type,staffModalVisibility:visibility});
+        const selected = intersection.map((item)=>item.userId)
+        this.setState({modalData: this._schoolUserList,selectedStaff:selected,intersection,staffModalType:type,staffModalVisibility:visibility});
       });
     }else if(type=="member"){
       const userList = this.props.workspace.get('schoolUserList');
@@ -129,8 +133,8 @@ const SchoolDepartPage = React.createClass({
       this.props.getMemberList(this._departmentId,"").then((res)=>{
         const memberList = res.data;
         const intersection = _.intersectionWith(userList,memberList,(a,b)=>a.userId===b.userId);
-        const selected = intersection.map((item)=>_.indexOf(userList,item))
-        this.setState({selectedStaff:selected,intersection,staffModalType:type,staffModalVisibility:visibility});
+        const selected = intersection.map((item)=>item.userId)
+        this.setState({modalData: this._schoolUserList,selectedStaff:selected,intersection,staffModalType:type,staffModalVisibility:visibility});
       });
     }else{
       this.setState({staffModalType:type,staffModalVisibility:visibility});
@@ -167,36 +171,107 @@ const SchoolDepartPage = React.createClass({
     }
   },
 
+  onSearchUserId(value){
+    const {searchUserId} = this.state;
+    const reg = new RegExp(searchUserId, 'gi');
+    this.setState({
+      userIdDropdownVisible: false,
+      modalData: this._schoolUserList.map((record) => {
+        const match = record.userId.match(reg);
+        if (!match) {
+          return null;
+        }
+        return {
+          ...record,
+          userId: (
+            <span>
+              {record.userId.split(reg).map((text, i) => (
+                i > 0 ? [<span className={styles.highlight}>{match[0]}</span>, text] : text
+              ))}
+            </span>
+          ),
+        };
+      }).filter(record => !!record),
+    });
+  },
+
+  onUserIdInputChange(e) {
+    this.setState({searchUserId: e.target.value});
+  },
+
+  onSearchTeacherName(value){
+    const {searchTeacherName} = this.state;
+    const reg = new RegExp(searchTeacherName, 'gi');
+    this.setState({
+      teacherNameDropdownVisible: false,
+      modalData: this._schoolUserList.map((record) => {
+        const match = record.name.match(reg);
+        if (!match) {
+          return null;
+        }
+        return {
+          ...record,
+          name: (
+            <span>
+              {record.name.split(reg).map((text, i) => (
+                i > 0 ? [<span className={styles.highlight}>{match[0]}</span>, text] : text
+              ))}
+            </span>
+          ),
+        };
+      }).filter(record => !!record),
+    });
+  },
+
+  onTeacherNameInputChange(e) {
+    this.setState({searchTeacherName: e.target.value});
+  },
+
   renderStaffModal(){
-    const {staffModalType,staffModalVisibility,selectedStaff} = this.state
+    const {searchTeacherName,teacherNameDropdownVisible,searchUserId,userIdDropdownVisible,staffModalType,staffModalVisibility,selectedStaff,modalData} = this.state
     const columns = [{
       title: '教师编号',
       dataIndex: 'userId',
-      // key: 'userId',
+      filterDropdown: (
+        <div className={styles.customFilterDropdown}>
+          <Search
+            className={styles.filterInput}
+            placeholder="请输入教师编号"
+            value={searchUserId}
+            onSearch={this.onSearchUserId}
+            onChange={this.onUserIdInputChange}
+          />
+        </div>
+      ),
+      filterDropdownVisible: userIdDropdownVisible,
+      onFilterDropdownVisibleChange: visible => this.setState({userIdDropdownVisible: visible}),
     },{
       title: '教师姓名',
       dataIndex: 'name',
-      // key: 'name',
+      filterDropdown: (
+        <div className={styles.customFilterDropdown}>
+          <Search
+            className={styles.filterInput}
+            placeholder="请输入教师姓名"
+            value={searchTeacherName}
+            onSearch={this.onSearchTeacherName}
+            onChange={this.onTeacherNameInputChange}
+          />
+        </div>
+      ),
+      filterDropdownVisible: teacherNameDropdownVisible,
+      onFilterDropdownVisibleChange: visible => this.setState({teacherNameDropdownVisible: visible}),
     }];
     const rowSelection = {
       onChange: (selectedRowKeys, selectedRows) => {
         console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
         this.setState({selectedStaff: selectedRowKeys, selectedRecord: selectedRows,rowsChanged: true});
       },
-      onSelect: (record, selected, selectedRows) => {
-        // console.log(record, selected, selectedRows);
-      },
-      onSelectAll: (selected, selectedRows, changeRows) => {
-        // console.log(selected, selectedRows, changeRows);
-      },
       selectedRowKeys: selectedStaff,
-      getCheckboxProps: record => ({
-        disabled: record.name === 'Disabled User',    // Column configuration not to be checked
-      }),
     };
-    const data = this.props.workspace.get('schoolUserList').length>=0?this.props.workspace.get('schoolUserList').map((v,key) => {
+    const data = modalData.length>=0?modalData.map((v,key) => {
       return {
-        key: key,
+        key: v.userId,
         name: v.name,
         userId: v.userId,
       }

@@ -4,7 +4,7 @@ import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 import {Radio,Row,Col,Upload,Select,DatePicker,Icon,Input,Table,Button,Modal,Form} from 'antd'
 import PermissionDic from '../../../utils/permissionDic'
-import {getGradeTeacherList,getClassSubject,getClassSubjectTeacher,getClassLeaderList,setClassLeader,getGradeList,getPhaseList,addClass,editClass,getWorkspaceData} from '../../../actions/workspace'
+import {setStudent,getStudent,findStudent,setClassTeacher,getGradeTeacherList,getClassSubject,getClassSubjectTeacher,getClassLeaderList,setClassLeader,getGradeList,getPhaseList,addClass,editClass,getWorkspaceData} from '../../../actions/workspace'
 import {fromJS,Map,List} from 'immutable'
 import {findMenuInTree} from '../../../reducer/menu'
 import moment from 'moment'
@@ -25,14 +25,27 @@ const ClassPage = React.createClass({
   getInitialState(){
     return {
       searchStr: "",
+      searchStu: "",
       modalType: "",
       modalVisibility: false,
       classLeaderModalVisibility: false,
       classLeaderIndex: [],
       rowsChanged: false,
       teacherModalVisibility: false,
-      subjectTeacherIndex: [],
+      studentModalVisibility: false,
+      subjectTeacherIndex: {},
       subjectTeacherChanged: false,
+      // filter string for leader
+      searchTeacherName: "",
+      searchWorkNum: "",
+      modalLeaderData: [],
+      // filter string for subject teacher
+      searchSubjectTeacherName: "",
+      searchSubjectTeacherWorkNum: "",
+      modalSubjectTeacherData: [],
+      // list for add student
+      studentForClassList: [],
+      studentIndex: [],
     }
   },
 
@@ -70,7 +83,7 @@ const ClassPage = React.createClass({
       key: 'count',
       className:styles.tableColumn,
       render: (text, record) => {
-        return <span>{text}</span>
+        return <a onClick={this.handleStudentModalDisplay.bind(null,true,record.key)}><Icon type="edit" />{text}</a>
       }
     },{
       title: '班主任',
@@ -117,17 +130,37 @@ const ClassPage = React.createClass({
     }
   },
 
+  handleStudentModalDisplay(visibility,key){
+    if(visibility){
+      this._currentClassId = this.props.workspace.get('data').get('result').get(key).get('classId');
+      this.props.getStudent(this._currentClassId).then((res)=>{
+        const studentForClassList = this.props.workspace.get('studentForClassList')
+        this._studentIndex = studentForClassList.map((item)=>item.studentId)
+        this.setState({rowsChanged:false,searchStu:"",studentIndex:this._studentIndex,studentForClassList,studentModalVisibility: true});
+      })
+    }else {
+      this.setState({studentModalVisibility: visibility});
+    }
+  },
+
   handleLeaderModalDisplay(visibility,key){
     if(visibility){
       this._currentLeaderId = this.props.workspace.get('data').get('result').get(key).get('userId');
       this._currentClassId = this.props.workspace.get('data').get('result').get(key).get('classId');
       this.props.getClassLeaderList(this._currentClassId).then((res)=>{
-        const index = _.findIndex(this.props.workspace.get('classLeaderList'),(v)=>v.userId===this._currentLeaderId);
-        this.setState({classLeaderModalVisibility: true,classLeaderIndex:[index]});
+        this._classLeaderList = this.props.workspace.get('classLeaderList');
+        this.setState({rowsChanged:false,modalLeaderData: this._classLeaderList,classLeaderModalVisibility: true,classLeaderIndex:[this._currentLeaderId]});
       })
     }else {
       this.setState({classLeaderModalVisibility: visibility});
     }
+  },
+
+  handleFindStudent(value){
+    this.props.findStudent(this.state.searchStu).then((res)=>{
+      const studentForClassList = this.props.workspace.get('studentForClassList');
+      this.setState({studentForClassList})
+    })
   },
 
   handleTeacherModalDisplay(visibility,key){
@@ -135,30 +168,77 @@ const ClassPage = React.createClass({
       this._currentClassId = this.props.workspace.get('data').get('result').get(key).get('classId');
       this.props.getClassSubject(this._currentClassId).then((res)=>{
         this.props.getClassSubjectTeacher(this._currentClassId).then((res)=>{
-          const currentSubject = this.props.workspace.get('classSubject').length>0?this.props.workspace.get('classSubject')[0].subject_id:"";
-          const subjectTeacherIndex = _.findIndex(this.props.workspace.get('classSubjectTeacher'),(v)=>v.subjectId===currentSubject);
-          this.setState({currentSubject,subjectTeacherIndex:[subjectTeacherIndex],teacherModalVisibility: visibility});
+          const subjectTeacherList = this.props.workspace.get('classSubjectTeacher');
+          this._gradeTeacherList = this.props.workspace.get('gradeTeacherList');
+          const subjectList = this.props.workspace.get('classSubject');
+          let subjectTeacherIndex = {};
+          subjectTeacherList.forEach((item,index)=>{
+            subjectTeacherIndex[item.subjectId] = [item.userId];
+          })
+          const currentSubject = subjectList.length>0?subjectList[0].subject_id:"";
+          this.setState({modalSubjectTeacherData: this._gradeTeacherList,currentSubject,subjectTeacherIndex,teacherModalVisibility: visibility});
         })
       })
-      // this.props.getClassLeaderList(this._currentClassId).then((res)=>{
-      //   const index = _.findIndex(this.props.workspace.get('classLeaderList'),(v)=>v.userId===this._currentLeaderId);
-      //   this.setState({classLeaderModalVisibility: true,classLeaderIndex:[index]});
-      // })
     }else {
       this.setState({teacherModalVisibility: visibility});
     }
   },
 
   handleSubjectChange(e){
-    console.log('radio checked', e.target.value);
-    const subjectId = e.target.value;
-    const subjectTeacherIndex = _.findIndex(this.props.workspace.get('classSubjectTeacher'),(v)=>v.subjectId===subjectId);
-    this.setState({currentSubject: subjectId,subjectTeacherIndex:[subjectTeacherIndex]});
+    this.setState({currentSubject:e.target.value})
   },
 
   handleSubjectTeacherDisplay(id){
     const subjectTeacher = this.props.workspace.get('classSubjectTeacher').find((item)=>item.subjectId==id);
     return subjectTeacher?subjectTeacher.teacherName:"未设置";
+  },
+
+  handleSetStudent(){
+    const {studentIndex,rowsChanged} = this.state;
+    if(!rowsChanged){
+      this.setState({studentModalVisibility: false})
+    }else{
+      const intersection = _.intersection(studentIndex,this._studentIndex);
+      const addList = _.xor(studentIndex,intersection)
+      const removeList = _.xor(this._studentIndex,intersection)
+      let formData = new FormData();
+      formData.append('classId',this._currentClassId)
+      formData.append('addList',addList.join(','))
+      formData.append('removeList',removeList.join(','))
+      const result = this.props.setStudent(formData)
+      let visibility = true;
+      result.then((res)=>{
+        if(res!=="error"){
+          visibility = false;
+        }
+      })
+      this.setState({studentModalVisibility: visibility})
+    }
+  },
+
+  handleSetTeacher(){
+    const {subjectTeacherChanged,subjectTeacherIndex} = this.state;
+    if(!subjectTeacherChanged){
+      this.setState({classLeaderModalVisibility: false});
+    }else{
+      let res = {};
+      _.keys(subjectTeacherIndex).map((key)=>{
+        if(subjectTeacherIndex[key]>=0){
+          res[key] = subjectTeacherIndex[key][0];
+        }
+      })
+      let formData = new FormData()
+      formData.append('classId',this._currentClassId);
+      formData.append('result',JSON.stringify(res));
+      const result = this.props.setClassTeacher(formData);
+      let visibility = true;
+      result.then((res)=>{
+        if(res!=="error"){
+          visibility = false;
+        }
+      })
+      this.setState({teacherModalVisibility: visibility})
+    }
   },
 
   handleSetLeader(){
@@ -168,7 +248,7 @@ const ClassPage = React.createClass({
     }else{
       let formData = new FormData()
       formData.append('classId',this._currentClassId);
-      formData.append('userId',this.props.workspace.get('classLeaderList')[classLeaderIndex[0]].userId);
+      formData.append('userId',classLeaderIndex[0]);
       const result = this.props.setClassLeader(formData);
       let visibility = true;
       result.then((res)=>{
@@ -203,6 +283,10 @@ const ClassPage = React.createClass({
 
   handleSearchStrChanged(e){
     this.setState({searchStr: e.target.value});
+  },
+
+  handleSearchStuChanged(e){
+    this.setState({searchStu: e.target.value});
   },
 
   handleSearchTableData(value){
@@ -275,6 +359,118 @@ const ClassPage = React.createClass({
   handlePhaseSelected(value){
     this.props.getGradeList(value);
     this.props.form.setFieldsValue({'gradeId':""});
+  },
+
+  onSearchWorkNum(value){
+    const {searchWorkNum} = this.state;
+    const reg = new RegExp(searchWorkNum, 'gi');
+    this.setState({
+      workNumDropdownVisible: false,
+      modalLeaderData: this._classLeaderList.map((record) => {
+        const match = record.teacherNum.match(reg);
+        if (!match) {
+          return null;
+        }
+        return {
+          ...record,
+          teacherNum: (
+            <span>
+              {record.teacherNum.split(reg).map((text, i) => (
+                i > 0 ? [<span className={styles.highlight}>{match[0]}</span>, text] : text
+              ))}
+            </span>
+          ),
+        };
+      }).filter(record => !!record),
+    });
+  },
+
+  onSearchSubjectTeacherWorkNum(value){
+    const {searchSubjectTeacherWorkNum} = this.state;
+    const reg = new RegExp(searchSubjectTeacherWorkNum, 'gi');
+    this.setState({
+      workNumDropdownVisible: false,
+      modalSubjectTeacherData: this._gradeTeacherList.map((record) => {
+        const match = record.workNum.match(reg);
+        if (!match) {
+          return null;
+        }
+        return {
+          ...record,
+          workNum: (
+            <span>
+              {record.workNum.split(reg).map((text, i) => (
+                i > 0 ? [<span className={styles.highlight}>{match[0]}</span>, text] : text
+              ))}
+            </span>
+          ),
+        };
+      }).filter(record => !!record),
+    });
+  },
+
+  onWorkNumInputChange(e) {
+    this.setState({searchWorkNum: e.target.value});
+  },
+
+  onSubjectTeacherWorkNumInputChange(e) {
+    this.setState({searchSubjectTeacherWorkNum: e.target.value});
+  },
+
+  onSearchTeacherName(value){
+    const {searchTeacherName} = this.state;
+    const reg = new RegExp(searchTeacherName, 'gi');
+    this.setState({
+      teacherNameDropdownVisible: false,
+      modalLeaderData: this._classLeaderList.map((record) => {
+        const match = record.teacherName.match(reg);
+        if (!match) {
+          return null;
+        }
+        return {
+          ...record,
+          teacherName: (
+            <span>
+              {record.teacherName.split(reg).map((text, i) => (
+                i > 0 ? [<span className={styles.highlight}>{match[0]}</span>, text] : text
+              ))}
+            </span>
+          ),
+        };
+      }).filter(record => !!record),
+    });
+  },
+
+  onSearchSubjectTeacherName(value){
+    const {searchSubjectTeacherName} = this.state;
+    const reg = new RegExp(searchSubjectTeacherName, 'gi');
+    this.setState({
+      teacherNameDropdownVisible: false,
+      modalSubjectTeacherData: this._gradeTeacherList.map((record) => {
+        const match = record.teacherName.match(reg);
+        if (!match) {
+          return null;
+        }
+        return {
+          ...record,
+          teacherName: (
+            <span>
+              {record.teacherName.split(reg).map((text, i) => (
+                i > 0 ? [<span className={styles.highlight}>{match[0]}</span>, text] : text
+              ))}
+            </span>
+          ),
+        };
+      }).filter(record => !!record),
+    });
+  },
+
+  onTeacherNameInputChange(e) {
+    this.setState({searchTeacherName: e.target.value});
+  },
+
+  onSubjectTeacherNameInputChange(e) {
+    this.setState({searchSubjectTeacherName: e.target.value});
   },
 
   renderModal(){
@@ -389,13 +585,39 @@ const ClassPage = React.createClass({
   },
 
   renderLeaderModal(){
-    const {classLeaderModalVisibility,classLeaderIndex} = this.state
+    const {modalLeaderData,searchTeacherName,searchWorkNum,workNumDropdownVisible,teacherNameDropdownVisible,classLeaderModalVisibility,classLeaderIndex} = this.state
     const columns = [{
       title: '教师编号',
-      dataIndex: 'teacherNum',
+      dataIndex: 'workNum',
+      filterDropdown: (
+        <div className={styles.customFilterDropdown}>
+          <Search
+            className={styles.filterInput}
+            placeholder="请输入教师编号"
+            value={searchWorkNum}
+            onSearch={this.onSearchWorkNum}
+            onChange={this.onWorkNumInputChange}
+          />
+        </div>
+      ),
+      filterDropdownVisible: workNumDropdownVisible,
+      onFilterDropdownVisibleChange: visible => this.setState({workNumDropdownVisible: visible})
     },{
       title: '教师姓名',
       dataIndex: 'teacherName',
+      filterDropdown: (
+        <div className={styles.customFilterDropdown}>
+          <Search
+            className={styles.filterInput}
+            placeholder="请输入教师姓名"
+            value={searchTeacherName}
+            onSearch={this.onSearchTeacherName}
+            onChange={this.onTeacherNameInputChange}
+          />
+        </div>
+      ),
+      filterDropdownVisible: teacherNameDropdownVisible,
+      onFilterDropdownVisibleChange: visible => this.setState({teacherNameDropdownVisible: visible})
     }];
     const rowSelection = {
       type: "radio",
@@ -404,11 +626,11 @@ const ClassPage = React.createClass({
       },
       selectedRowKeys: classLeaderIndex,
     };
-    const data = this.props.workspace.get('classLeaderList').length>=0?this.props.workspace.get('classLeaderList').map((v,key) => {
+    const data = modalLeaderData.length>=0?modalLeaderData.map((v,key) => {
       return {
-        key: key,
+        key: v.userId,
         teacherName: v.teacherName,
-        teacherNum: v.teacherNum,
+        workNum: v.teacherNum,
       }
     }):[];
     return (
@@ -423,26 +645,54 @@ const ClassPage = React.createClass({
   },
 
   renderTeacherModal(){
-    const {teacherModalVisibility,subjectTeacherIndex} = this.state
+    const {modalSubjectTeacherData,searchSubjectTeacherName,searchSubjectTeacherWorkNum,workNumDropdownVisible,teacherNameDropdownVisible,currentSubject,teacherModalVisibility,subjectTeacherIndex} = this.state
     const columns = [{
       title: '教师编号',
-      dataIndex: 'teacherNum',
+      dataIndex: 'workNum',
+      filterDropdown: (
+        <div className={styles.customFilterDropdown}>
+          <Search
+            className={styles.filterInput}
+            placeholder="请输入教师编号"
+            value={searchSubjectTeacherWorkNum}
+            onSearch={this.onSearchSubjectTeacherWorkNum}
+            onChange={this.onSubjectTeacherWorkNumInputChange}
+          />
+        </div>
+      ),
+      filterDropdownVisible: workNumDropdownVisible,
+      onFilterDropdownVisibleChange: visible => this.setState({workNumDropdownVisible: visible})
     },{
       title: '教师姓名',
       dataIndex: 'teacherName',
+      filterDropdown: (
+        <div className={styles.customFilterDropdown}>
+          <Search
+            className={styles.filterInput}
+            placeholder="请输入教师姓名"
+            value={searchSubjectTeacherName}
+            onSearch={this.onSearchSubjectTeacherName}
+            onChange={this.onSubjectTeacherNameInputChange}
+          />
+        </div>
+      ),
+      filterDropdownVisible: teacherNameDropdownVisible,
+      onFilterDropdownVisibleChange: visible => this.setState({teacherNameDropdownVisible: visible})
     }];
     const rowSelection = {
       type: "radio",
       onChange: (selectedRowKeys, selectedRows) => {
-        this.setState({subjectTeacherIndex: selectedRowKeys,subjectTeacherChanged: true});
+        let newTeacherIndex = subjectTeacherIndex;
+        newTeacherIndex[currentSubject] = selectedRowKeys
+        this.setState({subjectTeacherIndex: newTeacherIndex,subjectTeacherChanged: true});
       },
-      selectedRowKeys: subjectTeacherIndex,
+      selectedRowKeys: subjectTeacherIndex[currentSubject],
     };
-    const data = this.props.workspace.get('gradeTeacherList').length>=0?this.props.workspace.get('gradeTeacherList').map((v,key) => {
+    const data = modalSubjectTeacherData.length>=0?modalSubjectTeacherData.map((v,key) => {
       return {
-        key: key,
+        key: v.userId,
         teacherName: v.teacherName,
-        teacherNum: v.workNum,
+        workNum: v.workNum,
       }
     }):[];
     return (
@@ -461,6 +711,40 @@ const ClassPage = React.createClass({
               }
             </RadioGroup>
           </div>
+          <Table pagination={false} rowSelection={rowSelection} columns={columns} dataSource={data} />
+        </div>
+      </Modal>
+    )
+  },
+
+  renderStudentModal(){
+    const {studentIndex,studentForClassList,studentModalVisibility} = this.state
+    const columns = [{
+      title: '学号',
+      dataIndex: 'stuNum',
+    },{
+      title: '学生姓名',
+      dataIndex: 'stuName',
+    }];
+    const rowSelection = {
+      onChange: (selectedRowKeys, selectedRows) => {
+        this.setState({studentIndex: selectedRowKeys,rowsChanged: true});
+      },
+      selectedRowKeys: studentIndex,
+    };
+    const data = studentForClassList.length>=0?studentForClassList.map((v,key) => {
+      return {
+        key: v.studentId,
+        stuName: v.stuName,
+        stuNum: v.stuNum,
+      }
+    }):[];
+    return (
+      <Modal title="设置班级学生" visible={studentModalVisibility}
+        onOk={this.handleSetStudent} onCancel={this.handleStudentModalDisplay.bind(null,false,"")}
+      >
+        <div>
+          <Search style={{width:'260px',marginBottom:'5px'}} placeholder="请输入学生姓名或编号" value={this.state.searchStu} onChange={this.handleSearchStuChanged} onSearch={this.handleFindStudent} />
           <Table pagination={false} rowSelection={rowSelection} columns={columns} dataSource={data} />
         </div>
       </Modal>
@@ -512,6 +796,7 @@ const ClassPage = React.createClass({
         {this.renderModal()}
         {this.renderLeaderModal()}
         {this.renderTeacherModal()}
+        {this.renderStudentModal()}
       </div>
     )
   }
@@ -535,6 +820,10 @@ function mapDispatchToProps(dispatch){
     setClassLeader: bindActionCreators(setClassLeader,dispatch),
     getClassSubject: bindActionCreators(getClassSubject,dispatch),
     getClassSubjectTeacher: bindActionCreators(getClassSubjectTeacher,dispatch),
+    setClassTeacher: bindActionCreators(setClassTeacher,dispatch),
+    findStudent: bindActionCreators(findStudent,dispatch),
+    getStudent: bindActionCreators(getStudent,dispatch),
+    setStudent: bindActionCreators(setStudent,dispatch),
   }
 }
 

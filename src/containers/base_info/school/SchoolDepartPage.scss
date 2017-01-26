@@ -55,3 +55,13 @@
     @include deleteButton;
   }
 }
+
+:local(.customFilterDropdown){
+  @include customFilterDropdown
+}
+:local(.filterInput){
+  @include filterInput
+}
+:local(.highlight){
+  @include highlight
+}

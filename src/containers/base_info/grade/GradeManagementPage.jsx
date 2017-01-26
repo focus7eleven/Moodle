@@ -22,6 +22,9 @@ const GradeManagementPage = React.createClass({
       leaderModalVisibility: false,
       selectedStaff: [],
       rowsChanged: false,
+      searchTeacherName: "",
+      searchWorkNum: "",
+      modalData: [],
     }
   },
 
@@ -72,10 +75,10 @@ const GradeManagementPage = React.createClass({
 
   handleLeaderModalDisplay(visibility,key){
     if(visibility){
+      this._gradeTeacherList = this.props.workspace.get('gradeTeacherList');
       this._currentLeaderId = this.props.workspace.get('data').get('result').get(key).get('userId');
       this._currentGradeId = this.props.workspace.get('data').get('result').get(key).get('gradeId');
-      const index = _.findIndex(this.props.workspace.get('gradeTeacherList'),(v)=>v.userId===this._currentLeaderId);
-      this.setState({selectedStaff:[index]});
+      this.setState({modalData: this._gradeTeacherList,selectedStaff:[this._currentLeaderId]});
     }
     this.setState({leaderModalVisibility: visibility});
   },
@@ -87,7 +90,8 @@ const GradeManagementPage = React.createClass({
     }else{
       let formData = new FormData()
       formData.append('gradeId',this._currentGradeId);
-      formData.append('leaderUserId',this.props.workspace.get('gradeTeacherList')[selectedStaff[0]].userId);
+      formData.append('leaderUserId',selectedStaff[0]);
+      // formData.append('leaderUserId',this.props.workspace.get('gradeTeacherList')[selectedStaff[0]].userId);
       const result = this.props.setGradeLeader(formData);
       let visibility = true;
       result.then((res)=>{
@@ -107,14 +111,96 @@ const GradeManagementPage = React.createClass({
     this.props.getWorkspaceData('class',this.props.workspace.get('data').get('nowPage'),this.props.workspace.get('data').get('pageShow'),value)
   },
 
+  onSearchWorkNum(value){
+    const {searchWorkNum} = this.state;
+    const reg = new RegExp(searchWorkNum, 'gi');
+    this.setState({
+      workNumDropdownVisible: false,
+      modalData: this._gradeTeacherList.map((record) => {
+        const match = record.workNum.match(reg);
+        if (!match) {
+          return null;
+        }
+        return {
+          ...record,
+          workNum: (
+            <span>
+              {record.workNum.split(reg).map((text, i) => (
+                i > 0 ? [<span className={styles.highlight}>{match[0]}</span>, text] : text
+              ))}
+            </span>
+          ),
+        };
+      }).filter(record => !!record),
+    });
+  },
+
+  onWorkNumInputChange(e) {
+    this.setState({searchWorkNum: e.target.value});
+  },
+
+  onSearchTeacherName(value){
+    const {searchTeacherName} = this.state;
+    const reg = new RegExp(searchTeacherName, 'gi');
+    this.setState({
+      teacherNameDropdownVisible: false,
+      modalData: this._gradeTeacherList.map((record) => {
+        const match = record.teacherName.match(reg);
+        if (!match) {
+          return null;
+        }
+        return {
+          ...record,
+          teacherName: (
+            <span>
+              {record.teacherName.split(reg).map((text, i) => (
+                i > 0 ? [<span className={styles.highlight}>{match[0]}</span>, text] : text
+              ))}
+            </span>
+          ),
+        };
+      }).filter(record => !!record),
+    });
+  },
+
+  onTeacherNameInputChange(e) {
+    this.setState({searchTeacherName: e.target.value});
+  },
+
   renderLeaderModal(){
-    const {leaderModalVisibility,selectedStaff} = this.state
+    const {modalData,searchTeacherName,searchWorkNum,workNumDropdownVisible,teacherNameDropdownVisible,leaderModalVisibility,selectedStaff} = this.state
     const columns = [{
       title: '教师编号',
       dataIndex: 'workNum',
+      filterDropdown: (
+        <div className={styles.customFilterDropdown}>
+          <Search
+            className={styles.filterInput}
+            placeholder="请输入教师编号"
+            value={searchWorkNum}
+            onSearch={this.onSearchWorkNum}
+            onChange={this.onWorkNumInputChange}
+          />
+        </div>
+      ),
+      filterDropdownVisible: workNumDropdownVisible,
+      onFilterDropdownVisibleChange: visible => this.setState({workNumDropdownVisible: visible}),
     },{
       title: '教师姓名',
       dataIndex: 'teacherName',
+      filterDropdown: (
+        <div className={styles.customFilterDropdown}>
+          <Search
+            className={styles.filterInput}
+            placeholder="请输入教师姓名"
+            value={searchTeacherName}
+            onSearch={this.onSearchTeacherName}
+            onChange={this.onTeacherNameInputChange}
+          />
+        </div>
+      ),
+      filterDropdownVisible: teacherNameDropdownVisible,
+      onFilterDropdownVisibleChange: visible => this.setState({teacherNameDropdownVisible: visible}),
     }];
     const rowSelection = {
       type: "radio",
@@ -124,9 +210,9 @@ const GradeManagementPage = React.createClass({
       },
       selectedRowKeys: selectedStaff,
     };
-    const data = this.props.workspace.get('gradeTeacherList').length>=0?this.props.workspace.get('gradeTeacherList').map((v,key) => {
+    const data = modalData.length>=0?modalData.map((v,key) => {
       return {
-        key: key,
+        key: v.userId,
         teacherName: v.teacherName,
         workNum: v.workNum,
       }

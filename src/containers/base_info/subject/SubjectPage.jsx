@@ -7,6 +7,7 @@ import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 import {findMenuInTree} from '../../../reducer/menu'
 import styles from './SubjectPage.scss'
+import TableComponent from '../../../components/table/TableComponent'
 import _ from 'lodash'
 
 const FormItem = Form.Item
@@ -247,22 +248,7 @@ const SubjectPage = React.createClass({
           <Search style={{width: '260px'}} placeholder="请输入学科名称" value={this.state.searchStr} onChange={(e)=>{this.setState({searchStr:e.target.value})}} onSearch={this.handleSearchTableData} />
         </div>
         <div className={styles.body}>
-          <div className={styles.wrapper}>
-            <Table rowClassName={(record,index)=>index%2?styles.tableDarkRow:styles.tableLightRow} bordered columns={tableData.tableHeader} dataSource={tableData.tableBody}
-            pagination={!this.props.workspace.get('data').isEmpty()?{
-              total:this.props.workspace.get('data').get('totalCount'),
-              pageSize:this.props.workspace.get('data').get('pageShow'),
-              current:this.props.workspace.get('data').get('nowPage'),
-              showQuickJumper:true,
-              onChange:(page)=>{
-                this.props.getWorkspaceData('subject',page,this.props.workspace.get('data').get('pageShow'),this.state.searchStr)
-              },
-              onShowSizeChange:(current,size)=>{
-                this.props.getWorkspaceData('subject',this.props.workspace.get('data').get('nowPage'),size,this.state.searchStr)
-              }
-            }:null} />
-            <div className={styles.tableMsg}>当前条目{workspace.get('data').get('start')}-{parseInt(workspace.get('data').get('start'))+parseInt(workspace.get('data').get('pageShow'))}/总条目{workspace.get('data').get('totalCount')}</div>
-          </div>
+          <TableComponent tableData={tableData} pageType="subject" searchStr={this.state.searchStr}></TableComponent>
         </div>
         {this.renderAddSubjectModal()}
       </div>

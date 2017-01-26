@@ -121,6 +121,9 @@ const config = _.extend({
 			getAllAreas: `${baseURL}/area/getChildrenAreaList`,
 			downloadExcel: (type) => `${baseURL}/${type}/downloadModal`,
 			importExcel: (type) => `${baseURL}/${type}/importExcel`,
+			getTeacherRole: (userId) => `${baseURL}/user/role/getbycode?userId=${userId}&userStyle=15`,
+			getTeacherClass: (userId) => `${baseURL}/class/listClass?userId=${userId}`,
+			getStudentClass: (studentId) => `${baseURL}/student/getStuClassByStudentId?studentId=${studentId}`
 		},
 		department: {
 			post:`${baseURL}/cityDepartment/add`,
@@ -161,6 +164,10 @@ const config = _.extend({
 			setClassLeader: `${baseURL}/class/classTeacher`,
 			getClassSubject: (classId) => `${baseURL}/subject/class?classId=${classId}`,
 			getClassSubjectTeacher: (classId) => `${baseURL}/class/subjectTeacher?classId=${classId}`,
+			setClassTeacher: `${baseURL}/class/teacher/edit`,
+			getStudent: (classId) => `${baseURL}/student/listInClass?classId=${classId}`,
+			findStudent: (filter) => `${baseURL}/student/find?filter=${filter}`,
+			setStudent: `${baseURL}/class/student/edit`,
 		},
 		school:{
 			search:(search,currentPage,areaSelectId)=>`${baseURL}/school/pageByArea?search=${search}&currentPage=${currentPage}&areaSelectId=${areaSelectId}`,

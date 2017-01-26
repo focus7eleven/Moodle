@@ -13,11 +13,13 @@ import {
   GET_CLASS_LEADER_LIST,
   GET_CLASS_SUBJECT,
   GET_CLASS_SUBJECT_TEACHER,
+  FIND_STUDENT,
+  GET_STUDENT_FOR_CLASS,
   SEARCH_SCHOOL,
 } from '../actions/workspace'
 import {findPath} from '../reducer/menu'
-
 import {fromJS} from 'immutable'
+import _ from 'lodash'
 
 const initialState = fromJS({
   data:[],
@@ -34,6 +36,7 @@ const initialState = fromJS({
   classLeaderList: [],
   classSubject: [],
   classSubjectTeacher: [],
+  studentForClassList: [],
 })
 
 export default (state = initialState,action)=>{
@@ -68,6 +71,12 @@ export default (state = initialState,action)=>{
       return state.set('classSubject',action.data)
     case GET_CLASS_SUBJECT_TEACHER[1]:
       return state.set('classSubjectTeacher',action.data)
+    case GET_STUDENT_FOR_CLASS[1]:
+      return state.set('studentForClassList',action.data)
+    case FIND_STUDENT[1]:
+      let list = state.get('studentForClassList')
+      list = _.unionWith(list,action.data,(a,b)=>a.studentId==b.studentId);
+      return state.set('studentForClassList',list)
     case SEARCH_SCHOOL[0]:
       return state.set('loading',true)
     case SEARCH_SCHOOL[1]:

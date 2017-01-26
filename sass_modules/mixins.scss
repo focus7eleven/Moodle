@@ -21,6 +21,11 @@
   }
 }
 
+@mixin body {
+  height: calc( 100% - 40px );
+  width: 100%;
+}
+
 @mixin tableDarkRow{
   text-align: center;
   background-color: #F5F5F5;
@@ -61,4 +66,19 @@
     background-color: $warning-color;
     border-color: $warning-color;
   }
+}
+
+@mixin customFilterDropdown{
+  padding: 8px;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, .2);
+}
+
+@mixin filterInput{
+  width: 150px;
+}
+
+@mixin highlight{
+  color: #f50;
 }
