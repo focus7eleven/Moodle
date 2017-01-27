@@ -34,9 +34,10 @@ const CreateClassPage = React.createClass({
       homeworkType:'1',
     }
   },
+  //获取下拉框的数据
   getFilter(){
     return Promise.all([
-      fetch(config.api.courseCenter.getdistinctsubject,{
+      fetch(config.api.courseCenter.getDistinctSubject,{
         method:'get',
         headers:{
           'from':'nodejs',
@@ -132,16 +133,19 @@ const CreateClassPage = React.createClass({
       })
     })
   },
+  //打开添加作业的对话框
   handleShowHomeworkModal(){
     this.setState({
       showHomeworkModal:true
     })
   },
+  //打开添加微课的对话框
   handleShowMicroClassModal(){
     this.setState({
       showMicroClassModal:true
     })
   },
+  //改变下拉框的选项
   handleFilterChange(type,value){
     switch (type) {
       case 'subject':
@@ -180,6 +184,7 @@ const CreateClassPage = React.createClass({
 
     }
   },
+  //添加一条微课或者作业
   handleAddVideoHome(selectedMircroVideos){
     this.setState({
       videoHomeworkList:this.state.videoHomeworkList.concat(selectedMircroVideos),
@@ -187,6 +192,7 @@ const CreateClassPage = React.createClass({
       showHomeworkModal:false,
     })
   },
+  //保存新建的课程
   saveAsSchool(type){
     let formData = new FormData()
     formData.append('textbook_Version',this.state.versionOption)
@@ -210,6 +216,7 @@ const CreateClassPage = React.createClass({
     }).then(res => res.json()).then(res => {
     })
   },
+  //删除一条微课或者作业
   handleDeleteVideoHomework(key){
     this.setState({
       videoHomeworkList:this.state.videoHomeworkList.filter(v => {
@@ -221,6 +228,7 @@ const CreateClassPage = React.createClass({
       })
     })
   },
+  //渲染微课或者作业表格
   renderVideoHomeworkList(){
     const tableColumn =[{
       title:'类型',

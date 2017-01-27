@@ -30,9 +30,12 @@ import GradeManagementPage from './containers/base_info/grade/GradeManagementPag
 import AreaPage from './containers/base_info/area/AreaPage'
 import SchoolPage from './containers/base_info/school/SchoolPage'
 import AreaDepartmentPage from './containers/base_info/department/AreaDepartmentPage'
-// import CreateClassPage from './containers/class_container/CreateClassPage'
+import CreateClassPage from './containers/course_center/CreateClassPage'
 import CourseCenterContainer from './containers/course_center/CourseCenterContainer'
 import PublicCoursePage from './containers/course_center/PublicCoursePage'
+import PublishedPage from './containers/course_center/PublishedPage'
+import DetailContainer from './containers/detail/DetailContainer'
+import DetailPage from './containers/detail/DetailPage'
 
 const routes = (
 	<Router history={browserHistory}>
@@ -46,6 +49,7 @@ const routes = (
 				<Route path='filter' component={Filter}></Route>
 			</Route>
 			<Route path='login' component={LoginContainer}></Route>
+
 			<Route path='index' component={LoginControlHOC(MainContainer)}>
 				{/* <IndexRedirect to='base-info/phase' component={PhasePage} /> */}
 				{/* <Route path='base-info' component={BaseInfoContainer}> */}
@@ -88,8 +92,14 @@ const routes = (
 				{/*<Route path='notice_mgr' component={NoticeManagerContainer} />*/}
 
 				{/* 课程中心 */}
+
 				<Route path=':second' component={CourseCenterContainer}>
 					<Route path='publicCourse' component={PublicCoursePage}></Route>
+					<Route path='newCourse' component={CreateClassPage}></Route>
+					<Route path='publishedCourse' component={PublishedPage}></Route>
+					<Route path='detail/(:lessonId)' component={DetailContainer}>
+						<IndexRoute component={DetailPage}/>
+					</Route>
 				</Route>
 
 			</Route>

@@ -1,70 +1,99 @@
 import React from 'react'
 import styles from './PublishedPage.scss'
-import {Select,Spin} from 'antd'
-const Option = Select.Option
+import {connect} from 'react-redux'
+import {bindActionCreators} from 'redux'
+import {getTableData} from '../../actions/course_center/main'
+import CourseFilterComponent from '../../components/course_filter/CourseFilterComponent'
+import TableComponent from '../../components/table/TableComponent'
+import {Button} from 'antd'
+import {List,fromJS} from 'immutable'
 
 const PublishedPage = React.createClass({
-  _gradeList:List(),
-  _subjectList:List(),
-  _versionList:List(),
-  _termList:fromJS([{id:'1',text:'上学期'},{id:'2',text:'下学期'}]),
+  contextTypes: {
+    router: React.PropTypes.object
+  },
   getInitialState(){
     return {
-      loading:false,
+      searchStr:'',
     }
   },
+  getTableData(){
+    console.log("dfdfdfasdf:",this.context.router)
+    const tableHeader = [{
+      title:'序号',
+      dataIndex:'num',
+      key:'num',
+    },{
+      title:'课程名称',
+      dataIndex:'name',
+      key:'name',
+    },{
+      title:'微课数量',
+      dataIndex:'content_num',
+      key:'content_num',
+    },{
+      title:'预习作业数量',
+      dataIndex:'prepare_homework',
+      key:'prepare_homework',
+    },{
+      title:'课后作业数量',
+      dataIndex:'after_class_homework',
+      key:'after_class_homework',
+    },{
+      title:'班级',
+      dataIndex:'target_name',
+      key:'target_name',
+    },{
+      title:'创建时间',
+      dataIndex:'created_at_string',
+      key:'created_at_string',
+    },{
+      title:'查看详情',
+      key:'detail',
+      render:(text,record)=>{
+        return (<Button onClick={this.handleCheckDetail.bind(this,text)} type='primary'>详情</Button>)
+      }
+    }]
+    const tableData = this.props.courseCenter.get('data').isEmpty()?List():this.props.courseCenter.get('data').get('result').map((v,k) => ({
+      ...v.toJS(),
+      key:k,
+      num:k
+    }))
+    return {
+      tableBody:tableData.toJS(),
+      tableHeader,
+    }
+  },
+  //查看课程详情
+  handleCheckDetail(currentRow){
+    let lessonId = currentRow['lesson_id']
+    this.context.router.push(`/index/courseCenter/detail/${lessonId}`)
+  },
   render(){
+    const tableData = this.getTableData()
     return (
       <div className={styles.container}>
         <div className={styles.header}>
-        <Select>
-        {
-          this.state.loading?this._gradeList.map(v => (
-            <Option key={v.get("gradeId")} value={v.get('gradeId')} title={v.get('gradeName')}>{v.get('gradeName')}</Option>
-          )):<Option key={'-1'} value={'-1'}><Spin size='small'/></Option>
-        }
-        </Select>
-        <Select>
-        {
-          this.state.loading?this._termList.map(v => (
-            <Option key={v.get('id')} value={v.get('id')} title={v.get('text')}>{v.get('text')}</Option>
-          )):<Option key={'-1'} value={'-1'}><Spin size='small'/></Option>
-        }
-        </Select>
-        <Select>
-        {
-          this.state.loading?this._subjectList.map(v => (
-            <Option key={v.get('subject_id')} value={v.get('subject_id')} title={v.get('subject_name')}>{v.get('subject_name')}</Option>
-          )):<Option key={'-1'} value={'-1'}><Spin size='small'/></Option>
-        }
-        </Select>
-        <Select>
-        {
-          this.state.loading?this._versionList.map(v => (
-            <Option key={v.get('id')} value={v.get('id')} title={v.get('text')}>{v.get('text')}</Option>
-          )):<Option key={'-1'} value={'-1'}><Spin size='small'/></Option>
-        }
-        </Select>
+          <CourseFilterComponent />
         </div>
         <div className={styles.body}>
-          <div className={styles.wrapper}>
-            <Table rowClassName={(record,index)=>index%2?styles.tableDarkRow:styles.tableLightRow} bordered columns={tableData.tableHeader} dataSource={tableData.tableBody}
-            pagination={!this.props.workspace.get('data').isEmpty()?{
-              total:this.props.workspace.get('data').get('totalCount'),
-              pageSize:this.props.workspace.get('data').get('pageShow'),
-              current:this.props.workspace.get('data').get('nowPage'),
-              onChange:(page)=>{
-                this.props.getWorkspaceData('phase',page,this.props.workspace.get('data').get('pageShow'),this.state.searchStr)
-              },
-              showQuickJumper:true,
-              onShowSizeChange:(current,size)=>{
-                this.props.getWorkspaceData('phase',this.props.workspace.get('data').get('nowPage'),size,this.state.searchStr)
-              }
-            }:null} />
-            <div className={styles.tableMsg}>当前条目{workspace.get('data').get('start')}-{parseInt(workspace.get('data').get('start'))+parseInt(workspace.get('data').get('pageShow'))}/总条目{workspace.get('data').get('totalCount')}</div>
-          </div>
+          <TableComponent tableData={tableData} pageType="publicedPage" searchStr={this.state.searchStr}></TableComponent>
         </div>
       </div>
     )
   }
 })
+
+function mapStateToProps(state){
+  return{
+    menu:state.get('menu'),
+    courseCenter:state.get('courseCenter')
+  }
+}
+function mapDispatchToProps(dispatch){
+  return {
+    getTableData:bindActionCreators(getTableData,dispatch),
+  }
+}
+
+export default connect(mapStateToProps,mapDispatchToProps)(PublishedPage)

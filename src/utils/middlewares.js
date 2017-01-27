@@ -25,7 +25,11 @@ export function callAPIMiddleware({
 		}
 
 		if (!shouldCallAPI(getState())) {
-			return
+			const [requestType, successType, failureType] = types
+			return dispatch(_.extend({},payload,{
+				data:{},
+				type: successType
+			}))
 		}
 
 		const [requestType, successType, failureType] = types

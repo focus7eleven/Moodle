@@ -198,9 +198,11 @@ const config = _.extend({
 		},
 		courseCenter:{
 			getTableData: (type,search,currentPage) => `${baseURL}/lesson/get/${type}?search=${search}&currentPage=${currentPage}`,
+			getDetailData: (type,lessonId) => `${baseURL}/lesson/get/${type}?lesson_id=${lessonId}`,
 			getDistinctSubject: `${baseURL}/class/distinctsubject`,
 			getCourseVersion: `${baseURL}/select?selectstyle=JKS`,
 			getUserGrade: `${baseURL}/grade/getUserGrade`,
+			detail:(lessonId)=>`${baseURL}/lesson/get/detail?lesson_id=${lessonId}`
 		},
 		teachingPlan:{
 			course:{
