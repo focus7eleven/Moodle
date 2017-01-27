@@ -1,7 +1,7 @@
 import React from 'react'
 import {Icon,Input,Table,Button,Modal,Form,Spin} from 'antd'
 import styles from './BaseInfoContainer.scss'
-import { connect} from 'react-redux'
+import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 import {getWorkspaceData} from '../../actions/workspace'
 

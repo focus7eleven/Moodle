@@ -85,7 +85,9 @@ const ChangeUserDropDown = React.createClass({
 })
 
 function mapStateToProps(state) {
-  return {}
+  return {
+    user:state.get('user')
+  }
 }
 
 function mapDispatchToProps(dispatch){

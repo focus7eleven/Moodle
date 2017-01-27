@@ -105,3 +105,22 @@ export function importExcel(data,type){
     })
   }
 }
+
+export function setTeacherRole(data){
+  return dispatch => {
+    return fetch(config.api.staff.setTeacherRole,{
+      method:'post',
+      headers:{
+        'from':'nodejs',
+        'token':sessionStorage.getItem('accessToken'),
+      },
+      body: data
+    }).then(res => res.json()).then(res => {
+      if(res.title == 'Success'){
+        dispatch(getWorkspaceData('teacher','','','')).then(res => {notification.success({message:'设置成功'});return res})
+      }else{
+        notification.error({message:'失败',description:res.result})
+      }
+    })
+  }
+}

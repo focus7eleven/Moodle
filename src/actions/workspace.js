@@ -228,6 +228,7 @@ export const addStaff = require('./staff').addStaff
 export const editStaff = require('./staff').editStaff
 export const downloadExcel = require('./staff').downloadExcel
 export const importExcel = require('./staff').importExcel
+export const setTeacherRole = require('./staff').setTeacherRole
 
 export const addDepartment = require('./department').addDepartment
 export const editDepartment = require('./department').editDepartment

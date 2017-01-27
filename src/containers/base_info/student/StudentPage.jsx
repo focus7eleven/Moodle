@@ -7,6 +7,7 @@ import PermissionDic from '../../../utils/permissionDic'
 import {downloadExcel,importExcel,editStaff,addStaff,getWorkspaceData} from '../../../actions/workspace'
 import {fromJS,Map,List} from 'immutable'
 import {findMenuInTree} from '../../../reducer/menu'
+import TableComponent from '../../../components/table/TableComponent'
 import moment from 'moment'
 import config from '../../../config.js'
 
@@ -32,6 +33,8 @@ const StudentPage = React.createClass({
       // 查看学生班级
       studentClassList: [],
       classModalVisibility: false,
+      // 设置家长
+      patriarchModalVisibility: false,
     }
   },
 
@@ -74,7 +77,7 @@ const StudentPage = React.createClass({
       key: 'classCount',
       className:styles.tableColumn,
       render: (text,record) => {
-        return <a onClick={this.handleClassModalDisplay.bind(null,true,record.key)}><Icon type="edit" /> 所属班级个数：{text}</a>
+        return <a onClick={this.handleClassModalDisplay.bind(null,true,record.key)}>所属班级个数：{text}</a>
       }
     },{
       title: '家长',
@@ -82,7 +85,7 @@ const StudentPage = React.createClass({
       key: 'patriarchCount',
       className:styles.tableColumn,
       render: (text,record) => {
-        return <span>家长个数： {text}</span>
+        return <a onClick={this.handlePatriarchModalDisplay.bind(null,true,record.key)}><Icon type="edit"/>家长个数：{text}</a>
       }
     }])
     tableHeader = tableHeader.concat(authList.filter(v => (v.get('authUrl').split('/')[2] != 'import')&&(v.get('authUrl').split('/')[2] != 'view')&&(v.get('authUrl').split('/')[2] != 'add')).map( v => {
@@ -110,6 +113,14 @@ const StudentPage = React.createClass({
     return {
       tableHeader:tableHeader.toJS(),
       tableBody:tableBody.toJS(),
+    }
+  },
+
+  handlePatriarchModalDisplay(visibility,key){
+    if(visibility){
+
+    }else{
+      this.setState({patriarchModalVisibility: visibility});
     }
   },
 
@@ -451,6 +462,47 @@ const StudentPage = React.createClass({
     )
   },
 
+  renderPatriarchModal(){
+    const {patriarchModalVisibility} = this.state
+    const columns = [{
+      title: '姓名',
+      dataIndex: 'name',
+    },{
+      title: '电话',
+      dataIndex: 'phone',
+    },{
+      title: '常住地址',
+      dataIndex: 'address',
+    },{
+      title: '关系',
+      dataIndex: 'relation',
+      render:(text,record) => {
+        return (
+          <Select>
+          </Select>
+        )
+      }
+    }];
+    const data = patriarchList.length>=0?patriarchList.map((v,key) => {
+      return {
+        key: v.userId,
+        name: v.name,
+        phone: v.schoolName,
+        address: v.address,
+        relation: v.relation,
+      }
+    }):[];
+    return (
+      <Modal title="设置学生家长" visible={patriarchModalVisibility}
+        onOk={this.handleSetPatriarch} onCancel={this.handlePatriarchModalDisplay.bind(null,false,"")}
+      >
+        <div>
+          <Table pagination={false} columns={columns} dataSource={data} />
+        </div>
+      </Modal>
+    )
+  },
+
   renderClassModal(){
     const {studentClassList,classModalVisibility} = this.state
     const columns = [{
@@ -506,29 +558,7 @@ const StudentPage = React.createClass({
           <Search style={{width:'260px'}} placeholder="请输入学生姓名" value={this.state.searchStr} onChange={this.handleSearchStrChanged} onSearch={this.handleSearchTableData} />
         </div>
         <div className={styles.body}>
-          <div className={styles.wrapper}>
-            <Table
-              rowClassName={(record,index)=>index%2?styles.tableDarkRow:styles.tableLightRow}
-              bordered
-              columns={tableData.tableHeader}
-              dataSource={tableData.tableBody}
-              pagination={
-                !this.props.workspace.get('data').isEmpty() ?
-                  {
-                    total:this.props.workspace.get('data').get('totalCount'),
-                    pageSize:this.props.workspace.get('data').get('pageShow'),
-                    current:this.props.workspace.get('data').get('nowPage'),
-                    showQuickJumper:true,
-                    onChange:(page)=>{
-                      this.props.getWorkspaceData('student',page,this.props.workspace.get('data').get('pageShow'),this.state.searchStr)
-                    }
-                  }
-                  :
-                  null
-                }
-              />
-            <div className={styles.tableMsg}>当前条目{workspace.get('data').get('start')}-{parseInt(workspace.get('data').get('start'))+parseInt(workspace.get('data').get('pageShow'))}/总条目{workspace.get('data').get('totalCount')}</div>
-          </div>
+          <TableComponent tableData={tableData} pageType="student" searchStr={this.state.searchStr}></TableComponent>
         </div>
         {this.renderModal()}
         {this.renderImportModal()}
