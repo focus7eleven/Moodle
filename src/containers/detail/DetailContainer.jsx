@@ -11,7 +11,7 @@ const CourseCenterContainer = React.createClass({
   },
 
   componentWillReceiveProps(nextProps){
-    if(!this.props.detail.get('loading') && (nextProps.courseCenter.get('data').isEmpty() || (this.props.location.pathname != nextProps.location.pathname))){
+    if(!this.props.detail.get('loading') && (nextProps.detail.get('data').isEmpty() || (this.props.location.pathname != nextProps.location.pathname))){
 
       this.props.getDetailData(nextProps.params.lessonId)
     }
