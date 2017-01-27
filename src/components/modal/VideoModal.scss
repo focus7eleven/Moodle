@@ -5,6 +5,7 @@
     }
     :global(.ant-modal-body){
       padding: 0;
+      overflow: visible;
       :global(video){
         width:520px;
       }
