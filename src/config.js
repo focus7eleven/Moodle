@@ -197,7 +197,8 @@ const config = _.extend({
 			}
 		},
 		lesson:{
-			lastChapterTime:(scheduleId,hourNo)=>`${baseURL}/lesson/lastChapterTime?teaching_schedule_id=${scheduleId}&hour_no=${hourNo}`
+			lastChapterTime:(scheduleId,hourNo)=>`${baseURL}/lesson/lastChapterTime?teaching_schedule_id=${scheduleId}&hour_no=${hourNo}`,
+			create:`${baseURL}/lesson/create`
 		},
 		microvideo:{
 			get:(type,currentPage,pageShow,subjectId,gradeId,textbookId,search)=>`${baseURL}/microvideo/${type}?currentPage=${currentPage}&pageShow=${pageShow}&subjectId=${subjectId}&gradeId=${gradeId}&textbookMenuId=${textbookId}&search=${search}`

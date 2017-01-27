@@ -18,7 +18,7 @@ const CreateClassPage = React.createClass({
       subjectList:List(),
       versionList:List(),
       gradeList:List(),
-      termList:fromJS([{id:'上学期',text:'上学期'},{id:'下学期',text:'下学期'}]),
+      termList:fromJS([{id:'1',text:'上学期'},{id:'2',text:'下学期'}]),
       charpterList:List(),
 
       subjectOption:'',
@@ -26,6 +26,8 @@ const CreateClassPage = React.createClass({
       gradeOption:'',
       termOption:'',
       charpterOption:'',
+      courseName:'',
+      courseDesc:'',
 
       videoHomeworkList:List(),
 
@@ -185,6 +187,40 @@ const CreateClassPage = React.createClass({
       showHomeworkModal:false,
     })
   },
+  saveAsSchool(type){
+    let formData = new FormData()
+    formData.append('textbook_Version',this.state.versionOption)
+    formData.append('textbook_Term',this.state.termOption)
+    formData.append('course_date',this.state.chapterTime)
+    formData.append('course_name',this.state.courseName)
+    formData.append('course_des',this.state.courseDesc)
+    formData.append('teaching_schedule_id',this.state.charpterOption[0])
+    formData.append('hour_no',this.state.charpterOption[1])
+    formData.append('isSchool',type)
+    formData.append('video_content_id',this.state.videoHomeworkList.filter(v => v.get('type')=='video').map(v => v.get('id')).toJS().join(','))
+    formData.append('homework_content_id',this.state.videoHomeworkList.filter(v => v.get('type')=='homework').map(v => v.get('homework_id')).toJS().join(','))
+    formData.append('homeworkTypeList',this.state.videoHomeworkList.filter(v => v.get('type')=='homework').map(v => v.get('homework_id')+'|1').toJS().join(','))
+    fetch(config.api.lesson.create,{
+      method:'post',
+      headers:{
+        'from':'nodejs',
+        'token':sessionStorage.getItem('accessToken')
+      },
+      body:formData
+    }).then(res => res.json()).then(res => {
+    })
+  },
+  handleDeleteVideoHomework(key){
+    this.setState({
+      videoHomeworkList:this.state.videoHomeworkList.filter(v => {
+        if(v.get('type')=='video'){
+          return v.get('id')!=key
+        }else{
+          return v.get('homework_id')!=key
+        }
+      })
+    })
+  },
   renderVideoHomeworkList(){
     const tableColumn =[{
       title:'类型',
@@ -208,18 +244,20 @@ const CreateClassPage = React.createClass({
       title:'操作',
       key:'action',
       render:(text,record)=>{
-        return (<Button className={styles.deleteButton}>删除</Button>)
+        return (<Button className={styles.deleteButton} onClick={this.handleDeleteVideoHomework.bind(this,record.key)}>删除</Button>)
       }
     }]
     const tableData = this.state.videoHomeworkList.map(v => {
       if(v.get('type')=='video'){
         return {
+          key:v.get('id'),
           type:v.get('type'),
           name:v.get('name'),
           createdAt:v.get('createdAt'),
         }
       }else{
         return {
+          key:v.get('homework_id'),
           type:v.get('type'),
           name:v.get('homework_name'),
           createdAt:v.get('create_dt'),
@@ -304,13 +342,13 @@ const CreateClassPage = React.createClass({
               <Col span={6}>
                 <div className={styles.filterItem}>
                   <div ><span><Icon type="appstore" />上课时间</span></div>
-                  <DatePicker value={moment(this.state.chapterTime,'YYYY/MM/DD')} size='large' style={{width:'100%'}} showTime format="YYYY-MM-DD HH:mm:ss" />
+                  <DatePicker value={moment(this.state.chapterTime,'YYYY/MM/DD')} onChange={(date,dateString)=>{this.setState({chapterTime:dateString})}}  size='large' style={{width:'100%'}} showTime format="YYYY-MM-DD HH:mm:ss" />
                 </div>
               </Col>
               <Col span={12}>
                 <div className={styles.filterItem}>
                   <div ><span><Icon type="appstore" />课程名称</span></div>
-                  <Input size='large' placeholder="输入小于30个字" />
+                  <Input value={this.state.courseName} onChange={(e)=>{this.setState({courseName:e.target.value})}} size='large' placeholder="输入小于30个字" />
                 </div>
               </Col>
             </Row>
@@ -318,7 +356,7 @@ const CreateClassPage = React.createClass({
               <Col span={24}>
                 <div className={styles.filterItem}>
                   <div ><span><Icon type="appstore" />课程说明</span></div>
-                  <Input size='large' placeholder="请输入课程说明"/>
+                  <Input value={this.state.courseDesc} onChange={(e)=>{this.setState({courseDesc:e.target.value})}} size='large' placeholder="请输入课程说明"/>
                 </div>
               </Col>
             </Row>
@@ -328,7 +366,7 @@ const CreateClassPage = React.createClass({
           </div>
         </div>
         <div className={styles.footer}>
-          <Button type='primary' style={{marginRight:'10px'}} onClick={this.saveAsSchool}>保存为学校课程</Button><Button type='primary' onClick={this.saveAsSchool}>保存为个人课程</Button>
+          <Button type='primary' style={{marginRight:'10px'}} onClick={this.saveAsSchool.bind(this,'1')}>保存为学校课程</Button><Button type='primary' onClick={this.saveAsSchool.bind(this,'0')}>保存为个人课程</Button>
         </div>
         {this.state.showHomeworkModal?<AddHomeworkModal currentSubject={this.state.subjectOption} onSubmit={(selectedHomeworks)=>{this.handleAddVideoHome(selectedHomeworks)}} onCancel={()=>{this.setState({showHomeworkModal:false})}} />:null}
         {this.state.showMicroClassModal?<AddMicroClassModal onSubmit={(selectedMircroVideos)=>{this.handleAddVideoHome(selectedMircroVideos)}} onCancel={()=>{this.setState({showMicroClassModal:false})}} subjectList={this.state.subjectList} versionList={this.state.versionList} termList={this.state.termList}/>:null}
