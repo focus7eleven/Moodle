@@ -1,15 +1,38 @@
 import React from 'react'
 import styles from './HomeworkDetailModal.scss'
 import {Modal,Row,Col,Icon,Tag} from 'antd'
-
+import config from '../../config'
 const HomeworkDetailModal = React.createClass({
   getDefaultProps(){
     return {
-      onCancel:()=>{}
+      homeworkId:'',
+      onCancel:()=>{},
+    }
+  },
+  getInitialState(){
+    return {
+      subject:'',
+      homeworkName:'',
+      finishTime:'',
+      homeworkDesc:'',
     }
   },
   componentDidMount(){
+    fetch(config.api.homework.getHomeworkDetail(this.props.homeworkId),{
+      method:'get',
+      headers:{
+        'from':'nodejs',
+        'token':sessionStorage.getItem('accessToken')
+      }
+    }).then(res => res.json()).then(res => {
+      this.setState({
+        subject:res[0].subject,
+        homeworkName:res[0]['homework_name'],
+        finishTime:res[0]['finish_time'],
+        homeworkDesc:res[0]['homework_desc'],
 
+      })
+    })
   },
   render(){
     return (
@@ -18,11 +41,11 @@ const HomeworkDetailModal = React.createClass({
           <Col span={8}>
             <div className={styles.box}>
               <span><Icon type='appstore'/>学科</span>
-              <span><Tag >语文</Tag></span>
+              <span><Tag >{this.state.subject}</Tag></span>
             </div>
             <div className={styles.box}>
               <span><Icon type='appstore'/>名称</span>
-              <span><Tag >作业1</Tag></span>
+              <span><Tag >{this.state.homeworkName}</Tag></span>
             </div>
             <div className={styles.box}>
               <span><Icon type='appstore'/>教辅资料</span>
@@ -34,13 +57,13 @@ const HomeworkDetailModal = React.createClass({
             </div>
             <div className={styles.box}>
               <span><Icon type='appstore'/>完成期限</span>
-              <span><Tag >时间</Tag></span>
+              <span><Tag >{this.state.finishTime}</Tag></span>
             </div>
           </Col>
           <Col span={8}>
             <div className={styles.box}>
               <span><Icon type='appstore'/>要求</span>
-              <span><Tag >要求</Tag></span>
+              <span><Tag >{this.state.homeworkDesc}</Tag></span>
             </div>
           </Col>
           <Col span={8}>

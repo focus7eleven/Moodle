@@ -5,6 +5,7 @@ import styles from './DetailPage.scss'
 import {Row,Col,Card,Icon,Button,Table,Tag} from 'antd'
 import VideoModal from '../../components/modal/VideoModal'
 import HomeworkDetailModal from '../../components/modal/HomeworkDetailModal'
+import config from '../../config'
 
 const DetailPage = React.createClass({
   getInitialState(){
@@ -17,12 +18,23 @@ const DetailPage = React.createClass({
   },
   handleCheckDetail(currentRow){
     if(currentRow['content_name']=='微课'){
-      this.setState({
-        showVidoeoDetailModal:true
+      fetch(config.api.microvideo.getVideoDetailById(currentRow['content_id']),{
+        method:'get',
+        headers:{
+          'from':'nodejs',
+          'token':sessionStorage.getItem('accessToken'),
+        }
+      }).then(res => res.json()).then(res => {
+        const baseURL = 'http://139.224.194.45:8080'
+        this.setState({
+          showVidoeoDetailModal:true,
+          videoUrl:`${baseURL}/${res.url}`
+        })
       })
     }else{
       this.setState({
-        showHomeworkDetailModal:true
+        showHomeworkDetailModal:true,
+        homeworkId:currentRow['content_id']
       })
     }
   },
@@ -96,8 +108,8 @@ const DetailPage = React.createClass({
         <div className={styles.footer}>
           <Button type='primary' onClick={this.handleBack}>返回</Button>
         </div>
-        {this.state.showVidoeoDetailModal?<VideoModal onCancel={()=>{this.setState({showVidoeoDetailModal:false})}}/>:null}
-        {this.state.showHomeworkDetailModal?<HomeworkDetailModal onCancel={()=>{this.setState({showHomeworkDetailModal:false})}}/>:null}
+        {this.state.showVidoeoDetailModal?<VideoModal videoUrl={this.state.videoUrl} onCancel={()=>{this.setState({showVidoeoDetailModal:false})}}/>:null}
+        {this.state.showHomeworkDetailModal?<HomeworkDetailModal homeworkId={this.state.homeworkId} onCancel={()=>{this.setState({showHomeworkDetailModal:false})}}/>:null}
       </div>
     )
   }
