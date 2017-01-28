@@ -7,7 +7,7 @@ import {bindActionCreators} from 'redux'
 import {getTableData} from '../../actions/course_center/main'
 import {Button} from 'antd'
 import PublishModal from '../../components/modal/PublishModal'
-const PublicCoursePage = React.createClass({
+const TeacherCoursePage = React.createClass({
   contextTypes: {
     router: React.PropTypes.object
   },
@@ -104,4 +104,4 @@ function mapDispatchToProps(dispatch){
   }
 }
 
-export default connect(mapStateToProps,mapDispatchToProps)(PublicCoursePage)
+export default connect(mapStateToProps,mapDispatchToProps)(TeacherCoursePage)

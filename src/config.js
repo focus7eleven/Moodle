@@ -119,6 +119,7 @@ const config = _.extend({
 		group: {
 			addMadeGroup: `${baseURL}/group/add`,
 			editMadeGroup: `${baseURL}/group/edit`,
+			getByTeacherForHomework:`${baseURL}/group/getByTeacherForHomework`,
 		},
 		staff: {
 			addStaff: (type) => `${baseURL}/${type}/add`,
@@ -211,7 +212,8 @@ const config = _.extend({
 		},
 		lesson:{
 			lastChapterTime:(scheduleId,hourNo)=>`${baseURL}/lesson/lastChapterTime?teaching_schedule_id=${scheduleId}&hour_no=${hourNo}`,
-			create:`${baseURL}/lesson/create`
+			create:`${baseURL}/lesson/create`,
+			publish:`${baseURL}/lesson/publish`,
 		},
 		microvideo:{
 			get:(type,currentPage,pageShow,subjectId,gradeId,textbookId,search)=>`${baseURL}/microvideo/${type}?currentPage=${currentPage}&pageShow=${pageShow}&subjectId=${subjectId}&gradeId=${gradeId}&textbookMenuId=${textbookId}&search=${search}`,

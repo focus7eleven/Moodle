@@ -36,7 +36,8 @@ import PublicCoursePage from './containers/course_center/PublicCoursePage'
 import PublishedPage from './containers/course_center/PublishedPage'
 import DetailContainer from './containers/detail/DetailContainer'
 import DetailPage from './containers/detail/DetailPage'
-
+import TeacherCoursePage from './containers/course_center/TeacherPage'
+import SchoolCoursePage from './containers/course_center/SchoolCoursePage'
 const routes = (
 	<Router history={browserHistory}>
 		<Route path="/" component={AppContainer}>
@@ -100,6 +101,8 @@ const routes = (
 					<Route path='detail/(:lessonId)' component={DetailContainer}>
 						<IndexRoute component={DetailPage}/>
 					</Route>
+					<Route path='courseInfo' component={TeacherCoursePage} />
+					<Route path='schoolCourse' component={SchoolCoursePage} />
 				</Route>
 
 			</Route>
