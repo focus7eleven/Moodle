@@ -3,14 +3,15 @@ import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 import styles from './DetailPage.scss'
 import {Row,Col,Card,Icon,Button,Table,Tag} from 'antd'
-import VideoModal from '../../components/modal/VideoModal'
-import HomeworkDetailModal from '../../components/modal/HomeworkDetailModal'
-import config from '../../config'
+import VideoModal from '../../../components/modal/VideoModal'
+import HomeworkDetailModal from '../../../components/modal/HomeworkDetailModal'
+import config from '../../../config'
 
 const DetailPage = React.createClass({
   getInitialState(){
     return {
-      showDetailModal:false
+      showVidoeoDetailModal: false,
+      showHomeworkDetailModal: false,
     }
   },
   handleBack(){
@@ -62,7 +63,7 @@ const DetailPage = React.createClass({
         return (<Button onClick={this.handleCheckDetail.bind(this,text)} type='primary'>详情</Button>)
       }
     }]
-    const tableBody = this.props.detail.get('data').get('lessonContentPojoList').map(v => ({
+    const tableBody = this.props.courseCenter.get('courseDetail').get('lessonContentPojoList').map(v => ({
       key:v.get('content_id'),
       ...v.toJS()
     })).toJS()
@@ -117,8 +118,9 @@ const DetailPage = React.createClass({
 
 function mapStateToProps(state){
   return{
-    menu:state.get('menu'),
-    detail:state.get('detail')
+    menu: state.get('menu'),
+    courseCenter: state.get('courseCenter'),
+    // detail:state.get('detail'),
   }
 }
 function mapDispatchToProps(dispatch){
