@@ -558,7 +558,7 @@ const StudentPage = React.createClass({
           <Search style={{width:'260px'}} placeholder="请输入学生姓名" value={this.state.searchStr} onChange={this.handleSearchStrChanged} onSearch={this.handleSearchTableData} />
         </div>
         <div className={styles.body}>
-          <TableComponent tableData={tableData} pageType="student" searchStr={this.state.searchStr}></TableComponent>
+          <TableComponent dataType="baseInfo" tableData={tableData} pageType="student" searchStr={this.state.searchStr}></TableComponent>
         </div>
         {this.renderModal()}
         {this.renderImportModal()}

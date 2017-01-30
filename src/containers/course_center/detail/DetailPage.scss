@@ -6,9 +6,19 @@
   :local(.body){
 
   }
+
+  :local(.tableColumn){
+    @include tableColumn;
+  }
+
   :local(.footer){
     display: flex;
     width: 100%;
-    justify-content: flex-end;
+    justify-content: center;
+    >button{
+      width: 72px;
+      height: 32px;
+      font-size: 13px;
+    }
   }
 }

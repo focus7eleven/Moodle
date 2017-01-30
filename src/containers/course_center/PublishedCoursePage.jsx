@@ -1,5 +1,5 @@
 import React from 'react'
-import styles from './PublishedPage.scss'
+import styles from './PublishedCoursePage.scss'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 import {getTableData} from '../../actions/course_center/main'
@@ -8,7 +8,7 @@ import TableComponent from '../../components/table/TableComponent'
 import {Button} from 'antd'
 import {List,fromJS} from 'immutable'
 
-const PublishedPage = React.createClass({
+const PublishedCoursePage = React.createClass({
   contextTypes: {
     router: React.PropTypes.object
   },
@@ -18,38 +18,45 @@ const PublishedPage = React.createClass({
     }
   },
   getTableData(){
-    console.log("dfdfdfasdf:",this.context.router)
     const tableHeader = [{
       title:'序号',
       dataIndex:'num',
       key:'num',
+      className:styles.tableColumn,
     },{
       title:'课程名称',
       dataIndex:'name',
       key:'name',
+      className:styles.tableColumn,
     },{
       title:'微课数量',
       dataIndex:'content_num',
       key:'content_num',
+      className:styles.tableColumn,
     },{
       title:'预习作业数量',
       dataIndex:'prepare_homework',
       key:'prepare_homework',
+      className:styles.tableColumn,
     },{
       title:'课后作业数量',
       dataIndex:'after_class_homework',
       key:'after_class_homework',
+      className:styles.tableColumn,
     },{
       title:'班级',
       dataIndex:'target_name',
       key:'target_name',
+      className:styles.tableColumn,
     },{
       title:'创建时间',
       dataIndex:'created_at_string',
       key:'created_at_string',
+      className:styles.tableColumn,
     },{
       title:'查看详情',
       key:'detail',
+      className:styles.tableColumn,
       render:(text,record)=>{
         return (<Button onClick={this.handleCheckDetail.bind(this,text)} type='primary'>详情</Button>)
       }
@@ -74,10 +81,10 @@ const PublishedPage = React.createClass({
     return (
       <div className={styles.container}>
         <div className={styles.header}>
-          <CourseFilterComponent />
+          <CourseFilterComponent pageType="publishedPage"/>
         </div>
         <div className={styles.body}>
-          <TableComponent tableData={tableData} pageType="publicedPage" searchStr={this.state.searchStr}></TableComponent>
+          <TableComponent dataType="courseCenter" tableData={tableData} pageType="publishedPage" searchStr={this.state.searchStr}></TableComponent>
         </div>
       </div>
     )
@@ -96,4 +103,4 @@ function mapDispatchToProps(dispatch){
   }
 }
 
-export default connect(mapStateToProps,mapDispatchToProps)(PublishedPage)
+export default connect(mapStateToProps,mapDispatchToProps)(PublishedCoursePage)

@@ -3,6 +3,7 @@ import {Select} from 'antd'
 import {getWorkspaceData} from '../../actions/workspace'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
+import {getFilteredTableData,getGradeOptions,getSubjectOptions,getVersionOptions} from '../../actions/course_center/main'
 import styles from './CourseFilterComponent.scss'
 import config from '../../config'
 
@@ -10,35 +11,20 @@ const Option = Select.Option;
 
 const CourseFilterComponent = React.createClass({
   propTypes: {
+    pageType: React.PropTypes.string.isRequired,
   },
 
   componentWillMount(){
-    fetch(config.api.courseCenter.getCourseVersion,{
-      method:'GET',
-      headers:{
-        'from':'nodejs',
-        'token':sessionStorage.getItem('accessToken'),
-      }
-    }).then(res => res.json()).then((json)=>{
-      this.setState({version: json})
-      fetch(config.api.courseCenter.getDistinctSubject,{
-        method:'GET',
-        headers:{
-          'from':'nodejs',
-          'token':sessionStorage.getItem('accessToken'),
-        }
-      }).then(res => res.json()).then((json) => {
-        this.setState({subjects: json})
-        fetch(config.api.courseCenter.getUserGrade,{
-          method:'GET',
-          headers:{
-            'from':'nodejs',
-            'token':sessionStorage.getItem('accessToken'),
-          }
-        }).then(res => res.json()).then((json) => {
-          this.setState({grade: json})
-        })
-      })
+    this.props.getGradeOptions()
+    this.props.getSubjectOptions()
+    this.props.getVersionOptions()
+  },
+
+  componentWillReceiveProps(nextProps){
+    this.setState({
+      grade: nextProps.courseCenter.get('gradeOptions'),
+      subjects: nextProps.courseCenter.get('subjectOptions'),
+      version: nextProps.courseCenter.get('versionOptions'),
     })
   },
 
@@ -51,11 +37,11 @@ const CourseFilterComponent = React.createClass({
   },
 
   handleGradeChange(value){
-    console.log(value);
+    this.props.getFilteredTableData(this.props.pageType,'',1,value);
   },
 
   handleTermChange(value){
-    console.log(value);
+    this.props.getFilteredTableData(this.props.pageType,'',1,'','',value);
   },
 
   handleVersionChange(value){
@@ -63,7 +49,7 @@ const CourseFilterComponent = React.createClass({
   },
 
   handleSubjectChange(value){
-    console.log(value);
+    this.props.getFilteredTableData(this.props.pageType,'',1,'',value);
   },
 
   render(){
@@ -79,7 +65,7 @@ const CourseFilterComponent = React.createClass({
             })
           }
         </Select>
-        <Select defaultValue="" style={{ marginLeft:20,width: 200 }} onChange={this.handleSubjectChange}>
+        <Select defaultValue="" style={{ marginLeft:20,width: 200 }} onChange={this.handleTermChange}>
           <Option value="">所有学期</Option>
           <Option value="上学期">上学期</Option>
           <Option value="下学期">下学期</Option>
@@ -107,11 +93,16 @@ const CourseFilterComponent = React.createClass({
 
 function mapStateToProps(state){
   return{
+    courseCenter: state.get('courseCenter'),
   }
 }
 
 function mapDispatchToProps(dispatch){
   return {
+    getFilteredTableData:bindActionCreators(getFilteredTableData,dispatch),
+    getGradeOptions:bindActionCreators(getGradeOptions,dispatch),
+    getSubjectOptions:bindActionCreators(getSubjectOptions,dispatch),
+    getVersionOptions:bindActionCreators(getVersionOptions,dispatch),
   }
 }
 

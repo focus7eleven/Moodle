@@ -15,6 +15,7 @@ const HomeworkDetailModal = React.createClass({
       homeworkName:'',
       finishTime:'',
       homeworkDesc:'',
+      classes: [],
     }
   },
   componentDidMount(){
@@ -30,54 +31,64 @@ const HomeworkDetailModal = React.createClass({
         homeworkName:res[0]['homework_name'],
         finishTime:res[0]['finish_time'],
         homeworkDesc:res[0]['homework_desc'],
-
+      })
+    })
+    fetch(config.api.homework.getHomeworkClass(this.props.homeworkId),{
+      method:'get',
+      headers:{
+        'from':'nodejs',
+        'token':sessionStorage.getItem('accessToken')
+      }
+    }).then(res => res.json()).then(res => {
+      this.setState({
+        classes: res
       })
     })
   },
   render(){
     return (
-      <Modal title='作业详情' visible={true} onCancel={()=>{this.props.onCancel()}}>
+      <Modal width={800} title='作业详情' visible={true} onOk={()=>{this.props.onCancel()}} onCancel={()=>{this.props.onCancel()}}>
         <Row>
           <Col span={8}>
             <div className={styles.box}>
               <span><Icon type='appstore'/>学科</span>
-              <span><Tag >{this.state.subject}</Tag></span>
+              <span>{this.state.subject}</span>
             </div>
             <div className={styles.box}>
-              <span><Icon type='appstore'/>名称</span>
-              <span><Tag >{this.state.homeworkName}</Tag></span>
+              <span><Icon type='edit'/>名称</span>
+              <span>{this.state.homeworkName}</span>
             </div>
             <div className={styles.box}>
-              <span><Icon type='appstore'/>教辅资料</span>
-              <span><Tag >资料</Tag></span>
+              <span><Icon type='book'/>教辅资料</span>
+              <span>资料</span>
             </div>
             <div className={styles.box}>
-              <span><Icon type='appstore'/>作业内容</span>
-              <span><Tag >无</Tag></span>
+              <span><Icon type='bars'/>作业内容</span>
+              <span>无</span>
             </div>
             <div className={styles.box}>
-              <span><Icon type='appstore'/>完成期限</span>
-              <span><Tag >{this.state.finishTime}</Tag></span>
-            </div>
-          </Col>
-          <Col span={8}>
-            <div className={styles.box}>
-              <span><Icon type='appstore'/>要求</span>
-              <span><Tag >{this.state.homeworkDesc}</Tag></span>
+              <span><Icon type='calendar'/>完成期限</span>
+              <span>{this.state.finishTime}</span>
             </div>
           </Col>
           <Col span={8}>
             <div className={styles.box}>
-              <span><Icon type='appstore'/>附件</span>
-              <span><Tag >语文</Tag></span>
+              <span><Icon type='tags'/>要求</span>
+              <span style={{height: "285px"}}>{this.state.homeworkDesc}</span>
+            </div>
+          </Col>
+          <Col span={8}>
+            <div className={styles.box}>
+              <span><Icon type='file'/>附件</span>
+              <span>无</span>
             </div>
             <div className={styles.box}>
-              <span><Icon type='appstore'/>试卷</span>
-              <span><Tag >语文</Tag></span>
+              <span><Icon type='file-text'/>试卷</span>
+              <span>无</span>
             </div>
             <div className={styles.box}>
-              <span><Icon type='appstore'/>班级/群组</span>
-              <span><Tag >语文</Tag></span>
+              <span><Icon type='team'/>班级/群组</span>
+              <span>{this.state.classes}</span>
             </div>
           </Col>
         </Row>

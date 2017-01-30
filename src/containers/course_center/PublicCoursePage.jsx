@@ -97,10 +97,10 @@ const PublicCoursePage = React.createClass({
     return (
       <div className={styles.container}>
         <div className={styles.header}>
-          <CourseFilterComponent />
+          <CourseFilterComponent pageType="publicPage"/>
         </div>
         <div className={styles.body}>
-          <TableComponent tableData={tableData} pageType="publicedPage" searchStr={this.state.searchStr}></TableComponent>
+          <TableComponent dataType="courseCenter" tableData={tableData} pageType="publicPage" searchStr={this.state.searchStr}></TableComponent>
         </div>
         {this.state.showPublishModal?<PublishModal onOk={()=>{this.context.router.push(`/index/course-center/publishedCourse`)}} onCancel={()=>{this.setState({showPublishModal:false})}}/>:null}
       </div>

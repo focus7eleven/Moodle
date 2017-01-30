@@ -12,7 +12,6 @@ const CourseCenterContainer = React.createClass({
 
   componentWillReceiveProps(nextProps){
     if(!this.props.courseCenter.get('loading') && (nextProps.courseCenter.get('data').isEmpty() || (this.props.location.pathname != nextProps.location.pathname))){
-
       this.props.getTableData(nextProps.location.pathname.split('/').slice(-1)[0],'',1)
     }
   },

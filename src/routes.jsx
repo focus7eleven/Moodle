@@ -33,10 +33,10 @@ import AreaDepartmentPage from './containers/base_info/department/AreaDepartment
 import CreateClassPage from './containers/course_center/CreateClassPage'
 import CourseCenterContainer from './containers/course_center/CourseCenterContainer'
 import PublicCoursePage from './containers/course_center/PublicCoursePage'
-import PublishedPage from './containers/course_center/PublishedPage'
+import PublishedCoursePage from './containers/course_center/PublishedCoursePage'
 import DetailContainer from './containers/course_center/detail/DetailContainer'
 import DetailPage from './containers/course_center/detail/DetailPage'
-import TeacherCoursePage from './containers/course_center/TeacherPage'
+import TeacherCoursePage from './containers/course_center/TeacherCoursePage'
 import SchoolCoursePage from './containers/course_center/SchoolCoursePage'
 const routes = (
 	<Router history={browserHistory}>
@@ -97,7 +97,7 @@ const routes = (
 				<Route path=':second' component={CourseCenterContainer}>
 					<Route path='publicCourse' component={PublicCoursePage}></Route>
 					<Route path='newCourse' component={CreateClassPage}></Route>
-					<Route path='publishedCourse' component={PublishedPage}></Route>
+					<Route path='publishedCourse' component={PublishedCoursePage}></Route>
 					<Route path='detail/(:lessonId)' component={DetailContainer}>
 						<IndexRoute component={DetailPage}/>
 					</Route>

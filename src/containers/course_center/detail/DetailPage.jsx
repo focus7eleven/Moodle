@@ -44,21 +44,26 @@ const DetailPage = React.createClass({
       title:'类型',
       dataIndex:'content_name',
       key:'content_name',
+      className:styles.tableColumn,
     },{
       title:'名称',
       dataIndex:'name',
       key:'name',
+      className:styles.tableColumn,
     },{
       title:'创建时间',
       dataIndex:'create_dt',
       key:'create_dt',
+      className:styles.tableColumn,
     },{
       title:'说明',
       dataIndex:'desc2',
       key:'desc2',
+      className:styles.tableColumn,
     },{
       title:'操作',
       key:'action',
+      className:styles.tableColumn,
       render:(text,record)=>{
         return (<Button onClick={this.handleCheckDetail.bind(this,text)} type='primary'>详情</Button>)
       }
@@ -75,29 +80,29 @@ const DetailPage = React.createClass({
               <Card title={<span><Icon type='appstore'/>学科</span>} bordered={true}>Card content</Card>
             </Col>
             <Col span={6}>
-              <Card title={<span><Icon type='appstore'/>版本</span>} bordered={true}>Card content</Card>
+              <Card title={<span><Icon type='tags'/>版本</span>} bordered={true}>Card content</Card>
             </Col>
             <Col span={6}>
-              <Card title={<span><Icon type='appstore'/>年级</span>} bordered={true}>Card content</Card>
+              <Card title={<span><Icon type='bars'/>年级</span>} bordered={true}>Card content</Card>
             </Col>
             <Col span={6}>
-              <Card title={<span><Icon type='appstore'/>学期</span>} bordered={true}>Card content</Card>
+              <Card title={<span><Icon type='retweet'/>学期</span>} bordered={true}>Card content</Card>
             </Col>
           </Row>
           <Row type='flex' gutter={8} style={{marginBottom:'10px'}}>
-            <Col span={8}>
-              <Card title={<span><Icon type='appstore'/>章节课程</span>} bordered={true}>Card content</Card>
+            <Col span={6}>
+              <Card title={<span><Icon type='book'/>章节课程</span>} bordered={true}>Card content</Card>
             </Col>
-            <Col span={8}>
-              <Card title={<span><Icon type='appstore'/>上课时间</span>} bordered={true}>Card content</Card>
+            <Col span={6}>
+              <Card title={<span><Icon type='calendar'/>上课时间</span>} bordered={true}>Card content</Card>
             </Col>
-            <Col span={8}>
-              <Card title={<span><Icon type='appstore'/>课程名称</span>} bordered={true}>Card content</Card>
+            <Col span={12}>
+              <Card title={<span><Icon type='edit'/>课程名称</span>} bordered={true}>Card content</Card>
             </Col>
           </Row>
           <Row type='flex' gutter={8} style={{marginBottom:'10px'}}>
             <Col span={24}>
-              <Card title={<span><Icon type='appstore'/>课程说明</span>} bordered={true}>Card content</Card>
+              <Card title={<span><Icon type='plus'/>课程说明</span>} bordered={true}>Card content</Card>
             </Col>
           </Row>
           <Row type='flex'>
@@ -120,7 +125,6 @@ function mapStateToProps(state){
   return{
     menu: state.get('menu'),
     courseCenter: state.get('courseCenter'),
-    // detail:state.get('detail'),
   }
 }
 function mapDispatchToProps(dispatch){

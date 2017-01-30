@@ -9,7 +9,10 @@
   }
 
   :local(.body){
-    height: calc( 100% - 40px );
-    width: 100%;
+    @include body;
+  }
+
+  :local(.tableColumn){
+    @include tableColumn;
   }
 }

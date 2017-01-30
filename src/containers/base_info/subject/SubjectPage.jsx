@@ -248,7 +248,7 @@ const SubjectPage = React.createClass({
           <Search style={{width: '260px'}} placeholder="请输入学科名称" value={this.state.searchStr} onChange={(e)=>{this.setState({searchStr:e.target.value})}} onSearch={this.handleSearchTableData} />
         </div>
         <div className={styles.body}>
-          <TableComponent tableData={tableData} pageType="subject" searchStr={this.state.searchStr}></TableComponent>
+          <TableComponent tableData={tableData} pageType="subject" searchStr={this.state.searchStr} dataType="baseInfo"></TableComponent>
         </div>
         {this.renderAddSubjectModal()}
       </div>

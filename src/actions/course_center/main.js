@@ -37,6 +37,22 @@ export function getTableData(type,search,currentPage){
   }
 }
 
+export const GET_FILTERED_TABLEDATA = actionNames('GET_FILTERED_TABLEDATA')
+export function getFilteredTableData(type,search,currentPage,phaseCode="",subjectId="",termId=""){
+  return {
+    types:GET_FILTERED_TABLEDATA,
+    callAPI:()=>{
+      return fetch(config.api.courseCenter.getTableData(type,search,currentPage,phaseCode,subjectId,termId),{
+        method:'GET',
+        headers:{
+          'from':'nodejs',
+          'token':sessionStorage.getItem('accessToken'),
+        }
+      }).then(res => res.json())
+    },
+  }
+}
+
 //获取课程的详细信息
 export const GET_DETAILDATA = actionNames('GET_DETAILDATA')
 export function getDetailData(lessonId){
@@ -44,6 +60,53 @@ export function getDetailData(lessonId){
     types:GET_DETAILDATA,
     callAPI:()=>{
       return fetch(config.api.courseCenter.detail(lessonId),{
+        method:'GET',
+        headers:{
+          'from':'nodejs',
+          'token':sessionStorage.getItem('accessToken'),
+        }
+      }).then(res => res.json())
+    }
+  }
+}
+
+// 获取筛选器选项
+export const GET_GRADE_OPTIONS = actionNames('GET_GRADE_OPTIONS')
+export const GET_SUBJECT_OPTIONS = actionNames('GET_SUBJECT_OPTIONS')
+export const GET_VERSION_OPTIONS = actionNames('GET_VERSION_OPTIONS')
+export function getGradeOptions(){
+  return {
+    types: GET_GRADE_OPTIONS,
+    callAPI:()=>{
+      return fetch(config.api.courseCenter.getUserGrade,{
+        method:'GET',
+        headers:{
+          'from':'nodejs',
+          'token':sessionStorage.getItem('accessToken'),
+        }
+      }).then(res => res.json())
+    }
+  }
+}
+export function getSubjectOptions(){
+  return {
+    types: GET_SUBJECT_OPTIONS,
+    callAPI:()=>{
+      return fetch(config.api.courseCenter.getDistinctSubject,{
+        method:'GET',
+        headers:{
+          'from':'nodejs',
+          'token':sessionStorage.getItem('accessToken'),
+        }
+      }).then(res => res.json())
+    }
+  }
+}
+export function getVersionOptions(){
+  return {
+    types: GET_VERSION_OPTIONS,
+    callAPI:()=>{
+      return fetch(config.api.courseCenter.getCourseVersion,{
         method:'GET',
         headers:{
           'from':'nodejs',

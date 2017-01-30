@@ -23,7 +23,6 @@ const CourseCenterContainer = React.createClass({
 
 function mapStateToProps(state){
   return{
-    // detail:state.get('detail'),
     courseCenter:state.get('courseCenter'),
     menu:state.get('menu'),
   }

@@ -198,7 +198,7 @@ const config = _.extend({
 			}
 		},
 		courseCenter:{
-			getTableData: (type,search,currentPage) => `${baseURL}/lesson/get/${type}?search=${search}&currentPage=${currentPage}`,
+			getTableData: (type,search,currentPage,phaseCode="",subjectId="",termId="") => `${baseURL}/lesson/get/${type}?search=${search}&currentPage=${currentPage}&phaseCode=${phaseCode}&subjectId=${subjectId}&termId=${termId}`,
 			getDetailData: (type,lessonId) => `${baseURL}/lesson/get/${type}?lesson_id=${lessonId}`,
 			getDistinctSubject: `${baseURL}/class/distinctsubject`,
 			getCourseVersion: `${baseURL}/select?selectstyle=JKS`,
@@ -224,6 +224,7 @@ const config = _.extend({
 				existHomework:(subjectId,type='1')=>`${baseURL}/homework/course/existHomework?subjectId=${subjectId}&type=${type}`
 			},
 			getHomeworkDetail:(homeworkId)=>`${baseURL}/homework/getHomeworkDetail?homeworkId=${homeworkId}`,
+			getHomeworkClass: (homeworkId) => `${baseURL}/homework/getClasses?homeworkId=${homeworkId}`,
 		}
 	}
 })

@@ -1,6 +1,7 @@
 import React from 'react'
 import {Icon,Table,Button} from 'antd'
 import {getWorkspaceData} from '../../actions/workspace'
+import {getTableData} from '../../actions/course_center/main'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 import styles from './TableComponent.scss'
@@ -10,10 +11,18 @@ const TableComponent = React.createClass({
     tableData: React.PropTypes.object.isRequired,
     pageType: React.PropTypes.string.isRequired,
     searchStr: React.PropTypes.string.isRequired,
+    // 与reducer挂钩
+    dataType: React.PropTypes.string.isRequired,
   },
 
   render(){
-    const {tableData,pageType,searchStr,workspace,getWorkspaceData} = this.props;
+    const {tableData,pageType,searchStr,getWorkspaceData,getTableData,dataType} = this.props;
+    let workspace
+    if(dataType=='baseInfo'){
+      workspace = this.props.baseInfo
+    }else if(dataType=='courseCenter'){
+      workspace = this.props.courseCenter
+    }
     return (
       <div className={styles.wrapper}>
         <Table
@@ -29,10 +38,16 @@ const TableComponent = React.createClass({
                 current:workspace.get('data').get('nowPage'),
                 showQuickJumper:true,
                 onChange:(page)=>{
-                  getWorkspaceData(pageType,page,this.props.workspace.get('data').get('pageShow'),searchStr)
+                  if(dataType=='baseInfo'){
+                    getWorkspaceData(pageType,page,this.props.workspace.get('data').get('pageShow'),searchStr)
+                  }else if(dataType=='courseCenter'){
+                    getTableData(pageType,'',page)
+                  }
                 },
                 onShowSizeChange:(current,size)=>{
-                  getWorkspaceData(pageType,this.props.workspace.get('data').get('nowPage'),size,searchStr)
+                  if(dataType=='baseInfo'){
+                  }else if(dataType=='courseCenter'){
+                  }
                 }
               }
               :
@@ -52,13 +67,15 @@ const TableComponent = React.createClass({
 
 function mapStateToProps(state){
   return{
-    workspace:state.get('workspace')
+    baseInfo:state.get('workspace'),
+    courseCenter:state.get('courseCenter'),
   }
 }
 
 function mapDispatchToProps(dispatch){
   return {
     getWorkspaceData:bindActionCreators(getWorkspaceData,dispatch),
+    getTableData:bindActionCreators(getTableData,dispatch),
   }
 }
 
