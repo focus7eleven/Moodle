@@ -217,7 +217,8 @@ const config = _.extend({
 		},
 		microvideo:{
 			get:(type,currentPage,pageShow,subjectId,gradeId,textbookId,search)=>`${baseURL}/microvideo/${type}?currentPage=${currentPage}&pageShow=${pageShow}&subjectId=${subjectId}&gradeId=${gradeId}&textbookMenuId=${textbookId}&search=${search}`,
-			getVideoDetailById:(videoId)=>`${baseURL}/microvideo/getVideoDetailById?videoId=${videoId}`
+			getVideoDetailById:(videoId)=>`${baseURL}/microvideo/getVideoDetailById?videoId=${videoId}`,
+			getTableData: (type,search,currentPage) => `${baseURL}/microvideo/${type}?search=${search}&currentPage=${currentPage}`,
 		},
 		homework:{
 			course:{

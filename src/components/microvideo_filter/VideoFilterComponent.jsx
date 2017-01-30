@@ -2,13 +2,13 @@ import React from 'react'
 import {Select} from 'antd'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
-import {getFilteredTableData,getGradeOptions,getSubjectOptions,getVersionOptions} from '../../actions/course_center/main'
-import styles from './CourseFilterComponent.scss'
+import {getFilteredTableData,getGradeOptions,getSubjectOptions,getVersionOptions} from '../../actions/micro_course/main'
+import styles from './VideoFilterComponent.scss'
 import config from '../../config'
 
 const Option = Select.Option;
 
-const CourseFilterComponent = React.createClass({
+const VideoFilterComponent = React.createClass({
   propTypes: {
     pageType: React.PropTypes.string.isRequired,
   },
@@ -21,9 +21,9 @@ const CourseFilterComponent = React.createClass({
 
   componentWillReceiveProps(nextProps){
     this.setState({
-      grade: nextProps.courseCenter.get('gradeOptions'),
-      subjects: nextProps.courseCenter.get('subjectOptions'),
-      version: nextProps.courseCenter.get('versionOptions'),
+      grade: nextProps.microCourse.get('gradeOptions'),
+      subjects: nextProps.microCourse.get('subjectOptions'),
+      version: nextProps.microCourse.get('versionOptions'),
     })
   },
 
@@ -92,7 +92,7 @@ const CourseFilterComponent = React.createClass({
 
 function mapStateToProps(state){
   return{
-    courseCenter: state.get('courseCenter'),
+    microCourse: state.get('microCourse'),
   }
 }
 
@@ -105,4 +105,4 @@ function mapDispatchToProps(dispatch){
   }
 }
 
-export default connect(mapStateToProps,mapDispatchToProps)(CourseFilterComponent)
+export default connect(mapStateToProps,mapDispatchToProps)(VideoFilterComponent)
