@@ -1,5 +1,5 @@
 import React from 'react'
-import {Button,Icon,Form,Input,Row,Col,Modal,Table,Select,DatePicker} from 'antd'
+import {Button,Icon,Form,Input,Row,Col,Modal,Table,Select,DatePicker,notification} from 'antd'
 import {List,fromJS} from 'immutable'
 import styles from './CreateClassPage.scss'
 import config from '../../config'
@@ -214,6 +214,11 @@ const CreateClassPage = React.createClass({
       },
       body:formData
     }).then(res => res.json()).then(res => {
+      if(res.title=='Error'){
+        notification.error({message:res.result})
+      }else{
+        notification.success({message:res.result})
+      }
     })
   },
   //删除一条微课或者作业

@@ -106,7 +106,8 @@ const config = _.extend({
 				get:(textbookId)=>`${baseURL}/textbook/menulist.json?textbook_id=${textbookId}`,
 				delete:`${baseURL}/textbook/menudel`,
 			},
-			getTextBookByCondition:(subjectId,gradeId,version,term)=>`${baseURL}/textbook/getTextBookByCondition?subjectId=${subjectId}&gradeId=${gradeId}&version=${version}&term=${term}`
+			getTextBookByCondition:(subjectId,gradeId,version,term,unit='')=>`${baseURL}/textbook/getTextBookByCondition?subjectId=${subjectId}&gradeId=${gradeId}&version=${version}&term=${term}&unit=${unit}`,
+			getUnitBySubjectAndGrade:(subjectId,gradeId)=>`${baseURL}/textbook/getUnitBySubjectAndGrade?subjectId=${subjectId}&gradeId=${gradeId}`,
 		},
 		resource: {
 			getAllResources: `${baseURL}/resource/list`,
