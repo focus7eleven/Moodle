@@ -227,6 +227,13 @@ const config = _.extend({
 			},
 			getHomeworkDetail:(homeworkId)=>`${baseURL}/homework/getHomeworkDetail?homeworkId=${homeworkId}`,
 			getHomeworkClass: (homeworkId) => `${baseURL}/homework/getClasses?homeworkId=${homeworkId}`,
+		},
+		exampaper:{
+			showExamSelectList:(subjectId,gradeId,term)=>`${baseURL}/exampaper/showExamSelectList?subjectId=${subjectId}&gradeId=${gradeId}&term=${term}`,
+			getTableData:(search,currentPage)=>`${baseURL}/exampaper/showExamList.json?search=${search}&currentPage=${currentPage}`
+		},
+		answersheet:{
+			getAll:`${baseURL}/answersheet/getAll`,
 		}
 	}
 })

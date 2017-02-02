@@ -4,6 +4,7 @@ import user from './user'
 import workspace from './workspace'
 import courseCenter from './courseCenter'
 import microCourse from './microCourse'
+import exampaper from './exampaper'
 
 const reducer = combineReducers({
   menu,
@@ -11,6 +12,7 @@ const reducer = combineReducers({
   workspace,
   courseCenter,
   microCourse,
+  exampaper,
 })
 
 export default reducer

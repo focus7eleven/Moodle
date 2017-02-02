@@ -1,15 +1,18 @@
 import React from 'react'
 import styles from './CreateHomework.scss'
-import {Row,Col,Select,Icon,Input} from 'antd'
+import {Row,Col,Select,Icon,Input,Radio,Form} from 'antd'
 import {fromJS,List} from 'immutable'
 import config from '../../config'
 const Option = Select.Option
+const RadioGroup = Radio.Group;
 const selectStyle={
   width:'100%'
 }
+const FormItem = Form.Item
 
 const CreateHomeworkPage = React.createClass({
   componentDidMount(){
+    const {setFieldsValue} = this.props.form
     fetch(config.api.courseCenter.getDistinctSubject,{
       method:'get',
       headers:{
@@ -20,8 +23,11 @@ const CreateHomeworkPage = React.createClass({
       //获取学科列表
       this.setState({
         subjectList:fromJS(res),
-        subjectOption:res[0]['subject_id'],
       })
+      setFieldsValue({
+        subjectOption:res[0]['subject_id']
+      })
+
       //根据学科获取年级列表,获取版本列表
       let subjectId = res[0]['subject_id']
       return Promise.all([
@@ -43,8 +49,10 @@ const CreateHomeworkPage = React.createClass({
         //获取年级列表
         this.setState({
           gradeList:fromJS(res[0]),
-          gradeOption:res[0][0].gradeId,
           versionList:fromJS(res[1]),
+        })
+        setFieldsValue({
+          gradeOption:res[0][0].gradeId,
           versionOption:res[1][0].id
         })
         return {
@@ -66,10 +74,12 @@ const CreateHomeworkPage = React.createClass({
         //获取章节列表
         this.setState({
           charpterList:fromJS(res),
-          charpterOption:res[0][0],
+        })
+        setFieldsValue({
+          charpterOption:res[0],
         })
         //根绝章节获取响应的课程
-        fetch(config.api.textbook.getTextBookByCondition(subjectId,gradeId,versionId,'上学期',res[0][0]),{
+        fetch(config.api.textbook.getTextBookByCondition(subjectId,gradeId,versionId,'上学期',res[0]),{
           method:'get',
           headers:{
             'from':'nodejs',
@@ -78,7 +88,36 @@ const CreateHomeworkPage = React.createClass({
         }).then(res => res.json()).then(res =>{
           this.setState({
             courseList:fromJS(res),
-            courseOption:res[0]['textbook_id'],
+            // courseOption:''
+          })
+          setFieldsValue({
+            courseOption:'',
+            termOption:'上学期',
+            homeworkName:'',
+          })
+        })
+        //获取试卷列表
+        fetch(config.api.exampaper.showExamSelectList(subjectId,gradeId,'上学期'),{
+          method:'get',
+          headers:{
+            'from':'nodejs',
+            'token':sessionStorage.getItem('accessToken')
+          }
+        }).then(res => res.json()).then(res => {
+          this.setState({
+            testpaperList:fromJS(res)
+          })
+        })
+        //获取答题卡列表
+        fetch(config.api.answersheet.getAll,{
+          method:'get',
+          headers:{
+            'from':'nodejs',
+            'token':sessionStorage.getItem('accessToken')
+          }
+        }).then(res => res.json()).then(res => {
+          this.setState({
+            answersheetList:fromJS(res)
           })
         })
       })
@@ -92,93 +131,257 @@ const CreateHomeworkPage = React.createClass({
       versionList:List(),
       charpterList:List(),
       courseList:List(),
+      testpaperList:List(),
+      answersheetList:List(),
 
       homeworkName:'',
       demand:'',
-      homeworkType:''
+      homeworkType:1,
 
     }
   },
+  handleChangeSubject(value){
+    const {getFieldsValue,setFieldsValue} = this.props.form
+    const {subjectOption,termOption,versionOption} = getFieldsValue(['subjectOption','termOption','versionOption'])
+    console.log("--->:",subjectOption,termOption,versionOption)
+    //根据学科获取年级列表
+    fetch(config.api.grade.getBySubject.get(subjectOption),{
+      method:'get',
+      headers:{
+        'from':'nodejs',
+        'token':sessionStorage.getItem('accessToken')
+      }
+    }).then(res => res.json()).then(res => {
+      this.setState({
+        gradeList:fromJS(res)
+      })
+      setFieldsValue({
+        gradeOption:res[0].gradeId
+      })
+
+      let gradeOption = res[0].gradeId
+      //获取章节列表
+      fetch(config.api.textbook.getUnitBySubjectAndGrade(subjectOption,gradeOption),{
+        method:'get',
+        headers:{
+          'from':'nodejs',
+          'token':sessionStorage.getItem('accessToken')
+        }
+      }).then(res => res.json()).then(res => {
+        this.setState({
+          charpterList:fromJS(res)
+        })
+        setFieldsValue({
+          charpterOption:res[0]
+        })
+        let charpterOption = res[0]
+        //获取课程列表
+        fetch(config.api.textbook.getTextBookByCondition(subjectOption,gradeOption,versionOption,termOption,charpterOption),{
+          method:'get',
+          headers:{
+            'from':'nodejs',
+            'token':sessionStorage.getItem('accessToken')
+          }
+        }).then(res => res.json()).then(res => {
+          this.setState({
+            courseList:fromJS(res)
+          })
+          setFieldsValue({
+            courseOption:''
+          })
+          //获取电子试卷
+          fetch(config.api.exampaper.showExamSelectList(subjectOption,gradeOption,termOption),{
+            method:'get',
+            headers:{
+              'from':'nodejs',
+              'token':sessionStorage.getItem('accessToken')
+            }
+          }).then(res => res.json()).then(res => {
+            this.setState({
+              testpaperList:fromJS(res)
+            })
+          })
+          //获取答题卡
+          fetch(config.api.answersheet.getAll,{
+            method:'get',
+            headers:{
+              'from':'nodejs',
+              'token':sessionStorage.getItem('accessToken')
+            }
+          }).then(res => res.json()).then(res => {
+            this.setState({
+              answersheetList:fromJS(res)
+            })
+          })
+        })
+      })
+    })
+  },
+  onChangeHomeworkType(e){
+    this.setState({
+      homeworkType: e.target.value,
+    });
+  },
   render(){
+    const {getFieldDecorator} = this.props.form
     return (
       <div className={styles.container}>
         <div className={styles.body}>
+          <Form>
           <Row type='flex' gutter={8}>
-            <Col span={8}>
+            <Col span={8} style={{borderRight:'1px solid #cccccc'}}>
               <div className={styles.itemBox}>
                 <span><Icon type='appstore'/>学科</span>
-                <Select style={selectStyle}>
-                {
-                  this.state.subjectList.map((v,k) => (
-                    <Option value={v.get('subject_id')} key={k} title={v.get('subject_name')}>{v.get('subject_name')}</Option>
-                  ))
-                }
-                </Select>
+                <FormItem>
+                {getFieldDecorator('subjectOption', {
+                  rules: [{ required: true, message: '请选择学科' }],
+                })(
+                  <Select style={selectStyle} onChange={this.handleChangeSubject}>
+                  {
+                    this.state.subjectList.map((v,k) => (
+                      <Option value={v.get('subject_id')} key={k} title={v.get('subject_name')}>{v.get('subject_name')}</Option>
+                    ))
+                  }
+                  </Select>
+                )}
+                </FormItem>
               </div>
               <div className={styles.itemBox}>
                 <span><Icon type='appstore'/>年级</span>
-                <Select style={selectStyle}>
-                {
-                  this.state.gradeList.map((v,k) => (
-                    <Option value={v.get('gradeId')} key={k} title={v.get('gradeName')}>{v.get('gradeName')}</Option>
-                  ))
-                }
-                </Select>
+                <FormItem>
+                {getFieldDecorator('gradeOption', {
+                  rules: [{ required: true, message: '请选择年级' }],
+                })(
+                  <Select style={selectStyle}>
+                  {
+                    this.state.gradeList.map((v,k) => (
+                      <Option value={v.get('gradeId')} key={k} title={v.get('gradeName')}>{v.get('gradeName')}</Option>
+                    ))
+                  }
+                  </Select>
+                )}
+                </FormItem>
               </div>
               <div className={styles.itemBox}>
                 <span><Icon type='appstore'/>学期</span>
-                <Select style={selectStyle}>
-                {
-                  this.state.termList.map((v,k) => (
-                    <Option value={v.get('id')} key={k} title={v.get('text')}>{v.get('text')}</Option>
-                  ))
-                }
-                </Select>
+                <FormItem>
+                {getFieldDecorator('termOption', {
+                  rules: [{ required: true, message: '请选择学期' }],
+                })(
+                  <Select style={selectStyle}>
+                  {
+                    this.state.termList.map((v,k) => (
+                      <Option value={v.get('id')} key={k} title={v.get('text')}>{v.get('text')}</Option>
+                    ))
+                  }
+                  </Select>
+                )}
+                </FormItem>
               </div>
               <div className={styles.itemBox}>
                 <span><Icon type='appstore'/>名称</span>
-                <Input />
+                <FormItem>
+                {getFieldDecorator('homeworkName', {
+                  rules: [{ required: true, message: '请填写名字' },{max:30,message:'输入不超过30个字'}],
+                })(
+                  <Input placeholder='输入不超过30个字'/>
+                )}
+                </FormItem>
               </div>
               <div className={styles.itemBox}>
                 <span><Icon type='appstore'/>版本</span>
-                <Select style={selectStyle}>
-                {
-                  this.state.versionList.map((v,k) => (
-                    <Option value={v.get('id')} key={k} title={v.get('text')}>{v.get('text')}</Option>
-                  ))
-                }
-                </Select>
+                <FormItem>
+                {getFieldDecorator('versionOption', {
+                  rules: [{ required: true, message: '请选择版本' }],
+                })(
+                  <Select style={selectStyle}>
+                  {
+                    this.state.versionList.map((v,k) => (
+                      <Option value={v.get('id')} key={k} title={v.get('text')}>{v.get('text')}</Option>
+                    ))
+                  }
+
+                  </Select>
+                )}
+                </FormItem>
               </div>
               <div className={styles.itemBox}>
                 <span><Icon type='appstore'/>章节</span>
-                <Select style={selectStyle}>
-                {
-                  this.state.charpterList.map((v,k) => (
-                    <Option value={k} key={k} title={v}>{v}</Option>
-                  ))
-                }
-                </Select>
+                <FormItem>
+                {getFieldDecorator('charpterOption', {
+                  rules: [{ required: true, message: '请选择章节' }],
+                })(
+                  <Select style={selectStyle}>
+                  {
+                    this.state.charpterList.map((v,k) => (
+                      <Option value={k.toString()} key={k} title={v}>{v}</Option>
+                    ))
+                  }
+                  </Select>
+                )}
+                </FormItem>
               </div>
               <div className={styles.itemBox}>
                 <span><Icon type='appstore'/>课程</span>
-                <Select style={selectStyle}>
-                {
-                  this.state.courseList.map((v,k) => (
-                    <Option value={v.get('textbook_id')} key={k} title={v.get('course')}>{v.get('course')}</Option>
-                  ))
-                }
-                </Select>
+                <FormItem>
+                {getFieldDecorator('courseOption', {
+                  rules: [{ required: true, message: '请选择课程' }],
+                })(
+                  <Select style={selectStyle}>
+                  {
+                    this.state.courseList.map((v,k) => (
+                      <Option value={k.toString()} key={k} title={v.get('course')}>{v.get('course')}</Option>
+                    ))
+                  }
+                  </Select>
+                )}
+                </FormItem>
+              </div>
+            </Col>
+            <Col span={8} style={{borderRight:'1px solid #cccccc'}}>
+              <div className={styles.itemBox}>
+                <span><Icon type='appstore'/>要求</span>
+                <FormItem>
+                {getFieldDecorator('demand', {
+                  rules: [{ required: true, message: '请填写要求' },{max:200,message:'输入不超过200个字'}],
+                })(
+                  <Input type='textarea' placeholder='输入不超过200个字' rows={10}/>
+                )}
+                </FormItem>
               </div>
             </Col>
             <Col span={8}>
-            </Col>
-            <Col span={8}>
+              <div className={styles.itemBox}>
+                <span><Icon type='appstore'/>作业类型</span>
+                <div>
+                  <RadioGroup onChange={this.onChangeHomeworkType} value={this.state.homeworkType}>
+                    <Radio value={1}>电子试卷</Radio>
+                    <Radio value={0}>答题卡</Radio>
+                  </RadioGroup>
+                </div>
+                <FormItem>
+                {getFieldDecorator('userName', {
+                  rules: [{ required: true, message: 'Please input your username!' }],
+                })(
+                  <Select style={selectStyle} placeholder={this.state.homeworkType?'选择电子试卷':'选择答题卡'}>
+                  {
+                    this.state.homeworkType?this.state.testpaperList.map((v,k) => (
+                      <Option  value={v.get('examPaperId')} key={k} title={v.get('examPaperName')}>{v.get('examPaperName')}</Option>
+                    )):this.state.answersheetList.map((v,k) => (
+                      <Option value={v.get('answersheet_id')} key={k} title={v.get('answersheet_name')}>{v.get('answersheet_name')}</Option>
+                    ))
+                  }
+                  </Select>
+                )}
+                </FormItem>
+              </div>
             </Col>
           </Row>
+          </Form>
         </div>
       </div>
     )
   }
 })
 
-export default CreateHomeworkPage
+export default Form.create()(CreateHomeworkPage)
