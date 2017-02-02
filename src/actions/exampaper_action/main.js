@@ -9,7 +9,7 @@ notification.config({
 
 //获取表格数据
 export const GET_TABLEDATA = actionNames('GET_TABLEDATA')
-export function getTableData(type,search,currentPage){
+export function getExampaper(type,search,currentPage,subjectId,gradeId){
   let realType = type;
   if(type === 'selfexampapercenter'){
     realType = 'showExamList.json'
@@ -17,7 +17,7 @@ export function getTableData(type,search,currentPage){
   return {
     types:GET_TABLEDATA,
     callAPI:()=>{
-      return fetch(config.api.exampaper.getTableData(realType,search,currentPage),{
+      return fetch(config.api.exampaper.getTableData(realType,search,currentPage,subjectId,gradeId),{
         method:'GET',
         headers:{
           'from':'nodejs',
@@ -33,7 +33,7 @@ export function getFilteredTableData(type,search,currentPage,phaseCode="",subjec
   return {
     types:GET_FILTERED_TABLEDATA,
     callAPI:()=>{
-      return fetch(config.api.courseCenter.getTableData(type,search,currentPage,phaseCode,subjectId,termId),{
+      return fetch(config.api.exampaper.getTableData(type,search,currentPage,subjectId,gradeId),{
         method:'GET',
         headers:{
           'from':'nodejs',

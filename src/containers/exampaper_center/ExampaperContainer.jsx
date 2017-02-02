@@ -3,7 +3,7 @@ import {Spin} from 'antd'
 import styles from './ExampaperContainer.scss'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
-import {getTableData} from '../../actions/exampaper_action/main'
+import {getExampaper} from '../../actions/exampaper_action/main'
 
 const ExampaperContainer = React.createClass({
   componentDidMount(){
@@ -30,7 +30,7 @@ function mapStateToProps(state){
 
 function mapDispatchToProps(dispatch){
   return {
-    getTableData:bindActionCreators(getTableData,dispatch)
+    getTableData:bindActionCreators(getExampaper,dispatch)
   }
 }
 

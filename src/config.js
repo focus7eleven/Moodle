@@ -230,7 +230,7 @@ const config = _.extend({
 		},
 		exampaper:{
 			showExamSelectList:(subjectId,gradeId,term)=>`${baseURL}/exampaper/showExamSelectList?subjectId=${subjectId}&gradeId=${gradeId}&term=${term}`,
-			getTableData:(search,currentPage)=>`${baseURL}/exampaper/showExamList.json?search=${search}&currentPage=${currentPage}`
+			getTableData:(type,search,currentPage,subjectId='',gradeId='')=>`${baseURL}/exampaper/${type}?search=${search}&currentPage=${currentPage}&subjectId=${subjectId}&gradeId=${gradeId}`
 		},
 		answersheet:{
 			getAll:`${baseURL}/answersheet/getAll`,

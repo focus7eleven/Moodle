@@ -2,6 +2,7 @@ import React from 'react'
 import {Icon,Table,Button} from 'antd'
 import {getWorkspaceData} from '../../actions/workspace'
 import {getTableData} from '../../actions/course_center/main'
+import {getExampaper} from '../../actions/exampaper_action/main'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 import styles from './TableComponent.scss'
@@ -16,12 +17,14 @@ const TableComponent = React.createClass({
   },
 
   render(){
-    const {tableData,pageType,searchStr,getWorkspaceData,getTableData,dataType} = this.props;
+    const {tableData,pageType,searchStr,getWorkspaceData,getTableData,dataType,getExampaper} = this.props;
     let workspace
     if(dataType=='baseInfo'){
       workspace = this.props.baseInfo
     }else if(dataType=='courseCenter'){
       workspace = this.props.courseCenter
+    }else if(dataType=='exampaper'){
+      workspace = this.props.exampaper
     }
     return (
       <div className={styles.wrapper}>
@@ -42,6 +45,8 @@ const TableComponent = React.createClass({
                     getWorkspaceData(pageType,page,this.props.workspace.get('data').get('pageShow'),searchStr)
                   }else if(dataType=='courseCenter'){
                     getTableData(pageType,'',page)
+                  }else if(dataType=='exampaper'){
+                    getExampaper(pageType,'',page)
                   }
                 },
                 onShowSizeChange:(current,size)=>{
@@ -69,6 +74,7 @@ function mapStateToProps(state){
   return{
     baseInfo:state.get('workspace'),
     courseCenter:state.get('courseCenter'),
+    exampaper:state.get('exampaper'),
   }
 }
 
@@ -76,6 +82,7 @@ function mapDispatchToProps(dispatch){
   return {
     getWorkspaceData:bindActionCreators(getWorkspaceData,dispatch),
     getTableData:bindActionCreators(getTableData,dispatch),
+    getExampaper:bindActionCreators(getExampaper,dispatch),
   }
 }
 
