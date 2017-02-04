@@ -43,10 +43,10 @@ const VideoComponent = React.createClass({
     }
   },
   componentDidMount(){
-    let selector = '.'+styles.microVideo
-    console.log("players:",plyr.setup(selector,{
-      controls:['play','volume','fullscreen'],
-    }))
+    // let selector = '.'+styles.microVideo
+    // console.log("players:",plyr.setup(selector,{
+    //   controls:['play','volume','fullscreen'],
+    // }))
   },
   render(){
     return(
@@ -62,13 +62,13 @@ const VideoComponent = React.createClass({
           </div>
         </div>
         <div className={styles.description}>
-          <div>
+          <div className={styles.top}>
             <span>{this.props.description.grade}</span>
             <span>{this.props.description.subject}</span>
             <span>{this.props.description.charpter}</span>
           </div>
           <div className={styles.line}></div>
-          <div>
+          <div className={styles.bottom}>
             <span>播放:{this.props.description.playNums}</span>
             <span>{this.props.description.collectNums}人收藏</span>
           </div>

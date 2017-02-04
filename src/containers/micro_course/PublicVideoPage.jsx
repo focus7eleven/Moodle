@@ -6,6 +6,7 @@ import {bindActionCreators} from 'redux'
 import {getTableData} from '../../actions/micro_course/main'
 import {Pagination,Menu,Input,Button} from 'antd'
 import TreeComponent from '../../components/tree/TreeComponent'
+import VideoComponent from '../../components/video/VideoComponent'
 
 const Search = Input.Search
 
@@ -68,7 +69,7 @@ const PublicVideoPage = React.createClass({
               <div className={styles.videoPanel}>
                 {
                   [1,2,3,4,5,6,7,8,9].map((item,index)=>{
-                    return <div key={index}>video</div>
+                    return <div key={index}><VideoComponent></VideoComponent></div>
                   })
                 }
               </div>
