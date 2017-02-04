@@ -20,17 +20,22 @@
       left: 0px
     }
     :local(.mask){
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      z-index: 1;
-      color:white;
-      display: flex;
-      justify-content: space-between;
-      width: 100%;
-      padding:3px 5px;
-      font-size: 14px;
-      background-color: rgba(33, 25, 25, 0.36);
+      display: none;
+    }
+    &:hover{
+      :local(.mask){
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        z-index: 1;
+        color:white;
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        padding:3px 5px;
+        font-size: 14px;
+        background-color: rgba(33, 25, 25, 0.36);
+      }
     }
   }
   :local(.description){
