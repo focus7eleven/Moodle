@@ -34,6 +34,7 @@ const CreateExampaper = React.createClass({
             </Row>
           </div>
           <div className={styles.paperContent}>
+            
           </div>
         </div>
       </div>
