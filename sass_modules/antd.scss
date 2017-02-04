@@ -44,7 +44,7 @@
 
   }
   :global(.ant-modal-body){
-    max-height: 400px;
+    max-height: 500px;
     overflow: scroll;
   }
 }
@@ -195,4 +195,14 @@
 
 :global(.ant-radio-inner:after){
   background-color: $primary-color;
+}
+
+:global(.ant-menu-horizontal > .ant-menu-item-selected){
+  color: $primary-color;
+  border-bottom: 2px solid $primary-color;
+}
+
+:global(.ant-menu-horizontal > .ant-menu-item:hover){
+  color: $primary-color;
+  border-bottom: 2px solid $primary-color;
 }
