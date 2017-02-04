@@ -46,6 +46,9 @@ import HomeworkContainer from './containers/homework_center/HomeworkContainer'
 import CreateHomeworkPage from './containers/homework_center/CreateHomework'
 import ExampaperContainer from './containers/exampaper_center/ExampaperContainer'
 import MyExampaperPage from './containers/exampaper_center/MyExampaperPage'
+import CreateExampaper from './containers/exampaper_center/CreateExampaper'
+
+import VideoComponent from './components/video/VideoComponent'
 
 const routes = (
 	<Router history={browserHistory}>
@@ -57,6 +60,7 @@ const routes = (
 				<Route path='navigation-mini' component={NavigationMini}></Route>
 				<Route path='edu-outline' component={EduOutlinePage}></Route>
 				<Route path='filter' component={Filter}></Route>
+				<Route path='videoComponent' component={VideoComponent}></Route>
 			</Route>
 			<Route path='login' component={LoginContainer}></Route>
 
@@ -129,6 +133,7 @@ const routes = (
 				{/* 题库机组卷 */}
 				<Route path=':second' component={ExampaperContainer}>
 					<Route path='selfexampapercenter' component={MyExampaperPage}></Route>
+					<Route path='newexampaper' component={CreateExampaper}></Route>
 				</Route>
 
 			</Route>

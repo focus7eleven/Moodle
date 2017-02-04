@@ -1,0 +1,60 @@
+:local(.videoComponent){
+  height: 200px;
+  width: 254px;
+  border: 1px solid #D9D9D9;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  :local(.videoContainer){
+    position:relative;
+    padding: 0;
+    border: none;
+    :local(.tag){
+      position:absolute;
+      top: 0;
+      right: 0;
+      z-index: 1;
+    }
+    :local(.microVideo){
+      width:252px;
+      height: 142px;
+      top:0px;
+      left: 0px
+    }
+    :local(.mask){
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      z-index: 1;
+      color:white;
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      padding:3px 5px;
+      font-size: 14px;
+      background-color: rgba(33, 25, 25, 0.36);
+    }
+  }
+  :local(.description){
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    :local(.line){
+      width:230px;
+      height: 1px;
+      border-bottom: 1px solid #D9D9D9;
+      margin-left: 10px;
+    }
+    >div{
+      flex-grow: 1;
+      display: flex;
+      padding: 5px 10px;
+      justify-content: space-between;
+      >span{
+        display: block;
+        font-size: 14px;
+        line-height: 14px;
+      }
+    }
+  }
+}
