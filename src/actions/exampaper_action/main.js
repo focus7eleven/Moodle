@@ -25,6 +25,9 @@ export function getExampaper(type,search,currentPage,subjectId,gradeId){
         }
       }).then(res => res.json())
     },
+    shouldCallAPI:()=>{
+      return type!='newexampaper'
+    }
   }
 }
 
