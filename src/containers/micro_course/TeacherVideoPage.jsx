@@ -1,6 +1,6 @@
 import React from 'react'
 import CourseFilterComponent from '../../components/course_filter/CourseFilterComponent'
-import styles from './PublicVideoPage.scss'
+import styles from './TeacherVideoPage.scss'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 import {getTableData} from '../../actions/micro_course/main'
@@ -9,7 +9,7 @@ import TreeComponent from '../../components/tree/TreeComponent'
 
 const Search = Input.Search
 
-const PublicVideoPage = React.createClass({
+const TeacherVideoPage = React.createClass({
   getInitialState(){
     return {
       searchStr:'',
@@ -99,4 +99,4 @@ function mapDispatchToProps(dispatch){
   }
 }
 
-export default connect(mapStateToProps,mapDispatchToProps)(PublicVideoPage)
+export default connect(mapStateToProps,mapDispatchToProps)(TeacherVideoPage)

@@ -56,7 +56,7 @@ const CourseFilterComponent = React.createClass({
 
     return (
       <div className={styles.container}>
-        <Select defaultValue="" style={{ width: 200 }} onChange={this.handleGradeChange}>
+        <Select defaultValue="" style={{ width: 150 }} onChange={this.handleGradeChange}>
           <Option value="">所有年级</Option>
           {
             grade.map((item,index)=>{
@@ -64,12 +64,12 @@ const CourseFilterComponent = React.createClass({
             })
           }
         </Select>
-        <Select defaultValue="" style={{ marginLeft:20,width: 200 }} onChange={this.handleTermChange}>
+        <Select defaultValue="" style={{ marginLeft:20,width: 150 }} onChange={this.handleTermChange}>
           <Option value="">所有学期</Option>
           <Option value="上学期">上学期</Option>
           <Option value="下学期">下学期</Option>
         </Select>
-        <Select defaultValue="" style={{ marginLeft:20,width: 200 }} onChange={this.handleSubjectChange}>
+        <Select defaultValue="" style={{ marginLeft:20,width: 150 }} onChange={this.handleSubjectChange}>
           <Option value="">所有学科</Option>
           {
             subjects.map((item,index)=>{
@@ -77,7 +77,7 @@ const CourseFilterComponent = React.createClass({
             })
           }
         </Select>
-        <Select defaultValue="" style={{ marginLeft:20,width: 200 }} onChange={this.handleVersionChange}>
+        <Select defaultValue="" style={{ marginLeft:20,width: 150 }} onChange={this.handleVersionChange}>
           <Option value="">所有版本</Option>
           {
             version.map((item,index)=>{
