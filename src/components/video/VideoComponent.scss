@@ -17,7 +17,9 @@
     }
     :local(.microVideo){
       top:0px;
-      left: 0px
+      left: 0px;
+      width: 252px;
+      height: 142px;
     }
     :local(.mask){
       display: none;
@@ -35,6 +37,9 @@
         padding:3px 5px;
         font-size: 14px;
         background-color: rgba(33, 25, 25, 0.36);
+        &:hover{
+          display: none;
+        }
       }
     }
   }

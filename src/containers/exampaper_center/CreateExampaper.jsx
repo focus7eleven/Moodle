@@ -2,8 +2,25 @@ import React from 'react'
 import styles from './CreateExampaper.scss'
 import ExamElement from '../../components/tag/ExamElement'
 import {Row,Col,Checkbox,Button,Icon} from 'antd'
+import {List} from 'immutable'
+import config from '../../config'
 
 const CreateExampaper = React.createClass({
+  getInitalState(){
+    return {
+      exerciseList:List()
+    }
+  },
+  //添加选择题
+  handleAddChoose(type){
+    fetch(config.api.wordquestion.addChoose,{
+      method:'post',
+      headers:{
+        'from':'nodejs',
+        'token':sessionStorage.getItem('accessToken')
+      }
+    })
+  },
   render(){
     return (
       <div className={styles.container}>

@@ -234,6 +234,9 @@ const config = _.extend({
 		},
 		answersheet:{
 			getAll:`${baseURL}/answersheet/getAll`,
+		},
+		wordquestion:{
+			addChoose:`${baseURL}/wordquestion/addChoose`
 		}
 	}
 })

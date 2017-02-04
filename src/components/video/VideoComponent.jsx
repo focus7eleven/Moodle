@@ -43,17 +43,23 @@ const VideoComponent = React.createClass({
     }
   },
   componentDidMount(){
-    let selector = '.'+styles.microVideo
-    console.log("players:",plyr.setup(selector,{
-      controls:['play','volume','fullscreen'],
-    }))
+  },
+  handlePlay(){
+    console.log("this",this.refs.player)
+    if(this._played){
+      this._played = false
+      this.refs.player.pause()
+    }else{
+      this._played = true
+      this.refs.player.play()
+    }
   },
   render(){
     return(
       <div className={styles.videoComponent}>
-        <div className={styles.videoContainer}>
+        <div className={styles.videoContainer} onClick={this.handlePlay}>
           <Tag className={styles.tag} color={this.props.tag.color}>{this.props.description.grade}|{this.props.description.subject}</Tag>
-          <video poster={this.props.coverUrl} className={styles.microVideo} id={this.props.id} controls>
+          <video ref="player" poster={this.props.coverUrl} className={styles.microVideo} id={this.props.id}>
             <source src={this.props.videoUrl} type="video/mp4"/>
           </video>
           <div className={styles.mask}>
