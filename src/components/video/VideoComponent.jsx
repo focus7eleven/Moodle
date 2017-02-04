@@ -53,7 +53,7 @@ const VideoComponent = React.createClass({
       <div className={styles.videoComponent}>
         <div className={styles.videoContainer}>
           <Tag className={styles.tag} color={this.props.tag.color}>{this.props.description.grade}|{this.props.description.subject}</Tag>
-          <video poster={this.props.coverUrl} className={styles.microVideo} id={this.props.id} >
+          <video poster={this.props.coverUrl} className={styles.microVideo} id={this.props.id} controls>
             <source src={this.props.videoUrl} type="video/mp4"/>
           </video>
           <div className={styles.mask}>
