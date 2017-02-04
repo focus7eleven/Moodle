@@ -4,7 +4,9 @@ const MultipleChoiceQuestion = React.createClass({
   render(){
     return(
       <div className={styles.multipleChoiceQuestion}>
-        
+        <div>
+          
+        </div>
       </div>
     )
   }
