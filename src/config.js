@@ -232,6 +232,7 @@ const config = _.extend({
 			showExamSelectList:(subjectId,gradeId,term)=>`${baseURL}/exampaper/showExamSelectList?subjectId=${subjectId}&gradeId=${gradeId}&term=${term}`,
 			getTableData:(type,search,currentPage,subjectId='',gradeId='')=>`${baseURL}/exampaper/${type}?search=${search}&currentPage=${currentPage}&subjectId=${subjectId}&gradeId=${gradeId}`,
 			createExam:`${baseURL}/exampaper/createExam`,
+			deletePaper:`${baseURL}/exampaper/deleteExam`,
 		},
 		answersheet:{
 			getAll:`${baseURL}/answersheet/getAll`,

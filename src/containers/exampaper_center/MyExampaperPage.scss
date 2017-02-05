@@ -21,3 +21,6 @@
     @include tableColumn;
   }
 }
+:local(.deleteButton){
+  @include deleteButton;
+}

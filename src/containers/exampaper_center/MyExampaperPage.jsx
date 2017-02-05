@@ -3,7 +3,7 @@ import TableComponent from '../../components/table/TableComponent'
 import styles from './MyExampaperPage.scss'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
-import {getExampaper} from '../../actions/exampaper_action/main'
+import {getExampaper,deletePaper} from '../../actions/exampaper_action/main'
 import {Input,Button,Select} from 'antd'
 import {List,fromJS} from 'immutable'
 import config from '../../config'
@@ -76,6 +76,9 @@ const MyExampaperPage = React.createClass({
     })
     this.props.getTableData('selfexampapercenter','',1,this.state.subjectOption,value)
   },
+  handleDeletePaper(examId){
+    this.props.deletePaper(examId)
+  },
   getTableData(){
     const tableHeader = [{
       title:'学科',
@@ -100,7 +103,7 @@ const MyExampaperPage = React.createClass({
     },{
       title:'操作',
       render:(text,record)=>{
-        return null
+        return (<div><Button onClick={this.handleDeletePaper.bind(this,text.id)} className={styles.deleteButton}>删除</Button></div>)
       }
     }]
     const tableBody = this.props.exampaper.get('data').isEmpty()?List():this.props.exampaper.get('data').get('result').map((v,k)=>({
@@ -154,6 +157,7 @@ function mapStateToProps(state){
 function mapDispatchToProps(dispatch){
   return {
     getTableData:bindActionCreators(getExampaper,dispatch),
+    deletePaper:bindActionCreators(deletePaper,dispatch),
   }
 }
 
