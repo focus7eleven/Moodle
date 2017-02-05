@@ -4,13 +4,12 @@ import {Tag} from 'antd'
 import plyr from 'plyr'
 import 'plyr/dist/plyr.css'
 import {baseURL} from '../../config'
+import subjectColor from '../../utils/subjectColor'
 
 const mockURL = 'https://cdn.selz.com/plyr/1.5/View_From_A_Blue_Moon_Trailer-HD.mp4'
+
 const VideoComponent = React.createClass({
   propTypes:{
-    tag:PropTypes.shape({
-      color:PropTypes.string,
-    }),//标签的颜色和文字内容
     description:PropTypes.shape({
       grade:PropTypes.string,
       subject:PropTypes.string,
@@ -24,11 +23,15 @@ const VideoComponent = React.createClass({
     coverUrl:PropTypes.string,
     id:PropTypes.string,
   },
+
+  getInitialState(){
+    return {
+      tagColor: '',
+    }
+  },
+
   getDefaultProps(){
     return {
-      tag:{
-        color:'#8494C8',
-      },
       description:{
         grade:'七年级',
         subject:'物理',
@@ -43,7 +46,10 @@ const VideoComponent = React.createClass({
       id:'1',
     }
   },
-  componentDidMount(){
+
+  componentWillReceiveProps(nextProps){
+    const tagColor = subjectColor[nextProps.description.subject]?subjectColor[nextProps.description.subject]:'#aaa7b5';
+    this.setState({tagColor});
   },
 
   handlePlay(){
@@ -61,9 +67,9 @@ const VideoComponent = React.createClass({
     return(
       <div className={styles.videoComponent}>
         <div className={styles.videoContainer} onClick={this.handlePlay}>
-          <Tag className={styles.tag} color={this.props.tag.color}>{this.props.description.grade}|{this.props.description.subject}</Tag>
-          <video ref="player" poster={this.props.coverUrl} className={styles.microVideo} id={this.props.id} controls>
-            <source src={this.props.videoUrl} type="video/mp4"/>
+          <Tag className={styles.tag} color={this.state.tagColor}>{this.props.description.grade}|{this.props.description.subject}</Tag>
+          <video ref="player" poster={baseURL+'/'+this.props.coverUrl} className={styles.microVideo} id={this.props.id} controls>
+            <source src={baseURL+'/'+this.props.videoUrl} type="video/mp4"/>
           </video>
           <div className={styles.mask}>
             <span>{this.props.description.school}</span>

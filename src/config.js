@@ -220,6 +220,7 @@ const config = _.extend({
 			get:(type,currentPage,pageShow,subjectId,gradeId,textbookId,search)=>`${baseURL}/microvideo/${type}?currentPage=${currentPage}&pageShow=${pageShow}&subjectId=${subjectId}&gradeId=${gradeId}&textbookMenuId=${textbookId}&search=${search}`,
 			getVideoDetailById:(videoId)=>`${baseURL}/microvideo/getVideoDetailById?videoId=${videoId}`,
 			getTableData: (type,search,currentPage) => `${baseURL}/microvideo/${type}?search=${search}&currentPage=${currentPage}`,
+			addVideo: `${baseURL}/microvideo/add`,
 		},
 		homework:{
 			course:{

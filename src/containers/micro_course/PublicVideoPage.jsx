@@ -19,7 +19,7 @@ const PublicVideoPage = React.createClass({
   },
 
   handleSearchVideo(value){
-    console.log(value);
+    this.props.getTableData('public',value,this.props.microCourse.get('data').get('nowPage'));
   },
 
   handleClickMenu(e) {
@@ -30,10 +30,11 @@ const PublicVideoPage = React.createClass({
   },
 
   handlePageChanged(pageNumber){
-    console.log("page: ",pageNumber);
+    this.props.getTableData('public','',pageNumber);
   },
 
   render(){
+    const data = this.props.microCourse.get('data');
     return (
       <div className={styles.container}>
         <div className={styles.header}>
@@ -68,16 +69,26 @@ const PublicVideoPage = React.createClass({
               </Menu>
               <div className={styles.videoPanel}>
                 {
-                  [1,2,3,4,5,6,7,8,9].map((item,index)=>{
-                    return <div key={index}><VideoComponent></VideoComponent></div>
+                  data.get('result').map((item,index)=>{
+                    let description = {};
+                    description.grade = item.get('gradeName');
+                    description.subject = item.get('subjectName');
+                    description.chapter = item.get('textbookMenuCourse');
+                    description.playNums = item.get('playCount');
+                    description.collectNums = item.get('collectionCount');
+                    description.school = item.get('schoolName');
+                    description.teacher = 'teacher';
+                    return <div key={index}>
+                      <VideoComponent description={description} videoUrl={item.get('url')} coverUrl={item.get('coverUrl')} id={item.get('id')}></VideoComponent>
+                    </div>
                   })
                 }
               </div>
             </div>
             <div className={styles.videoPagination}>
-              <span>当前条目 1-9 / 总条目 10</span>
+              <span>当前条目 {data.get('start')} - {data.get('pageShow')} / 总条目 {data.get('totalCount')}</span>
               <div>
-                <Pagination showQuickJumper defaultCurrent={1} total={21} pageSize={9} onChange={this.handlePageChanged} />
+                <Pagination showQuickJumper defaultCurrent={data.get('nowPage')} total={data.get('totalCount')} pageSize={12} onChange={this.handlePageChanged} />
               </div>
             </div>
           </div>

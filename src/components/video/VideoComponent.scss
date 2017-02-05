@@ -72,6 +72,18 @@
         line-height: 14px;
         margin-right: 10px;
       }
+      >span:first-child{
+        flex-shrink: 0;
+      }
+      >span:nth-child(n+2){
+        flex-shrink: 0;
+      }
+      >span:nth-child(n+3){
+        flex-shrink: 1;
+        overflow-x: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
     }
     :local(.bottom){
       flex-grow: 1;
