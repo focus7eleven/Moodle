@@ -31,6 +31,40 @@ export function getExampaper(type,search,currentPage,subjectId,gradeId){
   }
 }
 
+//删除试卷
+export function deletePaper(examId){
+  let formData = new FormData()
+  formData.append('examId',examId)
+  return dispatch => {
+    fetch(config.api.exampaper.deletePaper,{
+      method:'post',
+      headers:{
+        'from':'nodejs',
+        'token':sessionStorage.getItem('accessToken')
+      },
+      body:formData
+    }).then(res => res.json()).then(res => {
+      if(res.title=='Success'){
+        console.log("Asdfasdf")
+        dispatch({
+          types:GET_TABLEDATA,
+          callAPI:()=>{
+            return fetch(config.api.exampaper.getTableData('showExamList.json','',1,'',''),{
+              method:'GET',
+              headers:{
+                'from':'nodejs',
+                'token':sessionStorage.getItem('accessToken'),
+              }
+            }).then(res => res.json()).then(res => {notification.success({message:'删除成功'});return res})
+          }
+        })
+      }else{
+        notification.error({message:'删除失败'})
+      }
+    })
+  }
+}
+
 export const GET_FILTERED_TABLEDATA = actionNames('GET_FILTERED_TABLEDATA')
 export function getFilteredTableData(type,search,currentPage,phaseCode="",subjectId="",termId=""){
   return {
