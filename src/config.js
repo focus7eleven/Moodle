@@ -230,13 +230,17 @@ const config = _.extend({
 		},
 		exampaper:{
 			showExamSelectList:(subjectId,gradeId,term)=>`${baseURL}/exampaper/showExamSelectList?subjectId=${subjectId}&gradeId=${gradeId}&term=${term}`,
-			getTableData:(type,search,currentPage,subjectId='',gradeId='')=>`${baseURL}/exampaper/${type}?search=${search}&currentPage=${currentPage}&subjectId=${subjectId}&gradeId=${gradeId}`
+			getTableData:(type,search,currentPage,subjectId='',gradeId='')=>`${baseURL}/exampaper/${type}?search=${search}&currentPage=${currentPage}&subjectId=${subjectId}&gradeId=${gradeId}`,
+			createExam:`${baseURL}/exampaper/createExam`,
 		},
 		answersheet:{
 			getAll:`${baseURL}/answersheet/getAll`,
 		},
 		wordquestion:{
-			addChoose:`${baseURL}/wordquestion/addChoose`
+			addChoose:`${baseURL}/wordquestion/addChoose`,
+			addNote:`${baseURL}/wordquestion/addNote`,
+			addJudge:`${baseURL}/wordquestion/addJudge`,
+			addShortAnswer:`${baseURL}/wordquestion/addShortAnswer`,
 		}
 	}
 })
