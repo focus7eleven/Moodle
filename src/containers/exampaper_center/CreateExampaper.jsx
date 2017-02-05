@@ -13,12 +13,18 @@ const CreateExampaper = React.createClass({
   },
   //添加选择题
   handleAddChoose(type){
+    let formData = new formData()
+    formData.append('examId','')
+    formData.append('kind',type)
+    formData.append('parentId','')
+    formData.append('date',Date.now())
     fetch(config.api.wordquestion.addChoose,{
       method:'post',
       headers:{
         'from':'nodejs',
         'token':sessionStorage.getItem('accessToken')
-      }
+      },
+      body:formData
     })
   },
   render(){

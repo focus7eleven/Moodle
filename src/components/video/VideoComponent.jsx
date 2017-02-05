@@ -3,6 +3,7 @@ import styles from './VideoComponent.scss'
 import {Tag} from 'antd'
 import plyr from 'plyr'
 import 'plyr/dist/plyr.css'
+import {baseURL} from '../../config'
 
 const mockURL = 'https://cdn.selz.com/plyr/1.5/View_From_A_Blue_Moon_Trailer-HD.mp4'
 const VideoComponent = React.createClass({
@@ -38,7 +39,7 @@ const VideoComponent = React.createClass({
         teacher:'张老师',
       },
       videoUrl:mockURL,
-      coverUrl:'https://unsplash.it/260/142',
+      coverUrl:baseURL+'/'+'microVideo/213844661528301568/1.jpg',
       id:'1',
     }
   },
@@ -61,7 +62,7 @@ const VideoComponent = React.createClass({
       <div className={styles.videoComponent}>
         <div className={styles.videoContainer} onClick={this.handlePlay}>
           <Tag className={styles.tag} color={this.props.tag.color}>{this.props.description.grade}|{this.props.description.subject}</Tag>
-          <video ref="player" poster={this.props.coverUrl} className={styles.microVideo} id={this.props.id}>
+          <video ref="player" poster={this.props.coverUrl} className={styles.microVideo} id={this.props.id} controls>
             <source src={this.props.videoUrl} type="video/mp4"/>
           </video>
           <div className={styles.mask}>
