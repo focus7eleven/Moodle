@@ -6,6 +6,7 @@ import {Row,Col,Card,Icon,Button,Table,Tag} from 'antd'
 import VideoModal from '../../../components/modal/VideoModal'
 import HomeworkDetailModal from '../../../components/modal/HomeworkDetailModal'
 import config from '../../../config'
+import moment from 'moment'
 
 const DetailPage = React.createClass({
   getInitialState(){
@@ -94,15 +95,15 @@ const DetailPage = React.createClass({
               <Card title={<span><Icon type='book'/>章节课程</span>} bordered={true}>Card content</Card>
             </Col>
             <Col span={6}>
-              <Card title={<span><Icon type='calendar'/>上课时间</span>} bordered={true}>Card content</Card>
+              <Card title={<span><Icon type='calendar'/>上课时间</span>} bordered={true}>{moment().format('MM-DD-YYYY')}</Card>
             </Col>
             <Col span={12}>
-              <Card title={<span><Icon type='edit'/>课程名称</span>} bordered={true}>Card content</Card>
+              <Card title={<span><Icon type='edit'/>课程名称</span>} bordered={true}>{this.props.courseCenter.get('courseDetail').get('name')}</Card>
             </Col>
           </Row>
           <Row type='flex' gutter={8} style={{marginBottom:'10px'}}>
             <Col span={24}>
-              <Card title={<span><Icon type='plus'/>课程说明</span>} bordered={true}>Card content</Card>
+              <Card title={<span><Icon type='plus'/>课程说明</span>} bordered={true}></Card>
             </Col>
           </Row>
           <Row type='flex'>

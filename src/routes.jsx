@@ -47,6 +47,7 @@ import CreateHomeworkPage from './containers/homework_center/CreateHomework'
 import ExampaperContainer from './containers/exampaper_center/ExampaperContainer'
 import MyExampaperPage from './containers/exampaper_center/MyExampaperPage'
 import CreateExampaper from './containers/exampaper_center/CreateExampaper'
+import HomeworkLibPage from './containers/homework/HomeworkLibPage'
 
 import VideoComponent from './components/video/VideoComponent'
 import CourseTree from './components/tree/CourseTree'
@@ -127,6 +128,7 @@ const routes = (
 				</Route>
 
 				{/* 作业中心 */}
+				<Route path="homework_lib/:type" component={HomeworkLibPage}/>
 				<Route path=':second' component={HomeworkContainer}>
 					<Route path='sethomework' component={CreateHomeworkPage}></Route>
 				</Route>
