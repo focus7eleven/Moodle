@@ -49,7 +49,7 @@ import MyExampaperPage from './containers/exampaper_center/MyExampaperPage'
 import CreateExampaper from './containers/exampaper_center/CreateExampaper'
 
 import VideoComponent from './components/video/VideoComponent'
-
+import CourseTree from './components/tree/CourseTree'
 const routes = (
 	<Router history={browserHistory}>
 		<Route path="/" component={AppContainer}>
@@ -61,6 +61,7 @@ const routes = (
 				<Route path='edu-outline' component={EduOutlinePage}></Route>
 				<Route path='filter' component={Filter}></Route>
 				<Route path='videoComponent' component={VideoComponent}></Route>
+				<Route path='coursetree' component={CourseTree}></Route>
 			</Route>
 			<Route path='login' component={LoginContainer}></Route>
 
