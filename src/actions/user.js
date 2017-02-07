@@ -70,3 +70,19 @@ export const logout = () =>{
     })
   }
 }
+
+export const GET_USER_ROLES = actionNames('GET_USER_ROLES')
+export function getUserRoles(){
+  return {
+    types:GET_USER_ROLES,
+    callAPI:()=>{
+      return fetch(config.api.staff.getAllAreas,{
+        method:'GET',
+        headers:{
+          'from':'nodejs',
+          'token':sessionStorage.getItem('accessToken'),
+        }
+      }).then(res => res.json())
+    }
+  }
+}
