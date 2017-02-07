@@ -28,18 +28,9 @@ export const login = (user,password)=>{
       }).then(res => res.json()).then(res => {
         if(res.title==='Success'){
           sessionStorage.setItem('accessToken',res.resultData.accessToken)
-          fetch(config.api.user.info.getUserId,{
-            method: 'GET',
-            headers: {
-              'from': 'NODEJS',
-              'token':sessionStorage.getItem('accessToken'),
-            },
-          }).then(res => res.json()).then(res => {
-            dispatch({
-              type:LOGIN_SUCCESS,
-              isAuth: true,
-              userId: res.userId,
-            })
+          dispatch({
+            type:LOGIN_SUCCESS,
+            isAuth: true,
           })
       }else{
           notification.error({
@@ -96,5 +87,21 @@ export function getUserRoles(){
         })
       }
     })
+  }
+}
+
+export const GET_USER_INFO = actionNames('GET_USER_INFO')
+export function getUserInfo(){
+  return {
+    types: GET_USER_INFO,
+    callAPI: () => {
+      return fetch(config.api.user.info.getInfo,{
+        method:'GET',
+        headers:{
+          'from':'nodejs',
+          'token':sessionStorage.getItem('accessToken'),
+        }
+      }).then(res => res.json())
+    }
   }
 }

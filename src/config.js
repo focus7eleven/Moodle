@@ -45,6 +45,7 @@ const config = _.extend({
 			},
 			info: {
 				getUserId: `${baseURL}/getuserid`,
+				getInfo: `${baseURL}/session`,
 			},
 		},
 		menu:{

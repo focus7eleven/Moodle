@@ -6,9 +6,10 @@ import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 import logo from 'images/logo.png'
 import {getMenu} from '../../actions/menu'
-import {getUserRoles} from '../../actions/user'
+import {getUserRoles,getUserInfo} from '../../actions/user'
 import ChangeUserDropDown from './ChangeUserDropdown'
 import classNames from 'classnames'
+import {baseURL} from '../../config'
 
 const Navigation = React.createClass({
   contextTypes: {
@@ -29,6 +30,7 @@ const Navigation = React.createClass({
   componentDidMount(){
     this.props.user.get('accessToken')?this.props.getMenu(this.props.user.get('accessToken')):null
     this.props.getUserRoles();
+    this.props.getUserInfo();
   },
 
   componentWillReceiveProps(nextProps){
@@ -105,6 +107,7 @@ const Navigation = React.createClass({
 
   render(){
     const currentUrl = this.context.router.location.pathname.split('/').slice(-2)[0]
+    const userInfo = this.props.user.get('userInfo')
     return (
       <div className={styles.wrapper}>
         <div className={styles.navigation}>
@@ -120,7 +123,7 @@ const Navigation = React.createClass({
               ))
             }
           </Menu>
-          <div className={styles.avatar} onClick={(e)=>{this.setState({showChangeUser:this.state.showChangeUser?false:true});e.stopPropagation()}}><img src='https://unsplash.it/25/25' /><span className={styles.nameDesc}>曹老师（任课老师）</span>{this.state.showChangeUser?<ChangeUserDropDown onClose={()=>{this.setState({showChangeUser:false})}}/>:null}</div>
+          <div className={styles.avatar} onClick={(e)=>{this.setState({showChangeUser:this.state.showChangeUser?false:true});e.stopPropagation()}}><img src={baseURL+'/'+userInfo.headUrl} /><span className={styles.nameDesc}>曹老师（任课老师）</span>{this.state.showChangeUser?<ChangeUserDropDown onClose={()=>{this.setState({showChangeUser:false})}}/>:null}</div>
         </div>
         <Motion defaultStyle={{x: 0}} style={this.state.openSubMenu?{x:spring(this.state.menuHeight)}:{x:spring(0)}}>
           {interpolatingStyle => (
@@ -145,6 +148,7 @@ function mapDispatchToProps(dispatch){
   return {
     getMenu:bindActionCreators(getMenu,dispatch),
     getUserRoles:bindActionCreators(getUserRoles,dispatch),
+    getUserInfo:bindActionCreators(getUserInfo,dispatch),
   }
 }
 export default connect(mapStateToProps,mapDispatchToProps)(Navigation)

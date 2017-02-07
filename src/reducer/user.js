@@ -2,6 +2,7 @@ import {
   LOGIN_SUCCESS,
   LOGOUT,
   GET_USER_ROLES,
+  GET_USER_INFO,
 } from '../actions/user'
 import {fromJS} from 'immutable'
 import {notification} from 'antd'
@@ -11,6 +12,7 @@ const initialState = fromJS({
   data:{},
   userId: 0,
   userRoles: [],
+  userInfo: {},
 })
 
 export default (state = initialState,action)=>{
@@ -30,6 +32,8 @@ export default (state = initialState,action)=>{
     case GET_USER_ROLES[1]:
       const userRoles = action.data.roles.filter((item)=>action.data.userRoleList.indexOf(item.roleId)>=0)
       return state.set('userRoles',userRoles)
+    case GET_USER_INFO[1]:
+      return state.set('userInfo',action.data)
     default:
       return state
 
