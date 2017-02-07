@@ -1,4 +1,8 @@
-import {LOGIN_SUCCESS,LOGOUT} from '../actions/user'
+import {
+  LOGIN_SUCCESS,
+  LOGOUT,
+  GET_USER_ROLES,
+} from '../actions/user'
 import {fromJS} from 'immutable'
 import {notification} from 'antd'
 
@@ -6,6 +10,7 @@ const initialState = fromJS({
   isAuth:false,
   data:{},
   userId: 0,
+  userRoles: [],
 })
 
 export default (state = initialState,action)=>{
@@ -22,6 +27,9 @@ export default (state = initialState,action)=>{
 				description: '您已成功登出。',
       })
       return state.set('isAuth',false)
+    case GET_USER_ROLES[1]:
+      const userRoles = action.data.roles.filter((item)=>action.data.userRoleList.indexOf(item.roleId)>=0)
+      return state.set('userRoles',userRoles)
     default:
       return state
 

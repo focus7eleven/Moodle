@@ -38,7 +38,7 @@ export const login = (user,password)=>{
             dispatch({
               type:LOGIN_SUCCESS,
               isAuth: true,
-              userId: Number.parseInt(res.userId),
+              userId: res.userId,
             })
           })
       }else{
@@ -73,16 +73,28 @@ export const logout = () =>{
 
 export const GET_USER_ROLES = actionNames('GET_USER_ROLES')
 export function getUserRoles(){
-  return {
-    types:GET_USER_ROLES,
-    callAPI:()=>{
-      return fetch(config.api.staff.getAllAreas,{
-        method:'GET',
-        headers:{
-          'from':'nodejs',
-          'token':sessionStorage.getItem('accessToken'),
-        }
-      }).then(res => res.json())
-    }
+  return dispatch => {
+    return fetch(config.api.user.info.getUserId,{
+      method: 'GET',
+      headers: {
+        'from': 'NODEJS',
+        'token':sessionStorage.getItem('accessToken'),
+      },
+    }).then(res => res.json()).then(res => {
+      if(res.userId){
+        dispatch({
+          types: GET_USER_ROLES,
+          callAPI:()=>{
+            return fetch(config.api.user.role.get(res.userId),{
+              method:'GET',
+              headers:{
+                'from':'nodejs',
+                'token':sessionStorage.getItem('accessToken'),
+              }
+            }).then(res => res.json())
+          }
+        })
+      }
+    })
   }
 }

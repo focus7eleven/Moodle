@@ -6,6 +6,7 @@ import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 import logo from 'images/logo.png'
 import {getMenu} from '../../actions/menu'
+import {getUserRoles} from '../../actions/user'
 import ChangeUserDropDown from './ChangeUserDropdown'
 import classNames from 'classnames'
 
@@ -27,6 +28,7 @@ const Navigation = React.createClass({
 
   componentDidMount(){
     this.props.user.get('accessToken')?this.props.getMenu(this.props.user.get('accessToken')):null
+    this.props.getUserRoles();
   },
 
   componentWillReceiveProps(nextProps){
@@ -142,6 +144,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch){
   return {
     getMenu:bindActionCreators(getMenu,dispatch),
+    getUserRoles:bindActionCreators(getUserRoles,dispatch),
   }
 }
 export default connect(mapStateToProps,mapDispatchToProps)(Navigation)
