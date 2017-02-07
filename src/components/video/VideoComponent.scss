@@ -1,6 +1,8 @@
 :local(.videoComponent){
-  height: 200px;
-  width: 254px;
+  /* height: 200px; */
+  /* width: 254px; */
+  width: 100%;
+  height: 100%;
   border: 1px solid #D9D9D9;
   padding: 0;
   display: flex;
@@ -9,6 +11,8 @@
     position:relative;
     padding: 0;
     border: none;
+    height: 162px;
+    width: 100%;
     :local(.tag){
       position:absolute;
       top: 0;
@@ -18,8 +22,10 @@
     :local(.microVideo){
       top:0px;
       left: 0px;
-      width: 252px;
-      height: 142px;
+      width: 100%;
+      height: 162px;
+      /* width: 252px; */
+      /* height: 142px; */
     }
     :local(.mask){
       display: none;
@@ -48,17 +54,43 @@
     display: flex;
     flex-direction: column;
     :local(.line){
-      width:230px;
+      width: calc( 100% - 20px );
       height: 1px;
       border-bottom: 1px solid #D9D9D9;
       margin-left: 10px;
+      margin-right: 10px;
       padding:0;
     }
-    >div{
+    :local(.top){
+      flex-grow: 1;
+      display: flex;
+      padding: 10px 10px 0 10px;
+      justify-content: flex-start;;
+      >span{
+        display: block;
+        font-size: 15px;
+        line-height: 14px;
+        margin-right: 10px;
+      }
+      >span:first-child{
+        flex-shrink: 0;
+      }
+      >span:nth-child(n+2){
+        flex-shrink: 0;
+      }
+      >span:nth-child(n+3){
+        flex-shrink: 1;
+        overflow-x: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+    :local(.bottom){
       flex-grow: 1;
       display: flex;
       padding: 5px 10px;
       justify-content: space-between;
+      align-items: center;
       >span{
         display: block;
         font-size: 14px;

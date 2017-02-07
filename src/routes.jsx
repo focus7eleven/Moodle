@@ -40,6 +40,8 @@ import TeacherCoursePage from './containers/course_center/TeacherCoursePage'
 import SchoolCoursePage from './containers/course_center/SchoolCoursePage'
 import MicroCourseContainer from './containers/micro_course/MicroCourseContainer'
 import PublicVideoPage from './containers/micro_course/PublicVideoPage'
+import SchoolVideoPage from './containers/micro_course/SchoolVideoPage'
+import TeacherVideoPage from './containers/micro_course/TeacherVideoPage'
 import HomeworkContainer from './containers/homework_center/HomeworkContainer'
 import CreateHomeworkPage from './containers/homework_center/CreateHomework'
 import ExampaperContainer from './containers/exampaper_center/ExampaperContainer'
@@ -120,8 +122,8 @@ const routes = (
 				{/* 微课中心 */}
 				<Route path=':second' component={MicroCourseContainer}>
 					<Route path='areavideo' component={PublicVideoPage}></Route>
-					{/* <Route path='publicvideo' component={CreateClassPage}></Route> */}
-					{/* <Route path='teachervideo' component={PublishedCoursePage}></Route> */}
+					<Route path='publicvideo' component={SchoolVideoPage}></Route>
+					<Route path='teachervideo' component={TeacherVideoPage}></Route>
 				</Route>
 
 				{/* 作业中心 */}

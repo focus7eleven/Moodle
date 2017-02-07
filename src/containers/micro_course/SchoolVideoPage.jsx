@@ -1,6 +1,6 @@
 import React from 'react'
 import CourseFilterComponent from '../../components/course_filter/CourseFilterComponent'
-import styles from './PublicVideoPage.scss'
+import styles from './SchoolVideoPage.scss'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 import {getTableData} from '../../actions/micro_course/main'
@@ -10,7 +10,7 @@ import VideoComponent from '../../components/video/VideoComponent'
 
 const Search = Input.Search
 
-const PublicVideoPage = React.createClass({
+const SchoolVideoPage = React.createClass({
   getInitialState(){
     return {
       searchStr:'',
@@ -19,7 +19,7 @@ const PublicVideoPage = React.createClass({
   },
 
   handleSearchVideo(value){
-    this.props.getTableData('public',value,this.props.microCourse.get('data').get('nowPage'));
+    this.props.getTableData('area',value,this.props.microCourse.get('data').get('nowPage'));
   },
 
   handleClickMenu(e) {
@@ -30,7 +30,7 @@ const PublicVideoPage = React.createClass({
   },
 
   handlePageChanged(pageNumber){
-    this.props.getTableData('public','',pageNumber);
+    this.props.getTableData('area','',pageNumber);
   },
 
   render(){
@@ -111,4 +111,4 @@ function mapDispatchToProps(dispatch){
   }
 }
 
-export default connect(mapStateToProps,mapDispatchToProps)(PublicVideoPage)
+export default connect(mapStateToProps,mapDispatchToProps)(SchoolVideoPage)

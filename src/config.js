@@ -1,6 +1,6 @@
 import _ from 'underscore'
 
-const baseURL = "http://139.224.194.45:8080"
+export const baseURL = "http://139.224.194.45:8080"
 
 // App config the for development and deployment environment.
 const isProduction = process.env.NODE_ENV === "production"
@@ -220,6 +220,7 @@ const config = _.extend({
 			get:(type,currentPage,pageShow,subjectId,gradeId,textbookId,search)=>`${baseURL}/microvideo/${type}?currentPage=${currentPage}&pageShow=${pageShow}&subjectId=${subjectId}&gradeId=${gradeId}&textbookMenuId=${textbookId}&search=${search}`,
 			getVideoDetailById:(videoId)=>`${baseURL}/microvideo/getVideoDetailById?videoId=${videoId}`,
 			getTableData: (type,search,currentPage) => `${baseURL}/microvideo/${type}?search=${search}&currentPage=${currentPage}`,
+			addVideo: `${baseURL}/microvideo/add`,
 		},
 		homework:{
 			course:{
