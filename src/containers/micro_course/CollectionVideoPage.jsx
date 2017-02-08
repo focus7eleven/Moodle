@@ -1,6 +1,6 @@
 import React from 'react'
 import CourseFilterComponent from '../../components/course_filter/CourseFilterComponent'
-import styles from './SchoolVideoPage.scss'
+import styles from './CollectionVideoPage.scss'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 import {getTableData} from '../../actions/micro_course/main'
@@ -11,7 +11,7 @@ import VideoComponent from '../../components/video/VideoComponent'
 
 const Search = Input.Search
 
-const SchoolVideoPage = React.createClass({
+const CollectionVideoPage = React.createClass({
   getInitialState(){
     return {
       searchStr:'',
@@ -20,7 +20,7 @@ const SchoolVideoPage = React.createClass({
   },
 
   handleSearchVideo(value){
-    this.props.getTableData('area',value,this.props.microCourse.get('data').get('nowPage'));
+    this.props.getTableData('collection',value,this.props.microCourse.get('data').get('nowPage'));
   },
 
   handleClickMenu(e) {
@@ -31,7 +31,7 @@ const SchoolVideoPage = React.createClass({
   },
 
   handlePageChanged(pageNumber){
-    this.props.getTableData('area','',pageNumber);
+    this.props.getTableData('collection','',pageNumber);
   },
 
   render(){
@@ -48,6 +48,7 @@ const SchoolVideoPage = React.createClass({
         <div className={styles.body}>
           <div className={styles.treeContainer}>
             <CourseTree></CourseTree>
+            {/* <TreeComponent></TreeComponent> */}
           </div>
           <div className={styles.videoContainer}>
             <div className={styles.videoList}>
@@ -112,4 +113,4 @@ function mapDispatchToProps(dispatch){
   }
 }
 
-export default connect(mapStateToProps,mapDispatchToProps)(SchoolVideoPage)
+export default connect(mapStateToProps,mapDispatchToProps)(CollectionVideoPage)

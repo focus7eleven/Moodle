@@ -4,7 +4,7 @@ import config from '../config.js'
 
 // 声明登录之后获取菜单的action操作
 export const GET_MENU = 'GET_MENU'
-export function getMenu(token){
+export function getMenu(){
   return dispatch => {
     return fetch(config.api.menu.get,{
       method:'GET',

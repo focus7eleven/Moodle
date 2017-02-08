@@ -6,6 +6,7 @@ import {bindActionCreators} from 'redux'
 import {getTableData} from '../../actions/micro_course/main'
 import {Pagination,Menu,Input,Button,Modal,Form} from 'antd'
 import TreeComponent from '../../components/tree/TreeComponent'
+import CourseTree from '../../components/tree/CourseTree'
 import VideoComponent from '../../components/video/VideoComponent'
 import {findMenuInTree} from '../../reducer/menu'
 import {fromJS,Map,List} from 'immutable'
@@ -184,7 +185,7 @@ const TeacherVideoPage = React.createClass({
         </div>
         <div className={styles.body}>
           <div className={styles.treeContainer}>
-            <TreeComponent></TreeComponent>
+            <CourseTree></CourseTree>
           </div>
           <div className={styles.videoContainer}>
             <div className={styles.videoList}>

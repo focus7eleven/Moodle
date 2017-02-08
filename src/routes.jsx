@@ -42,6 +42,7 @@ import MicroCourseContainer from './containers/micro_course/MicroCourseContainer
 import PublicVideoPage from './containers/micro_course/PublicVideoPage'
 import SchoolVideoPage from './containers/micro_course/SchoolVideoPage'
 import TeacherVideoPage from './containers/micro_course/TeacherVideoPage'
+import CollectionVideoPage from './containers/micro_course/CollectionVideoPage'
 import HomeworkContainer from './containers/homework_center/HomeworkContainer'
 import CreateHomeworkPage from './containers/homework_center/CreateHomework'
 import ExampaperContainer from './containers/exampaper_center/ExampaperContainer'
@@ -125,6 +126,8 @@ const routes = (
 					<Route path='areavideo' component={PublicVideoPage}></Route>
 					<Route path='publicvideo' component={SchoolVideoPage}></Route>
 					<Route path='teachervideo' component={TeacherVideoPage}></Route>
+					<Route path='mycollection' component={CollectionVideoPage}></Route>
+					<Route path='uncheckedvideo' component={CollectionVideoPage}></Route>
 				</Route>
 
 				{/* 作业中心 */}

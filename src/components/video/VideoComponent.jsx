@@ -11,6 +11,7 @@ const mockURL = 'https://cdn.selz.com/plyr/1.5/View_From_A_Blue_Moon_Trailer-HD.
 const VideoComponent = React.createClass({
   propTypes:{
     description:PropTypes.shape({
+      name:PropTypes.string,
       grade:PropTypes.string,
       subject:PropTypes.string,
       chapter:PropTypes.string,//章节
@@ -33,6 +34,7 @@ const VideoComponent = React.createClass({
   getDefaultProps(){
     return {
       description:{
+        name: "test",
         grade:'七年级',
         subject:'物理',
         chapter:'分子结构',
@@ -78,8 +80,9 @@ const VideoComponent = React.createClass({
         </div>
         <div className={styles.description}>
           <div className={styles.top}>
-            <span>{this.props.description.grade}</span>
-            <span>{this.props.description.subject}</span>
+            {/* <span>{this.props.description.grade}</span>
+            <span>{this.props.description.subject}</span> */}
+            <span>{this.props.description.name}</span>
             <span>{this.props.description.chapter}</span>
           </div>
           <div className={styles.line}></div>

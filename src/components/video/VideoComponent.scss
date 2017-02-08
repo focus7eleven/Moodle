@@ -66,6 +66,7 @@
       display: flex;
       padding: 10px 10px 0 10px;
       justify-content: flex-start;;
+      /* overflow-x: auto; */
       >span{
         display: block;
         font-size: 15px;
@@ -76,9 +77,6 @@
         flex-shrink: 0;
       }
       >span:nth-child(n+2){
-        flex-shrink: 0;
-      }
-      >span:nth-child(n+3){
         flex-shrink: 1;
         overflow-x: hidden;
         text-overflow: ellipsis;

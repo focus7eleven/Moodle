@@ -42,6 +42,7 @@ const config = _.extend({
 			},
 			role: {
 				get: (userId) => `${baseURL}/user/role/get?userId=${userId}`,
+				roleType: `${baseURL}/account/changeRoleWithToken`,
 			},
 			info: {
 				getUserId: `${baseURL}/getuserid`,

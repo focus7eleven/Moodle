@@ -17,6 +17,8 @@ export function getTableData(type,search,currentPage){
     realType = 'public'
   }else if(type=='teachervideo'){
     realType = 'getTeacher'
+  }else if(type=='mycollection'){
+    realType = 'collection'
   }
   return {
     types:GET_TABLEDATA,

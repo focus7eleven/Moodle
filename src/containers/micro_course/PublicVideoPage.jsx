@@ -6,6 +6,7 @@ import {bindActionCreators} from 'redux'
 import {getTableData} from '../../actions/micro_course/main'
 import {Pagination,Menu,Input,Button} from 'antd'
 import TreeComponent from '../../components/tree/TreeComponent'
+import CourseTree from '../../components/tree/CourseTree'
 import VideoComponent from '../../components/video/VideoComponent'
 
 const Search = Input.Search
@@ -46,7 +47,7 @@ const PublicVideoPage = React.createClass({
         </div>
         <div className={styles.body}>
           <div className={styles.treeContainer}>
-            <TreeComponent></TreeComponent>
+            <CourseTree></CourseTree>
           </div>
           <div className={styles.videoContainer}>
             <div className={styles.videoList}>
@@ -71,6 +72,7 @@ const PublicVideoPage = React.createClass({
                 {
                   data.get('result').map((item,index)=>{
                     let description = {};
+                    description.name = item.get('name');
                     description.grade = item.get('gradeName');
                     description.subject = item.get('subjectName');
                     description.chapter = item.get('textbookMenuCourse');
