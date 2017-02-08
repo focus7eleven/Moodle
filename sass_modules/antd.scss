@@ -206,3 +206,7 @@
   color: $primary-color;
   border-bottom: 2px solid $primary-color;
 }
+
+// :global(.ant-table-tbody > tr:hover){
+//   background: unset;
+// }

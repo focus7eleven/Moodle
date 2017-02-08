@@ -27,6 +27,7 @@ const TableComponent = React.createClass({
       workspace = this.props.exampaper
     }
     return (
+      <div>
       <div className={styles.wrapper}>
         <Table
           rowClassName={(record,index)=>index%2?styles.tableDarkRow:styles.tableLightRow}
@@ -65,6 +66,7 @@ const TableComponent = React.createClass({
           +parseInt(workspace.get('data').get('pageShow'))}
           /总条目{workspace.get('data').get('totalCount')}
         </div>
+      </div>
       </div>
     )
   }

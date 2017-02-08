@@ -5,7 +5,6 @@ import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 import {getTableData} from '../../actions/micro_course/main'
 import {Pagination,Menu,Input,Button} from 'antd'
-import TreeComponent from '../../components/tree/TreeComponent'
 import CourseTree from '../../components/tree/CourseTree'
 import VideoComponent from '../../components/video/VideoComponent'
 

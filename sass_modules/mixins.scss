@@ -28,12 +28,12 @@
 
 @mixin tableDarkRow{
   text-align: center;
-  background-color: #F5F5F5;
+  background-color: #F5F5F5 !important;
 }
 
 @mixin tableLightRow {
   text-align: center;
-  background-color: #FFFFFF;
+  background-color: #FFFFFF !important;
 }
 
 @mixin tableColumn {
