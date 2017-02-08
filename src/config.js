@@ -204,7 +204,7 @@ const config = _.extend({
 			getDistinctSubject: `${baseURL}/class/distinctsubject`,
 			getCourseVersion: `${baseURL}/select?selectstyle=JKS`,
 			getUserGrade: `${baseURL}/grade/getUserGrade`,
-			detail:(lessonId)=>`${baseURL}/lesson/get/detail?lesson_id=${lessonId}`
+			detail:(lessonId)=>`${baseURL}/lesson/get/detail_new?lesson_id=${lessonId}`
 		},
 		teachingPlan:{
 			course:{
