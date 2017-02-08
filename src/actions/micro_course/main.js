@@ -96,3 +96,23 @@ export function getVersionOptions(){
     }
   }
 }
+
+export function addVideo(data,type){
+  return dispatch => {
+    return fetch(config.api.microvideo.addVideo,{
+      method:'post',
+      headers:{
+        'from':'nodejs',
+        'token':sessionStorage.getItem('accessToken'),
+      },
+      body: data
+    }).then(res => res.json()).then(res => {
+      if(res.title == 'Success'){
+        dispatch(getTableData(type,'',1)).then(res => {notification.success({message:'添加成功'});return res})
+      }else{
+        notification.error({message:'添加失败',description: res.result});
+        return "error";
+      }
+    })
+  }
+}

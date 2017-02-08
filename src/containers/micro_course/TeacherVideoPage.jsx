@@ -3,16 +3,18 @@ import CourseFilterComponent from '../../components/course_filter/CourseFilterCo
 import styles from './TeacherVideoPage.scss'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
-import {getTableData} from '../../actions/micro_course/main'
-import {Pagination,Menu,Input,Button,Modal,Form} from 'antd'
+import {addVideo,getTableData} from '../../actions/micro_course/main'
+import {Select,Pagination,Menu,Input,Button,Modal,Form} from 'antd'
 import TreeComponent from '../../components/tree/TreeComponent'
 import CourseTree from '../../components/tree/CourseTree'
 import VideoComponent from '../../components/video/VideoComponent'
 import {findMenuInTree} from '../../reducer/menu'
 import {fromJS,Map,List} from 'immutable'
+import config from '../../config'
 
 const Search = Input.Search
 const FormItem = Form.Item
+const Option = Select.Option;
 
 const TeacherVideoPage = React.createClass({
   _currentMenu:Map({
@@ -31,6 +33,12 @@ const TeacherVideoPage = React.createClass({
       currentTab: "hot",
       showAddVideoModal: false,
       videoFile: null,
+      gradeId: '',
+      subjectId: '',
+      versionId: '',
+      termValue: '',
+      textbook: [],
+      canSelectTextbook: true,
     }
   },
 
@@ -49,11 +57,28 @@ const TeacherVideoPage = React.createClass({
     this.props.getTableData('getTeacher','',pageNumber);
   },
 
-  handleShowAddVideoModal(){
-  },
-
   handlePostVideo(){
-
+    const {getFieldsValue,getFieldValue,getFieldError,validateFields} = this.props.form
+    validateFields((err, values) => {
+      if (!err) {
+        let formData = new FormData()
+        formData.append('addArea','');
+        formData.append('name',values.name);
+        formData.append('description',values.description);
+        formData.append('subjectId',values.subjectId);
+        formData.append('gradeId',values.gradeId);
+        formData.append('textbookMenuId',values.textbookMenuId);
+        formData.append('file',this.state.videoFile);
+        const result = this.props.addVideo(formData,"getTeacher")
+        let visibility = true;
+        result.then((res)=>{
+          if(res!=="error"){
+            visibility = false;
+          }
+        })
+        this.setState({showAddVideoModal: visibility});
+      }
+    });
   },
 
   handleShowAddVideoModal(){
@@ -69,9 +94,56 @@ const TeacherVideoPage = React.createClass({
     this.setState({videoFile: file});
   },
 
+  handleFetchTextbook(subjectId,gradeId,versionId,termValue){
+    // const {subjectId,gradeId,versionId,termValue} = this.state;
+    console.log(subjectId,gradeId,versionId,termValue);
+    this.setState({canSelectTextbook:false})
+    fetch(config.api.textbook.getTextBookByCondition(subjectId,gradeId,versionId,termValue),{
+      method:'GET',
+      headers:{
+        'from':'nodejs',
+        'token':sessionStorage.getItem('accessToken'),
+      }
+    }).then(res => res.json()).then(res=>{
+      this.setState({textbook: res,canSelectTextbook: true});
+    })
+  },
+
+  handleGradeChange(value){
+    this.props.form.setFieldsValue({'textbookMenuId':''})
+    const {subjectId,versionId,termValue} = this.state;
+    this.handleFetchTextbook(subjectId,value,versionId,termValue)
+    this.setState({gradeId: value})
+  },
+
+  handleTermChange(value){
+    this.props.form.setFieldsValue({'textbookMenuId':''})
+    const {subjectId,versionId,gradeId} = this.state;
+    this.handleFetchTextbook(subjectId,gradeId,versionId,value)
+    this.setState({termValue: value})
+  },
+
+  handleVersionChange(value){
+    this.props.form.setFieldsValue({'textbookMenuId':''})
+    const {subjectId,gradeId,termValue} = this.state;
+    this.handleFetchTextbook(subjectId,gradeId,value,termValue)
+    this.setState({versionId: value})
+  },
+
+  handleSubjectChange(value){
+    this.props.form.setFieldsValue({'textbookMenuId':''})
+    const {gradeId,versionId,termValue} = this.state;
+    this.handleFetchTextbook(value,gradeId,versionId,termValue)
+    this.setState({subjectId: value})
+  },
+
+
   renderModal(){
+    const gradeOptions = this.props.courseCenter.get('gradeOptions')
+    const subjectOptions = this.props.courseCenter.get('subjectOptions')
+    const versionOptions = this.props.courseCenter.get('versionOptions')
     const {getFieldDecorator} = this.props.form;
-    const {showAddVideoModal} = this.state;
+    const {showAddVideoModal,textbook,canSelectTextbook} = this.state;
     const formItemLayout = {labelCol:{span:5},wrapperCol:{span:12}};
     return (
       <Modal title="添加微课视频" visible={showAddVideoModal}
@@ -143,17 +215,111 @@ const TeacherVideoPage = React.createClass({
             >
             {
               getFieldDecorator('gradeId', {
-                rules: [{required: true}],
-                // initialValue: allAreasList[0]?allAreasList[0].areaId:"",
+                rules: [{required: true, message: '请选择年级'}],
+                initialValue: "",
               })(
                 <Select
-                  placeholder="请选择年级"
                   optionFilterProp="children"
+                  onChange={this.handleGradeChange}
                 >
+                  <Option value="">请选择</Option>
                   {
-                    // allAreasList.map((item)=>{
-                    //   return <Option value={item.areaId} key={item.areaId}>{item.areaName}</Option>
-                    // })
+                    gradeOptions.map((item,index)=>{
+                      return <Option value={item.gradeId} key={index}>{item.gradeName}</Option>
+                    })
+                  }
+                </Select>
+              )
+            }
+            </FormItem>
+            <FormItem
+              label='学科'
+              {...formItemLayout}
+              key='subjectId'
+            >
+            {
+              getFieldDecorator('subjectId', {
+                rules: [{required: true, message: '请选择学科'}],
+                initialValue: "",
+              })(
+                <Select
+                  optionFilterProp="children"
+                  onChange={this.handleSubjectChange}
+                >
+                  <Option value="">请选择</Option>
+                  {
+                    subjectOptions.map((item,index)=>{
+                      return <Option value={item.subject_id} key={item.subject_id}>{item.subject_name}</Option>
+                    })
+                  }
+                </Select>
+              )
+            }
+            </FormItem>
+            <FormItem
+              label='学期'
+              {...formItemLayout}
+              key='termValue'
+            >
+            {
+              getFieldDecorator('termValue', {
+                rules: [{required: true, message: '请选择学期'}],
+                initialValue: "",
+              })(
+                <Select
+                  optionFilterProp="children"
+                  onChange={this.handleTermChange}
+                >
+                  <Option value="">请选择</Option>
+                  <Option value="上学期">上学期</Option>
+                  <Option value="下学期">下学期</Option>
+                </Select>
+              )
+            }
+            </FormItem>
+            <FormItem
+              label='版本'
+              {...formItemLayout}
+              key='versionId'
+            >
+            {
+              getFieldDecorator('versionId', {
+                rules: [{required: true, message: '请选择版本'}],
+                initialValue: "",
+              })(
+                <Select
+                  optionFilterProp="children"
+                  onChange={this.handleVersionChange}
+                >
+                  <Option value="">请选择</Option>
+                  {
+                    versionOptions.map((item,index)=>{
+                      return <Option value={item.id} key={item.id}>{item.text}</Option>
+                    })
+                  }
+                </Select>
+              )
+            }
+            </FormItem>
+            <FormItem
+              label='章节课程'
+              {...formItemLayout}
+              key='textbookMenuId'
+            >
+            {
+              getFieldDecorator('textbookMenuId', {
+                rules: [{required: true, message: '请选择章节课程'}],
+                initialValue: "",
+              })(
+                <Select
+                  optionFilterProp="children"
+                  disabled={!canSelectTextbook}
+                >
+                  <Option value="">请选择</Option>
+                  {
+                    textbook.map((item,index)=>{
+                      return <Option value={item.textbook_menu_id} key={item.textbook_menu_id}>{item.name}</Option>
+                    })
                   }
                 </Select>
               )
@@ -210,9 +376,10 @@ const TeacherVideoPage = React.createClass({
                 {
                   data.get('result').map((item,index)=>{
                     let description = {};
+                    description.name = item.get('name');
                     description.grade = item.get('gradeName');
                     description.subject = item.get('subjectName');
-                    description.chapter = item.get('textbookMenuCourse');
+                    description.chapter = item.get('textBookMenuName');
                     description.playNums = item.get('playCount');
                     description.collectNums = item.get('collectionCount');
                     description.school = item.get('schoolName');
@@ -241,13 +408,15 @@ const TeacherVideoPage = React.createClass({
 function mapStateToProps(state){
   return{
     menu:state.get('menu'),
-    microCourse:state.get('microCourse')
+    microCourse:state.get('microCourse'),
+    courseCenter: state.get('courseCenter'),
   }
 }
 
 function mapDispatchToProps(dispatch){
   return {
     getTableData:bindActionCreators(getTableData,dispatch),
+    addVideo:bindActionCreators(addVideo,dispatch),
   }
 }
 
